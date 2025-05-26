@@ -1,0 +1,223 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/grammar_provider.dart';
+import '../utils/app_theme.dart';
+import '../widgets/pattern_card.dart';
+import 'dart:io' show Platform;
+import 'pattern_detail_screen.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String? _selectedCategory;
+  int? _selectedDifficultyLevel;
+  List<String> _categories = [];
+  int _maxDifficultyLevel = 5;
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+      _loadCategoriesAndLevels();
+    });
+  }
+  
+  Future<void> _loadData() async {
+    await Provider.of<GrammarProvider>(context, listen: false).loadGrammarPatterns();
+  }
+  
+  Future<void> _loadCategoriesAndLevels() async {
+    final provider = Provider.of<GrammarProvider>(context, listen: false);
+    
+    final categories = await provider.getCategories();
+    final maxLevel = await provider.getMaxDifficultyLevel();
+    
+    setState(() {
+      _categories = categories;
+      _maxDifficultyLevel = maxLevel;
+    });
+  }
+  
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chinese Grammar Visualizer'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          _buildSearchBar(),
+          _buildFilterOptions(),
+          _buildPatternsList(),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search grammar patterns...',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    Provider.of<GrammarProvider>(context, listen: false)
+                        .setSearchQuery('');
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onChanged: (value) {
+          Provider.of<GrammarProvider>(context, listen: false).setSearchQuery(value);
+        },
+      ),
+    );
+  }
+  
+  Widget _buildFilterOptions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<String?>(
+              decoration: InputDecoration(
+                labelText: 'Category',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              value: _selectedCategory,
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text('All Categories'),
+                ),
+                ..._categories.map((category) => DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                )).toList(),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+                Provider.of<GrammarProvider>(context, listen: false)
+                    .filterByCategory(value);
+              },
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: DropdownButtonFormField<int?>(
+              decoration: InputDecoration(
+                labelText: 'Difficulty',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              value: _selectedDifficultyLevel,
+              items: [
+                const DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('All Levels'),
+                ),
+                ...List.generate(_maxDifficultyLevel, (index) => index + 1)
+                    .map((level) => DropdownMenuItem<int>(
+                  value: level,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: AppTheme.getDifficultyColor(level),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text('Level $level'),
+                    ],
+                  ),
+                )).toList(),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedDifficultyLevel = value;
+                });
+                Provider.of<GrammarProvider>(context, listen: false)
+                    .filterByDifficultyLevel(value);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPatternsList() {
+    return Consumer<GrammarProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Expanded(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        if (provider.filteredPatterns.isEmpty) {
+          return const Expanded(
+            child: Center(
+              child: Text(
+                'No grammar patterns found',
+                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
+              ),
+            ),
+          );
+        }
+        
+        return Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: provider.filteredPatterns.length,
+            itemBuilder: (context, index) {
+              final pattern = provider.filteredPatterns[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: PatternCard(
+                  pattern: pattern,
+                  onTap: () {
+                    provider.selectPattern(pattern.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PatternDetailScreen(patternId: pattern.id),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}

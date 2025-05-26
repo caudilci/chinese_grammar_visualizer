@@ -1,0 +1,702 @@
+[
+  {
+    "id": "ba-sentence",
+    "name": "把 (bǎ) Sentence",
+    "chineseTitle": "把字句",
+    "englishTitle": "Bǎ Sentence Structure",
+    "description": "The 把 (bǎ) construction is used to emphasize what happens to the object of an action. It moves the object before the verb, emphasizing the result or effect on the object.",
+    "structure": "Subject + 把 + Object + Verb + Result/Complement",
+    "examples": [
+      {
+        "id": "ba-example-1",
+        "chineseSentence": "我把书放在桌子上。",
+        "pinyinSentence": "Wǒ bǎ shū fàng zài zhuōzi shàng.",
+        "englishTranslation": "I put the book on the table.",
+        "breakdownParts": [
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "partOfSpeech": "pronoun",
+            "meaning": "I",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "把",
+            "pinyin": "bǎ",
+            "partOfSpeech": "preposition",
+            "meaning": null,
+            "grammarFunction": "marker"
+          },
+          {
+            "text": "书",
+            "pinyin": "shū",
+            "partOfSpeech": "noun",
+            "meaning": "book",
+            "grammarFunction": "object"
+          },
+          {
+            "text": "放",
+            "pinyin": "fàng",
+            "partOfSpeech": "verb",
+            "meaning": "put",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "在",
+            "pinyin": "zài",
+            "partOfSpeech": "preposition",
+            "meaning": "at/in",
+            "grammarFunction": "location marker"
+          },
+          {
+            "text": "桌子",
+            "pinyin": "zhuōzi",
+            "partOfSpeech": "noun",
+            "meaning": "table",
+            "grammarFunction": "location"
+          },
+          {
+            "text": "上",
+            "pinyin": "shàng",
+            "partOfSpeech": "postposition",
+            "meaning": "on",
+            "grammarFunction": "location complement"
+          }
+        ],
+        "note": "This sentence uses 把 to emphasize what happened to the book (it was put on the table)."
+      },
+      {
+        "id": "ba-example-2",
+        "chineseSentence": "他把衣服洗干净了。",
+        "pinyinSentence": "Tā bǎ yīfu xǐ gānjìng le.",
+        "englishTranslation": "He washed the clothes clean.",
+        "breakdownParts": [
+          {
+            "text": "他",
+            "pinyin": "tā",
+            "partOfSpeech": "pronoun",
+            "meaning": "he",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "把",
+            "pinyin": "bǎ",
+            "partOfSpeech": "preposition",
+            "meaning": null,
+            "grammarFunction": "marker"
+          },
+          {
+            "text": "衣服",
+            "pinyin": "yīfu",
+            "partOfSpeech": "noun",
+            "meaning": "clothes",
+            "grammarFunction": "object"
+          },
+          {
+            "text": "洗",
+            "pinyin": "xǐ",
+            "partOfSpeech": "verb",
+            "meaning": "wash",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "干净",
+            "pinyin": "gānjìng",
+            "partOfSpeech": "adjective",
+            "meaning": "clean",
+            "grammarFunction": "result complement"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "completion marker"
+          }
+        ],
+        "note": "This example shows how 把 is commonly used with a result complement (干净) to show the outcome of the action."
+      }
+    ],
+    "category": "Intermediate",
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "marker": "#FF3B30",
+      "object": "#5856D6",
+      "action": "#34C759",
+      "result complement": "#007AFF",
+      "location marker": "#FF9500",
+      "location": "#5856D6",
+      "location complement": "#34C759",
+      "completion marker": "#FF3B30"
+    }
+  },
+  {
+    "id": "shi-de",
+    "name": "是...的 (shì...de) Structure",
+    "chineseTitle": "是...的句式",
+    "englishTitle": "Shì...de Construction",
+    "description": "The 是...的 (shì...de) structure is used to emphasize certain aspects of a past action, such as time, place, manner, or person who performed the action.",
+    "structure": "Subject + 是 + Information to emphasize + Verb + 的",
+    "examples": [
+      {
+        "id": "shi-de-example-1",
+        "chineseSentence": "他是昨天来的。",
+        "pinyinSentence": "Tā shì zuótiān lái de.",
+        "englishTranslation": "It was yesterday that he came.",
+        "breakdownParts": [
+          {
+            "text": "他",
+            "pinyin": "tā",
+            "partOfSpeech": "pronoun",
+            "meaning": "he",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "是",
+            "pinyin": "shì",
+            "partOfSpeech": "verb",
+            "meaning": "is/am/are",
+            "grammarFunction": "emphasis marker 1"
+          },
+          {
+            "text": "昨天",
+            "pinyin": "zuótiān",
+            "partOfSpeech": "noun",
+            "meaning": "yesterday",
+            "grammarFunction": "time (emphasized)"
+          },
+          {
+            "text": "来",
+            "pinyin": "lái",
+            "partOfSpeech": "verb",
+            "meaning": "come",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "的",
+            "pinyin": "de",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "emphasis marker 2"
+          }
+        ],
+        "note": "This sentence emphasizes WHEN he came (yesterday), not the fact that he came."
+      },
+      {
+        "id": "shi-de-example-2",
+        "chineseSentence": "我是坐飞机去北京的。",
+        "pinyinSentence": "Wǒ shì zuò fēijī qù Běijīng de.",
+        "englishTranslation": "I went to Beijing by plane.",
+        "breakdownParts": [
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "partOfSpeech": "pronoun",
+            "meaning": "I",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "是",
+            "pinyin": "shì",
+            "partOfSpeech": "verb",
+            "meaning": "is/am/are",
+            "grammarFunction": "emphasis marker 1"
+          },
+          {
+            "text": "坐",
+            "pinyin": "zuò",
+            "partOfSpeech": "verb",
+            "meaning": "sit/take",
+            "grammarFunction": "method (emphasized)"
+          },
+          {
+            "text": "飞机",
+            "pinyin": "fēijī",
+            "partOfSpeech": "noun",
+            "meaning": "airplane",
+            "grammarFunction": "transportation"
+          },
+          {
+            "text": "去",
+            "pinyin": "qù",
+            "partOfSpeech": "verb",
+            "meaning": "go to",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "北京",
+            "pinyin": "Běijīng",
+            "partOfSpeech": "noun",
+            "meaning": "Beijing",
+            "grammarFunction": "destination"
+          },
+          {
+            "text": "的",
+            "pinyin": "de",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "emphasis marker 2"
+          }
+        ],
+        "note": "This sentence emphasizes HOW I went to Beijing (by plane), not where I went."
+      }
+    ],
+    "category": "Intermediate",
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "emphasis marker 1": "#FF3B30",
+      "emphasis marker 2": "#FF3B30",
+      "time (emphasized)": "#5856D6",
+      "method (emphasized)": "#5856D6",
+      "action": "#34C759",
+      "transportation": "#007AFF",
+      "destination": "#5AC8FA"
+    }
+  },
+  {
+    "id": "topic-comment",
+    "name": "Topic-Comment Structure",
+    "chineseTitle": "话题-评论结构",
+    "englishTitle": "Topic-Comment Structure",
+    "description": "The topic-comment structure is fundamental in Chinese. The topic establishes what is being discussed, and the comment provides information about the topic.",
+    "structure": "Topic + Comment",
+    "examples": [
+      {
+        "id": "topic-comment-example-1",
+        "chineseSentence": "这本书我已经看过了。",
+        "pinyinSentence": "Zhè běn shū wǒ yǐjīng kàn guò le.",
+        "englishTranslation": "This book, I have already read it.",
+        "breakdownParts": [
+          {
+            "text": "这本",
+            "pinyin": "zhè běn",
+            "partOfSpeech": "determiner + measure word",
+            "meaning": "this",
+            "grammarFunction": "determiner"
+          },
+          {
+            "text": "书",
+            "pinyin": "shū",
+            "partOfSpeech": "noun",
+            "meaning": "book",
+            "grammarFunction": "topic"
+          },
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "partOfSpeech": "pronoun",
+            "meaning": "I",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "已经",
+            "pinyin": "yǐjīng",
+            "partOfSpeech": "adverb",
+            "meaning": "already",
+            "grammarFunction": "time adverb"
+          },
+          {
+            "text": "看",
+            "pinyin": "kàn",
+            "partOfSpeech": "verb",
+            "meaning": "read/see",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "过",
+            "pinyin": "guò",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "aspect marker (experience)"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "completion marker"
+          }
+        ],
+        "note": "In English, this would require a pronoun ('it') to refer back to the topic, but in Chinese, the object is understood from context."
+      },
+      {
+        "id": "topic-comment-example-2",
+        "chineseSentence": "北京冬天很冷。",
+        "pinyinSentence": "Běijīng dōngtiān hěn lěng.",
+        "englishTranslation": "Beijing, winters are very cold.",
+        "breakdownParts": [
+          {
+            "text": "北京",
+            "pinyin": "Běijīng",
+            "partOfSpeech": "noun",
+            "meaning": "Beijing",
+            "grammarFunction": "topic"
+          },
+          {
+            "text": "冬天",
+            "pinyin": "dōngtiān",
+            "partOfSpeech": "noun",
+            "meaning": "winter",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "很",
+            "pinyin": "hěn",
+            "partOfSpeech": "adverb",
+            "meaning": "very",
+            "grammarFunction": "degree modifier"
+          },
+          {
+            "text": "冷",
+            "pinyin": "lěng",
+            "partOfSpeech": "adjective",
+            "meaning": "cold",
+            "grammarFunction": "predicate"
+          }
+        ],
+        "note": "This sets up 'Beijing' as the topic, then makes a comment about its winters."
+      }
+    ],
+    "category": "Beginner",
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "topic": "#FF9500",
+      "subject": "#5856D6",
+      "action": "#34C759",
+      "determiner": "#007AFF",
+      "time adverb": "#5AC8FA",
+      "aspect marker (experience)": "#FF3B30",
+      "completion marker": "#FF3B30",
+      "degree modifier": "#5AC8FA",
+      "predicate": "#34C759"
+    }
+  },
+  {
+    "id": "comparative",
+    "name": "比 (bǐ) Comparative Structure",
+    "chineseTitle": "比较句",
+    "englishTitle": "Comparative Structure",
+    "description": "The 比 (bǐ) structure is used to compare two things, indicating that one is more or less than the other in some quality.",
+    "structure": "A + 比 + B + Adjective/Verb",
+    "examples": [
+      {
+        "id": "comparative-example-1",
+        "chineseSentence": "他比我高。",
+        "pinyinSentence": "Tā bǐ wǒ gāo.",
+        "englishTranslation": "He is taller than me.",
+        "breakdownParts": [
+          {
+            "text": "他",
+            "pinyin": "tā",
+            "partOfSpeech": "pronoun",
+            "meaning": "he",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "比",
+            "pinyin": "bǐ",
+            "partOfSpeech": "preposition",
+            "meaning": "compared to",
+            "grammarFunction": "comparison marker"
+          },
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "partOfSpeech": "pronoun",
+            "meaning": "I/me",
+            "grammarFunction": "object of comparison"
+          },
+          {
+            "text": "高",
+            "pinyin": "gāo",
+            "partOfSpeech": "adjective",
+            "meaning": "tall",
+            "grammarFunction": "comparative quality"
+          }
+        ],
+        "note": "A simple comparison of height. No degree word is needed in Chinese."
+      },
+      {
+        "id": "comparative-example-2",
+        "chineseSentence": "这个城市比那个城市大得多。",
+        "pinyinSentence": "Zhège chéngshì bǐ nàge chéngshì dà de duō.",
+        "englishTranslation": "This city is much bigger than that city.",
+        "breakdownParts": [
+          {
+            "text": "这个",
+            "pinyin": "zhège",
+            "partOfSpeech": "determiner + measure word",
+            "meaning": "this",
+            "grammarFunction": "determiner 1"
+          },
+          {
+            "text": "城市",
+            "pinyin": "chéngshì",
+            "partOfSpeech": "noun",
+            "meaning": "city",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "比",
+            "pinyin": "bǐ",
+            "partOfSpeech": "preposition",
+            "meaning": "compared to",
+            "grammarFunction": "comparison marker"
+          },
+          {
+            "text": "那个",
+            "pinyin": "nàge",
+            "partOfSpeech": "determiner + measure word",
+            "meaning": "that",
+            "grammarFunction": "determiner 2"
+          },
+          {
+            "text": "城市",
+            "pinyin": "chéngshì",
+            "partOfSpeech": "noun",
+            "meaning": "city",
+            "grammarFunction": "object of comparison"
+          },
+          {
+            "text": "大",
+            "pinyin": "dà",
+            "partOfSpeech": "adjective",
+            "meaning": "big",
+            "grammarFunction": "comparative quality"
+          },
+          {
+            "text": "得多",
+            "pinyin": "de duō",
+            "partOfSpeech": "adverbial phrase",
+            "meaning": "much more",
+            "grammarFunction": "degree complement"
+          }
+        ],
+        "note": "The phrase 得多 indicates a large degree of difference between the two cities."
+      }
+    ],
+    "category": "Beginner",
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "comparison marker": "#FF3B30",
+      "object of comparison": "#5856D6",
+      "comparative quality": "#34C759",
+      "determiner 1": "#007AFF",
+      "determiner 2": "#007AFF",
+      "degree complement": "#5AC8FA"
+    }
+  },
+  {
+    "id": "bei-passive",
+    "name": "被 (bèi) Passive Structure",
+    "chineseTitle": "被字句",
+    "englishTitle": "Passive Voice with bèi",
+    "description": "The 被 (bèi) structure is used to create passive voice in Chinese, emphasizing that someone or something is acted upon or affected by an action.",
+    "structure": "Subject + 被 + Agent + Verb + (Complement)",
+    "examples": [
+      {
+        "id": "bei-passive-example-1",
+        "chineseSentence": "我的手机被小偷偷走了。",
+        "pinyinSentence": "Wǒ de shǒujī bèi xiǎotōu tōu zǒu le.",
+        "englishTranslation": "My phone was stolen by a thief.",
+        "breakdownParts": [
+          {
+            "text": "我的",
+            "pinyin": "wǒ de",
+            "partOfSpeech": "possessive",
+            "meaning": "my",
+            "grammarFunction": "possessive"
+          },
+          {
+            "text": "手机",
+            "pinyin": "shǒujī",
+            "partOfSpeech": "noun",
+            "meaning": "phone",
+            "grammarFunction": "subject (affected)"
+          },
+          {
+            "text": "被",
+            "pinyin": "bèi",
+            "partOfSpeech": "preposition",
+            "meaning": "by",
+            "grammarFunction": "passive marker"
+          },
+          {
+            "text": "小偷",
+            "pinyin": "xiǎotōu",
+            "partOfSpeech": "noun",
+            "meaning": "thief",
+            "grammarFunction": "agent"
+          },
+          {
+            "text": "偷走",
+            "pinyin": "tōu zǒu",
+            "partOfSpeech": "verb compound",
+            "meaning": "steal away",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "completion marker"
+          }
+        ],
+        "note": "This passive construction emphasizes what happened to the phone rather than focusing on the thief's action."
+      },
+      {
+        "id": "bei-passive-example-2",
+        "chineseSentence": "问题被解决了。",
+        "pinyinSentence": "Wèntí bèi jiějué le.",
+        "englishTranslation": "The problem was solved.",
+        "breakdownParts": [
+          {
+            "text": "问题",
+            "pinyin": "wèntí",
+            "partOfSpeech": "noun",
+            "meaning": "problem",
+            "grammarFunction": "subject (affected)"
+          },
+          {
+            "text": "被",
+            "pinyin": "bèi",
+            "partOfSpeech": "preposition",
+            "meaning": "by",
+            "grammarFunction": "passive marker"
+          },
+          {
+            "text": "解决",
+            "pinyin": "jiějué",
+            "partOfSpeech": "verb",
+            "meaning": "solve",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "completion marker"
+          }
+        ],
+        "note": "In this example, the agent (who solved the problem) is omitted, which is common when the agent is unknown or unimportant."
+      }
+    ],
+    "category": "Intermediate",
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject (affected)": "#FF9500",
+      "passive marker": "#FF3B30",
+      "agent": "#5856D6",
+      "action": "#34C759",
+      "completion marker": "#5AC8FA",
+      "possessive": "#007AFF"
+    }
+  },
+  {
+    "id": "le-particle",
+    "name": "了 (le) Particle Usage",
+    "chineseTitle": "了的用法",
+    "englishTitle": "Le Particle Usage",
+    "description": "The 了 (le) particle has two main uses: (1) after a verb to indicate completion of an action, and (2) at the end of a sentence to indicate change of state or new situation.",
+    "structure": "Verb + 了 (completion) or Sentence + 了 (change of state)",
+    "examples": [
+      {
+        "id": "le-example-1",
+        "chineseSentence": "我昨天看了一部电影。",
+        "pinyinSentence": "Wǒ zuótiān kàn le yī bù diànyǐng.",
+        "englishTranslation": "I watched a movie yesterday.",
+        "breakdownParts": [
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "partOfSpeech": "pronoun",
+            "meaning": "I",
+            "grammarFunction": "subject"
+          },
+          {
+            "text": "昨天",
+            "pinyin": "zuótiān",
+            "partOfSpeech": "noun",
+            "meaning": "yesterday",
+            "grammarFunction": "time"
+          },
+          {
+            "text": "看",
+            "pinyin": "kàn",
+            "partOfSpeech": "verb",
+            "meaning": "watch",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "completion marker"
+          },
+          {
+            "text": "一部",
+            "pinyin": "yī bù",
+            "partOfSpeech": "numeral + measure word",
+            "meaning": "one",
+            "grammarFunction": "quantity"
+          },
+          {
+            "text": "电影",
+            "pinyin": "diànyǐng",
+            "partOfSpeech": "noun",
+            "meaning": "movie",
+            "grammarFunction": "object"
+          }
+        ],
+        "note": "This example shows 了 used after a verb to indicate the action was completed."
+      },
+      {
+        "id": "le-example-2",
+        "chineseSentence": "下雨了。",
+        "pinyinSentence": "Xià yǔ le.",
+        "englishTranslation": "It's raining. (It has started to rain.)",
+        "breakdownParts": [
+          {
+            "text": "下",
+            "pinyin": "xià",
+            "partOfSpeech": "verb",
+            "meaning": "fall",
+            "grammarFunction": "action"
+          },
+          {
+            "text": "雨",
+            "pinyin": "yǔ",
+            "partOfSpeech": "noun",
+            "meaning": "rain",
+            "grammarFunction": "object"
+          },
+          {
+            "text": "了",
+            "pinyin": "le",
+            "partOfSpeech": "particle",
+            "meaning": null,
+            "grammarFunction": "change of state marker"
+          }
+        ],
+        "note": "This example shows 了 at the end of a sentence to indicate a new situation (it wasn't raining before, but now it is)."
+      }
+    ],
+    "category": "Beginner",
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "time": "#5856D6",
+      "action": "#34C759",
+      "completion marker": "#FF3B30",
+      "change of state marker": "#FF3B30",
+      "quantity": "#007AFF",
+      "object": "#5AC8FA"
+    }
+  }
+]
