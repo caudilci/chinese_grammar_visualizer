@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/grammar_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/pattern_card.dart';
-import 'dart:io' show Platform;
 import 'pattern_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int? _selectedDifficultyLevel;
   List<String> _categories = [];
   int _maxDifficultyLevel = 5;
-  
+
   @override
   void initState() {
     super.initState();
@@ -28,23 +27,26 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadCategoriesAndLevels();
     });
   }
-  
+
   Future<void> _loadData() async {
-    await Provider.of<GrammarProvider>(context, listen: false).loadGrammarPatterns();
+    await Provider.of<GrammarProvider>(
+      context,
+      listen: false,
+    ).loadGrammarPatterns();
   }
-  
+
   Future<void> _loadCategoriesAndLevels() async {
     final provider = Provider.of<GrammarProvider>(context, listen: false);
-    
+
     final categories = await provider.getCategories();
     final maxLevel = await provider.getMaxDifficultyLevel();
-    
+
     setState(() {
       _categories = categories;
       _maxDifficultyLevel = maxLevel;
     });
   }
-  
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -67,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
+
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -81,22 +83,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
-                    Provider.of<GrammarProvider>(context, listen: false)
-                        .setSearchQuery('');
+                    Provider.of<GrammarProvider>(
+                      context,
+                      listen: false,
+                    ).setSearchQuery('');
                   },
                 )
               : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
         onChanged: (value) {
-          Provider.of<GrammarProvider>(context, listen: false).setSearchQuery(value);
+          Provider.of<GrammarProvider>(
+            context,
+            listen: false,
+          ).setSearchQuery(value);
         },
       ),
     );
   }
-  
+
   Widget _buildFilterOptions() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -106,7 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<String?>(
               decoration: InputDecoration(
                 labelText: 'Category',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               value: _selectedCategory,
               items: [
@@ -114,17 +122,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   value: null,
                   child: Text('All Categories'),
                 ),
-                ..._categories.map((category) => DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category),
-                )).toList(),
+                ..._categories
+                    .map(
+                      (category) => DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    )
+                    .toList(),
               ],
               onChanged: (value) {
                 setState(() {
                   _selectedCategory = value;
                 });
-                Provider.of<GrammarProvider>(context, listen: false)
-                    .filterByCategory(value);
+                Provider.of<GrammarProvider>(
+                  context,
+                  listen: false,
+                ).filterByCategory(value);
               },
             ),
           ),
@@ -133,7 +147,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<int?>(
               decoration: InputDecoration(
                 labelText: 'Difficulty',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               value: _selectedDifficultyLevel,
               items: [
@@ -142,27 +159,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('All Levels'),
                 ),
                 ...List.generate(_maxDifficultyLevel, (index) => index + 1)
-                    .map((level) => DropdownMenuItem<int>(
-                  value: level,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: AppTheme.getDifficultyColor(level),
-                        size: 16,
+                    .map(
+                      (level) => DropdownMenuItem<int>(
+                        value: level,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: AppTheme.getDifficultyColor(level),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text('Level $level'),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 4),
-                      Text('Level $level'),
-                    ],
-                  ),
-                )).toList(),
+                    )
+                    .toList(),
               ],
               onChanged: (value) {
                 setState(() {
                   _selectedDifficultyLevel = value;
                 });
-                Provider.of<GrammarProvider>(context, listen: false)
-                    .filterByDifficultyLevel(value);
+                Provider.of<GrammarProvider>(
+                  context,
+                  listen: false,
+                ).filterByDifficultyLevel(value);
               },
             ),
           ),
@@ -170,18 +192,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
+
   Widget _buildPatternsList() {
     return Consumer<GrammarProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
           return const Expanded(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: Center(child: CircularProgressIndicator()),
           );
         }
-        
+
         if (provider.filteredPatterns.isEmpty) {
           return const Expanded(
             child: Center(
@@ -192,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }
-        
+
         return Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
@@ -208,7 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PatternDetailScreen(patternId: pattern.id),
+                        builder: (context) =>
+                            PatternDetailScreen(patternId: pattern.id),
                       ),
                     );
                   },
