@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'providers/grammar_provider.dart';
-import 'screens/home_screen.dart';
+import 'providers/dictionary_provider.dart';
+import 'screens/main_screen.dart';
 import 'utils/app_theme.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => GrammarProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GrammarProvider()),
+        ChangeNotifierProvider(create: (context) => DictionaryProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -22,13 +27,13 @@ class MyApp extends StatelessWidget {
       title: 'Chinese Grammar Visualizer',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({super.key});
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -45,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     }
   }
