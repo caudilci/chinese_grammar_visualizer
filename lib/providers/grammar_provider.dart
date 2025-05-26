@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/grammar_pattern.dart';
 import '../services/grammar_service.dart';
+import '../utils/pinyin_utils.dart';
 
 class GrammarProvider extends ChangeNotifier {
   final GrammarService _grammarService = GrammarService();
@@ -63,7 +64,15 @@ class GrammarProvider extends ChangeNotifier {
               pattern.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
               pattern.chineseTitle.contains(_searchQuery) ||
               pattern.englishTitle.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              pattern.description.toLowerCase().contains(_searchQuery.toLowerCase()))
+              pattern.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              // Search examples for pinyin matches (with or without tone marks)
+              pattern.examples.any((example) => 
+                  PinyinUtils.matchesWithoutTones(example.pinyinSentence, _searchQuery) ||
+                  example.breakdownParts.any((part) => 
+                      PinyinUtils.matchesWithoutTones(part.pinyin, _searchQuery)
+                  )
+              )
+          )
           .toList();
     }
   }
