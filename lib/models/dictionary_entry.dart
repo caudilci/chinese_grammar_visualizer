@@ -1,7 +1,10 @@
+import '../utils/pinyin_utils.dart';
+
 class DictionaryEntry {
   final String traditional;
   final String simplified;
   final String pinyin;
+  final String plainPinyin; // Pinyin without tone markers or numbers
   final List<String> definitions;
 
   DictionaryEntry({
@@ -9,7 +12,14 @@ class DictionaryEntry {
     required this.simplified,
     required this.pinyin,
     required this.definitions,
-  });
+    String? plainPinyin,
+  }) : plainPinyin = plainPinyin ?? PinyinUtils.getPlainPinyin(pinyin);
+
+  // Static helper to remove tones from pinyin
+  static String _removeTones(String pinyin) {
+    // Use the utility function from PinyinUtils
+    return PinyinUtils.getPlainPinyin(pinyin);
+  }
 
   // Factory constructor to create a DictionaryEntry from a CC-CEDICT line
   factory DictionaryEntry.fromCEDICTLine(String line) {
@@ -20,6 +30,7 @@ class DictionaryEntry {
         simplified: '',
         pinyin: '',
         definitions: [],
+        plainPinyin: '',
       );
     }
 
@@ -48,6 +59,8 @@ class DictionaryEntry {
       final String traditional = characters[0];
       final String simplified = characters[characters.length - 1];
       final String pinyin = line.substring(pinyinStart + 1, pinyinEnd);
+      // Create plain pinyin (without tone numbers) for more flexible searching
+      final String plainPinyin = _removeTones(pinyin).toLowerCase();
       
       // Extract the definitions part (everything between first '/' and the end)
       final String definitionsString = line.substring(definitionsStart + 1);
@@ -64,6 +77,7 @@ class DictionaryEntry {
         traditional: traditional,
         simplified: simplified,
         pinyin: pinyin,
+        plainPinyin: plainPinyin,
         definitions: definitions,
       );
     } catch (e) {
@@ -76,6 +90,7 @@ class DictionaryEntry {
       traditional: '',
       simplified: '',
       pinyin: '',
+      plainPinyin: '',
       definitions: [],
     );
   }
@@ -85,6 +100,7 @@ class DictionaryEntry {
       traditional.isNotEmpty && 
       simplified.isNotEmpty && 
       pinyin.isNotEmpty && 
+      plainPinyin.isNotEmpty &&
       definitions.isNotEmpty;
 
   // Check if this entry contains the specified search term in any field
@@ -94,6 +110,7 @@ class DictionaryEntry {
     return (ignoreCase ? simplified.toLowerCase() : simplified).contains(searchTerm) ||
            (ignoreCase ? traditional.toLowerCase() : traditional).contains(searchTerm) ||
            (ignoreCase ? pinyin.toLowerCase() : pinyin).contains(searchTerm) ||
+           (ignoreCase ? plainPinyin.toLowerCase() : plainPinyin).contains(searchTerm) ||
            definitions.any((def) => 
              (ignoreCase ? def.toLowerCase() : def).contains(searchTerm)
            );

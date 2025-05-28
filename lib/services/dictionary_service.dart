@@ -54,7 +54,6 @@ class DictionaryService {
             }
           } catch (e) {
             print('Error parsing line: $e');
-            print('Problematic line: $line');
           }
         }
         
@@ -116,33 +115,64 @@ class DictionaryService {
     if (query.isEmpty) return [];
     
     final String queryLower = query.toLowerCase();
+    final bool hasToneMarks = PinyinUtils.containsToneMarks(query);
+    final bool hasToneNumbers = PinyinUtils.containsToneNumbers(query);
     
-    // Handle different pinyin formats
-    bool hasToneMarks = PinyinUtils.containsToneMarks(query);
-    bool hasToneNumbers = PinyinUtils.containsToneNumbers(query);
+    print('Searching pinyin: "$query", hasToneMarks: $hasToneMarks, hasToneNumbers: $hasToneNumbers');
     
-    // Remove all tone markers for plain search
-    final String plainQuery = hasToneMarks 
-        ? PinyinUtils.removeToneMarks(queryLower)
-        : hasToneNumbers 
-            ? PinyinUtils.removeToneNumbers(queryLower)
-            : queryLower;
+    var results = <DictionaryEntry>[];
     
-    return _entries
-        .where((entry) {
-          // Normalize entry pinyin for comparison
-          final String entryPinyin = entry.pinyin.toLowerCase();
-          final String entryPlainPinyin = PinyinUtils.removeToneNumbers(entryPinyin);
-          
-          // Direct match (with any tone marks/numbers)
-          if (hasToneMarks || hasToneNumbers) {
-            if (entryPinyin.contains(queryLower)) return true;
-          }
-          
-          // Match without tone markers
-          return entryPlainPinyin.contains(plainQuery);
-        })
-        .toList();
+    if (hasToneMarks || hasToneNumbers) {
+      // Search with tone markers - use exact pinyin matching
+      results = _entries.where((entry) => 
+        entry.pinyin.toLowerCase().contains(queryLower)
+      ).toList();
+      // Search with tone markers completed
+    } else {
+      // For no-tone searches, regenerate plainPinyin on the fly to ensure correctness
+      // Search without tone markers - use the plainPinyin field
+      results = _entries.where((entry) {
+        // Generate plain pinyin by removing tone numbers
+        String plainPinyin = PinyinUtils.getPlainPinyin(entry.pinyin);
+        return plainPinyin.contains(queryLower);
+      }).toList();
+      // Search without tone markers completed
+    }
+    
+    // Sort results by relevance
+    results.sort((a, b) {
+      final String aCompare = hasToneMarks || hasToneNumbers ? 
+                            a.pinyin.toLowerCase() : 
+                            generatePlainPinyin(a.pinyin);
+      final String bCompare = hasToneMarks || hasToneNumbers ? 
+                            b.pinyin.toLowerCase() : 
+                            generatePlainPinyin(b.pinyin);
+      
+      // Exact matches first
+      bool aExactMatch = aCompare == queryLower;
+      bool bExactMatch = bCompare == queryLower;
+      
+      if (aExactMatch && !bExactMatch) return -1;
+      if (!aExactMatch && bExactMatch) return 1;
+      
+      // Then matches at the beginning of the pinyin
+      bool aStartsWith = aCompare.startsWith(queryLower);
+      bool bStartsWith = bCompare.startsWith(queryLower);
+      
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      
+      // Default to keeping the existing order
+      return 0;
+    });
+    
+    return results;
+  }
+  
+  // Helper method to generate plain pinyin (without tone numbers) from pinyin with tones
+  // Uses the PinyinUtils functionality for consistency
+  String generatePlainPinyin(String pinyin) {
+    return PinyinUtils.getPlainPinyin(pinyin);
   }
 
   // Search for entries by English definition
@@ -151,13 +181,30 @@ class DictionaryService {
     
     final String normalizedQuery = query.toLowerCase();
     
-    return _entries
-        .where((entry) => 
-            entry.definitions.any((def) => 
-                def.toLowerCase().contains(normalizedQuery)
-            )
-        )
+    // Split the query into words for more precise matching
+    final List<String> queryWords = normalizedQuery.split(RegExp(r'\s+'))
+        .where((word) => word.length > 1)  // Filter out single letters
         .toList();
+    
+    // If the query has multiple words, try to match all of them
+    if (queryWords.length > 1) {
+      return _entries
+          .where((entry) {
+            // Check if all query words appear in any definition
+            final allDefsText = entry.definitions.join(' ').toLowerCase();
+            return queryWords.every((word) => allDefsText.contains(word));
+          })
+          .toList();
+    } else {
+      // Single word search - standard behavior
+      return _entries
+          .where((entry) => 
+              entry.definitions.any((def) => 
+                  def.toLowerCase().contains(normalizedQuery)
+              )
+          )
+          .toList();
+    }
   }
 
   // Get entries for a specific Chinese character
@@ -170,6 +217,22 @@ class DictionaryService {
             entry.traditional == character
         )
         .toList();
+  }
+  
+  // Debug method to check entry fields
+  // Debug utility for development purposes
+  void debugCheckEntryFields() {
+    if (_entries.isEmpty) {
+      return;
+    }
+    
+    // Count entries with empty plainPinyin
+    int emptyPlainPinyinCount = 0;
+    for (var entry in _entries) {
+      if (entry.plainPinyin.isEmpty && entry.pinyin.isNotEmpty) {
+        emptyPlainPinyinCount++;
+      }
+    }
   }
 
   // Search all fields
@@ -192,6 +255,20 @@ class DictionaryService {
         // Limit the number of results to prevent performance issues
         var results = searchByPinyin(query);
         print('Found ${results.length} results for pinyin query: $query');
+        
+        // If no results found and query is short, try first-letter search as a fallback
+        if (results.isEmpty && query.length >= 2 && !query.contains(' ')) {
+          // Try as initial letters search (e.g., "nh" for "ni hao")
+          // No direct results, try initial letters search as fallback
+          
+          results = _entries.where((entry) {
+            final entrySyllables = PinyinUtils.getPlainPinyin(entry.pinyin).split(' ');
+            final entryFirstLetters = entrySyllables
+                .map((s) => s.isNotEmpty ? s[0] : '')
+                .join('');
+            return entryFirstLetters.contains(query.toLowerCase());
+          }).toList();
+        }
         
         if (results.length > 100) {
           print('Limiting results to 100 entries');
