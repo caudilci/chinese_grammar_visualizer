@@ -307,11 +307,13 @@ class DictionaryService {
     }
 
     // Count entries with empty plainPinyin
+    int emptyPlainPinyinCount = 0;
     for (var entry in _entries) {
       if (entry.plainPinyin.isEmpty && entry.pinyin.isNotEmpty) {
         emptyPlainPinyinCount++;
       }
     }
+    print('Entries with empty plainPinyin: $emptyPlainPinyinCount');
   }
 
   // Search all fields
