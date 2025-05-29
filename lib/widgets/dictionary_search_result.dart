@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
+import '../services/search_isolate.dart';
 import '../utils/pinyin_utils.dart';
 
 class DictionarySearchResult extends StatelessWidget {

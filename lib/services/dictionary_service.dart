@@ -187,23 +187,104 @@ class DictionaryService {
     
     // If the query has multiple words, try to match all of them
     if (queryWords.length > 1) {
-      return _entries
+      final results = _entries
           .where((entry) {
             // Check if all query words appear in any definition
             final allDefsText = entry.definitions.join(' ').toLowerCase();
             return queryWords.every((word) => allDefsText.contains(word));
           })
           .toList();
+          
+      // Sort by relevance: exact phrase matches first, then partial matches
+      _sortDefinitionResultsByRelevance(results, normalizedQuery);
+      return results;
     } else {
-      // Single word search - standard behavior
-      return _entries
+      // Single word search
+      final results = _entries
           .where((entry) => 
               entry.definitions.any((def) => 
                   def.toLowerCase().contains(normalizedQuery)
               )
           )
           .toList();
+      
+      // Sort by relevance: exact word matches first, then partial matches
+      _sortDefinitionResultsByRelevance(results, normalizedQuery);
+      return results;
     }
+  }
+  
+  // Helper method to sort definition search results by relevance
+  void _sortDefinitionResultsByRelevance(List<DictionaryEntry> results, String query) {
+    // Add word boundary markers for regex to ensure matching whole words
+    final String wordBoundaryQuery = '\\b$query\\b';
+    final RegExp exactWordRegExp = RegExp(wordBoundaryQuery, caseSensitive: false);
+    
+    results.sort((a, b) {
+      // Calculate these values once for performance
+      final List<String> aLowerDefs = a.definitions.map((def) => def.toLowerCase()).toList();
+      final List<String> bLowerDefs = b.definitions.map((def) => def.toLowerCase()).toList();
+      final String aDefinitions = aLowerDefs.join(' ');
+      final String bDefinitions = bLowerDefs.join(' ');
+      
+      // 1. Prioritize entries where query is an exact match for the entire definition
+      final aExactDefinition = aLowerDefs.any((def) => def == query);
+      final bExactDefinition = bLowerDefs.any((def) => def == query);
+      
+      if (aExactDefinition && !bExactDefinition) return -1;
+      if (!aExactDefinition && bExactDefinition) return 1;
+      
+      // 2. Prioritize entries with exact word matches (using word boundaries)
+      // Count the number of exact word matches in each entry
+      final aExactWordMatchCount = _countRegexMatches(aDefinitions, exactWordRegExp);
+      final bExactWordMatchCount = _countRegexMatches(bDefinitions, exactWordRegExp);
+      
+      if (aExactWordMatchCount > bExactWordMatchCount) return -1;
+      if (aExactWordMatchCount < bExactWordMatchCount) return 1;
+      
+      // 3. Prioritize entries where query appears at the beginning of a definition
+      final aStartsWithMatch = aLowerDefs.any((def) => def.startsWith(query));
+      final bStartsWithMatch = bLowerDefs.any((def) => def.startsWith(query));
+      
+      if (aStartsWithMatch && !bStartsWithMatch) return -1;
+      if (!aStartsWithMatch && bStartsWithMatch) return 1;
+      
+      // 4. Count occurrences of the query term in all definitions
+      final aOccurrences = _countOccurrences(aDefinitions, query);
+      final bOccurrences = _countOccurrences(bDefinitions, query);
+      
+      if (aOccurrences > bOccurrences) return -1;
+      if (aOccurrences < bOccurrences) return 1;
+      
+      // 5. Shorter definitions are likely more relevant
+      final aLength = aDefinitions.length;
+      final bLength = bDefinitions.length;
+      
+      return aLength.compareTo(bLength);
+    });
+  }
+  
+  // Helper method to count occurrences of a substring in a string
+  int _countOccurrences(String text, String pattern) {
+    if (text.isEmpty || pattern.isEmpty) return 0;
+    
+    int count = 0;
+    int index = 0;
+    
+    while ((index = text.indexOf(pattern, index)) != -1) {
+      count++;
+      index += pattern.length;
+    }
+    
+    return count;
+  }
+  
+  // Helper method to count regex matches in a string
+  int _countRegexMatches(String text, RegExp regex) {
+    if (text.isEmpty) return 0;
+    
+    final matches = regex.allMatches(text);
+    return matches.length;
   }
 
   // Get entries for a specific Chinese character
@@ -239,35 +320,69 @@ class DictionaryService {
     if (query.isEmpty) return [];
     
     final bool isChineseQuery = _containsChineseCharacters(query);
+    final String trimmedQuery = query.trim();
     
     if (isChineseQuery) {
       // For Chinese characters, search both simplified and traditional
       var results = <DictionaryEntry>{};  // Use a Set to avoid duplicates
-      results.addAll(searchBySimplified(query));
-      results.addAll(searchByTraditional(query));
-      return results.toList();
+      
+      // First try exact matches
+      var exactMatches = _entries.where((entry) => 
+          entry.simplified == trimmedQuery || 
+          entry.traditional == trimmedQuery
+      ).toList();
+      
+      if (exactMatches.isNotEmpty) {
+        return exactMatches;
+      }
+      
+      // If no exact matches, look for partial matches
+      results.addAll(searchBySimplified(trimmedQuery));
+      results.addAll(searchByTraditional(trimmedQuery));
+      
+      // Sort by length to prioritize shorter matches which are likely more relevant
+      final resultsList = results.toList();
+      resultsList.sort((a, b) {
+        // Compare by character length
+        final aLength = a.simplified.length;
+        final bLength = b.simplified.length;
+        return aLength.compareTo(bLength);
+      });
+      
+      return resultsList;
     } else {
       // Attempt to detect if this is a pinyin query
-      final bool isPinyinQuery = PinyinUtils.isPotentialPinyin(query);
+      final bool isPinyinQuery = PinyinUtils.isPotentialPinyin(trimmedQuery);
       
       if (isPinyinQuery) {
         // Limit the number of results to prevent performance issues
-        var results = searchByPinyin(query);
-        print('Found ${results.length} results for pinyin query: $query');
+        var results = searchByPinyin(trimmedQuery);
+        print('Found ${results.length} results for pinyin query: $trimmedQuery');
         
         // If no results found and query is short, try first-letter search as a fallback
-        if (results.isEmpty && query.length >= 2 && !query.contains(' ')) {
+        if (results.isEmpty && trimmedQuery.length >= 2 && !trimmedQuery.contains(' ')) {
           // Try as initial letters search (e.g., "nh" for "ni hao")
-          // No direct results, try initial letters search as fallback
           
           results = _entries.where((entry) {
             final entrySyllables = PinyinUtils.getPlainPinyin(entry.pinyin).split(' ');
             final entryFirstLetters = entrySyllables
                 .map((s) => s.isNotEmpty ? s[0] : '')
                 .join('');
-            return entryFirstLetters.contains(query.toLowerCase());
+            return entryFirstLetters.contains(trimmedQuery.toLowerCase());
           }).toList();
         }
+        
+        // Sort by more precise matches first
+        results.sort((a, b) {
+          // Exact matches
+          final aExactMatch = a.pinyin.toLowerCase() == trimmedQuery.toLowerCase();
+          final bExactMatch = b.pinyin.toLowerCase() == trimmedQuery.toLowerCase();
+          
+          if (aExactMatch && !bExactMatch) return -1;
+          if (!aExactMatch && bExactMatch) return 1;
+          
+          return 0;
+        });
         
         if (results.length > 100) {
           print('Limiting results to 100 entries');
@@ -276,8 +391,19 @@ class DictionaryService {
         return results;
       } else {
         // For English queries
-        var results = searchByDefinition(query);
-        print('Found ${results.length} results for definition query: $query');
+        var results = searchByDefinition(trimmedQuery);
+        print('Found ${results.length} results for definition query: $trimmedQuery');
+        
+        // Check for any exact matches first
+        final exactMatches = results.where((entry) => 
+          entry.definitions.any((def) => def.toLowerCase() == trimmedQuery.toLowerCase())
+        ).toList();
+        
+        if (exactMatches.isNotEmpty) {
+          print('Found ${exactMatches.length} exact matches');
+          // If we have exact matches, prioritize them at the top
+          results = [...exactMatches, ...results.where((e) => !exactMatches.contains(e))];
+        }
         
         if (results.length > 100) {
           print('Limiting results to 100 entries');

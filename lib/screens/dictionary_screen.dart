@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
+import '../services/search_isolate.dart';
 import '../utils/pinyin_utils.dart';
 import '../widgets/dictionary_search_result.dart';
 
@@ -16,6 +17,7 @@ class DictionaryScreen extends StatefulWidget {
 class DictionaryScreenState extends State<DictionaryScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -149,18 +152,19 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   Widget _buildSearchResults() {
     return Consumer<DictionaryProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Expanded(
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
         if (!provider.isInitialized) {
           return const Expanded(
             child: Center(
-              child: Text(
-                'Dictionary is loading...',
-                style: TextStyle(fontSize: 16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text(
+                    'Dictionary is loading...',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ],
               ),
             ),
           );
@@ -212,7 +216,25 @@ class DictionaryScreenState extends State<DictionaryScreen> {
             );
           }
 
-          if (searchResults.isEmpty) {
+          if (provider.isLoading && searchResults.isEmpty) {
+            return const Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text(
+                      'Searching...',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (searchResults.isEmpty && !provider.isLoading) {
             final String modeText = provider.searchMode == SearchMode.english 
         ? "English" 
         : provider.searchMode == SearchMode.chinese 
@@ -252,19 +274,43 @@ class DictionaryScreenState extends State<DictionaryScreen> {
           }
 
         return Expanded(
-          child: ListView.builder(
-            itemCount: searchResults.length,
-            itemBuilder: (context, index) {
-              final entry = searchResults[index];
-              return DictionarySearchResult(
-                entry: entry,
-                onTap: () {
-                  // Show dictionary entry details
-                  provider.selectEntry(entry);
-                  _showEntryDetails(context, entry);
-                },
-              );
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+                  provider.hasMoreResults && !provider.isLoading) {
+                // Load more results when reaching the end of the list
+                provider.loadMoreResults();
+              }
+              return false;
             },
+            child: ListView.builder(
+              itemCount: searchResults.length + (provider.hasMoreResults || provider.isLoading ? 1 : 0),
+              itemBuilder: (context, index) {
+                // Show loading indicator at the bottom while more results are loading
+                if (index >= searchResults.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2.0),
+                      ),
+                    ),
+                  );
+                }
+                
+                final entry = searchResults[index];
+                return DictionarySearchResult(
+                  entry: entry,
+                  onTap: () {
+                    // Show dictionary entry details
+                    provider.selectEntry(entry);
+                    _showEntryDetails(context, entry);
+                  },
+                );
+              },
+            ),
           ),
         );
       },
