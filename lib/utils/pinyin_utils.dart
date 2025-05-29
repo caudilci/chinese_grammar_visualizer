@@ -110,7 +110,8 @@ class PinyinUtils {
   /// Checks if a string contains numerical pinyin notation (with tone numbers)
   static bool containsToneNumbers(String text) {
     // Regex that matches pinyin with tone numbers (1-5)
-    final RegExp toneNumberRegex = RegExp(r'[a-zA-Z:üÜ]+[1-5]');
+    // Allow for whitespace between syllable and tone number
+    final RegExp toneNumberRegex = RegExp(r'[a-zA-Z:üÜ]+\s*[1-5]');
     return toneNumberRegex.hasMatch(text);
   }
 
@@ -125,9 +126,19 @@ class PinyinUtils {
     return normalizedText.contains(normalizedSearchTerm);
   }
 
-  /// Converts pinyin with tone marks to numerical pinyin
+  /// Converts pinyin with tone marks or tone numbers to numerical pinyin
   /// Example: "nǐ hǎo" becomes "ni3 hao3"
+  /// Also handles existing numerical pinyin like "ni3 hao3"
   static String toNumericalPinyin(String pinyin) {
+    // If already has tone numbers, standardize format and return
+    if (containsToneNumbers(pinyin)) {
+      // Remove any whitespace before tone numbers for consistency
+      return pinyin.replaceAllMapped(
+        RegExp(r'([a-zA-ZüÜ]+)\s*([1-5])'), 
+        (match) => '${match[1]}${match[2]}'
+      );
+    }
+    
     if (!containsToneMarks(pinyin)) {
       // Add tone 5 to each syllable without tone marks
       final words = pinyin.split(' ');

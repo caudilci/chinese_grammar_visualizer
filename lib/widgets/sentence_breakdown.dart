@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/grammar_pattern.dart';
 import '../utils/app_theme.dart';
 import '../services/color_service.dart';
+import '../utils/dictionary_utils.dart';
 
 class SentenceBreakdown extends StatefulWidget {
   final List<SentencePart> parts;
@@ -281,12 +282,29 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
           ),
           const SizedBox(height: 12),
           if (part.meaning != null) ...[
-            const Text(
-              'Meaning',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppTheme.textSecondary,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Meaning',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.menu_book, size: 16),
+                  label: const Text('Dictionary', style: TextStyle(fontSize: 12)),
+                  onPressed: () {
+                    DictionaryUtils.findAndShowDictionaryEntry(context, part);
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
@@ -315,6 +333,19 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
               ),
             ),
           ],
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.menu_book),
+            label: const Text('Open in Dictionary'),
+            onPressed: () {
+              DictionaryUtils.findAndShowDictionaryEntry(context, part);
+            },
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(36),
+              side: BorderSide(color: componentColor),
+              foregroundColor: componentColor,
+            ),
+          ),
         ],
       ),
     );

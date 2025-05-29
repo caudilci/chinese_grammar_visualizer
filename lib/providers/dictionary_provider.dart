@@ -180,6 +180,235 @@ class DictionaryProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  // Get dictionary entries for a specific word (for grammar example lookups)
+  // searchWithNormalization: true for general dictionary search, false for exact matching from grammar examples
+  List<DictionaryEntry> getDictionaryEntriesForWord(String word, {String? pinyin, bool searchWithNormalization = true}) {
+    if (word.isEmpty) return [];
+    
+    // Special debugging for "上" character
+    if (word == '上') {
+      print('>>> DEBUG: Looking up 上 with pinyin: $pinyin (normalization: $searchWithNormalization)');
+    }
+    
+    // For grammar examples (non-normalized search), try to find exact matches first
+    if (!searchWithNormalization && pinyin != null && pinyin.isNotEmpty) {
+      // First get all character matches
+      var characterMatches = _dictionaryService.entries.where((entry) => 
+        entry.simplified == word || entry.traditional == word
+      ).toList();
+      
+      if (characterMatches.isNotEmpty) {
+        // Convert the example pinyin to numerical form for consistent comparison
+        String queryNumPinyin = PinyinUtils.toNumericalPinyin(pinyin);
+        
+        // Find entries with exact numerical pinyin match
+        var exactMatches = characterMatches.where((entry) {
+          String entryNumPinyin = PinyinUtils.toNumericalPinyin(entry.pinyin);
+          bool isMatch = entryNumPinyin == queryNumPinyin;
+          
+          if (word == '上') {
+            print('>>> Comparing numerical pinyin for 上: entry=$entryNumPinyin vs query=$queryNumPinyin, match=$isMatch');
+          }
+          
+          return isMatch;
+        }).toList();
+        
+        // If we found exact matches, return them immediately
+        if (exactMatches.isNotEmpty) {
+          if (word == '上') {
+            print('>>> Found ${exactMatches.length} EXACT matches for 上 with pinyin: $pinyin');
+            for (var i = 0; i < exactMatches.length; i++) {
+              print('>>> Exact Match $i: ${exactMatches[i].simplified} [${exactMatches[i].pinyin}] - ${exactMatches[i].definitions.join('; ')}');
+            }
+          }
+          return exactMatches;
+        }
+      }
+    }
+    
+    // Get all character matches first
+    var characterMatches = _dictionaryService.entries.where((entry) => 
+      entry.simplified == word || entry.traditional == word
+    ).toList();
+    
+    // Sort by exact pinyin match if we have pinyin (for all characters, not just "上")
+    if (pinyin != null && pinyin.isNotEmpty && !searchWithNormalization) {
+      // Convert our test pinyin to numerical form for reliable comparison
+      final String queryNumPinyin = PinyinUtils.toNumericalPinyin(pinyin);
+      
+      characterMatches.sort((a, b) {
+        final String aNumPinyin = PinyinUtils.toNumericalPinyin(a.pinyin);
+        final String bNumPinyin = PinyinUtils.toNumericalPinyin(b.pinyin);
+        
+        // Exact numerical pinyin match comes first
+        final bool aExactMatch = aNumPinyin == queryNumPinyin;
+        final bool bExactMatch = bNumPinyin == queryNumPinyin;
+        
+        if (aExactMatch && !bExactMatch) return -1;
+        if (!aExactMatch && bExactMatch) return 1;
+        
+        return 0;
+      });
+    }
+    
+    // Debug info for "上" character
+    if (word == '上') {
+      print('>>> Found ${characterMatches.length} character matches for 上:');
+      for (var i = 0; i < characterMatches.length; i++) {
+        print('>>> Match $i: ${characterMatches[i].simplified} [${characterMatches[i].pinyin}] - ${characterMatches[i].definitions.join('; ')}');
+      }
+    }
+    
+    // If pinyin is provided, sort to prioritize entries with matching pinyin
+    if (pinyin != null && pinyin.isNotEmpty && characterMatches.isNotEmpty) {
+      // Different formats of pinyin we should check
+      final pinyinVariations = searchWithNormalization 
+          ? [
+              pinyin,                                 // Original format
+              pinyin.toLowerCase(),                   // Lowercase
+              PinyinUtils.normalizePinyin(pinyin),    // Without tones
+              PinyinUtils.toNumericalPinyin(pinyin),  // With numerical tones
+              PinyinUtils.toDiacriticPinyin(pinyin),  // With diacritic tones
+              pinyin.trim(),                          // Trimmed
+              pinyin.toLowerCase().trim()             // Lowercase and trimmed
+            ]
+          : [
+              pinyin,                                 // Original format
+              pinyin.toLowerCase(),                   // Lowercase only
+              pinyin.trim(),                          // Trimmed
+              pinyin.toLowerCase().trim(),            // Lowercase and trimmed
+              PinyinUtils.toNumericalPinyin(pinyin)   // Add numerical for 上 case
+            ];
+      
+      // Debug for "上" character
+      if (word == '上') {
+        print('>>> Pinyin variations for $pinyin:');
+        for (var i = 0; i < pinyinVariations.length; i++) {
+          print('>>> Variation $i: "${pinyinVariations[i]}"');
+        }
+      }
+
+      
+      // First collect exact pinyin matches
+      final exactPinyinMatches = <DictionaryEntry>[];
+      final otherMatches = <DictionaryEntry>[];
+      
+      for (var entry in characterMatches) {
+        // Check if any of our pinyin variations match the entry's pinyin or its variations
+        bool isExactMatch = false;
+        
+        if (searchWithNormalization) {
+          // For normalized search, use PinyinUtils.pinyinMatches or variation contains
+          isExactMatch = pinyinVariations.contains(entry.pinyin) || 
+                         pinyinVariations.contains(entry.pinyin.toLowerCase()) ||
+                         PinyinUtils.pinyinMatches(entry.pinyin, pinyin);
+        } else {
+          // For exact match (grammar examples), require exact equality
+          // Note: We shouldn't reach here for grammar examples as we check for exact matches earlier
+          isExactMatch = entry.pinyin == pinyin || 
+                         entry.pinyin.trim() == pinyin.trim();
+        }
+        
+        // Debug for "上" character
+        if (word == '上') {
+          print('>>> Comparing entry: ${entry.simplified} [${entry.pinyin}]');
+          print('>>> isExactMatch: $isExactMatch');
+        }
+
+        
+        if (isExactMatch) {
+          exactPinyinMatches.add(entry);
+        } else {
+          otherMatches.add(entry);
+        }
+      }
+      
+      // If we have exact pinyin matches, return those first
+      if (exactPinyinMatches.isNotEmpty) {
+        // Debug for "上" character
+        if (word == '上') {
+          print('>>> Found ${exactPinyinMatches.length} exact pinyin matches');
+          for (var entry in exactPinyinMatches) {
+            print('>>> Exact match: ${entry.simplified} [${entry.pinyin}]');
+          }
+        }
+        return [...exactPinyinMatches, ...otherMatches];
+      }
+    }
+    
+    // If no pinyin match or no pinyin provided, return character matches
+    if (characterMatches.isNotEmpty) {
+      // Debug for "上" character
+      if (word == '上') {
+        print('>>> Returning ${characterMatches.length} character matches (no pinyin matches found)');
+      }
+      return characterMatches;
+    }
+    
+    // If still no matches, try characters that contain the word
+    // (for multi-character words or compounds)
+    var containsMatches = _dictionaryService.entries.where((entry) => 
+      entry.simplified.contains(word) || entry.traditional.contains(word)
+    ).toList();
+    
+    // If pinyin is provided, sort to prioritize those with matching pinyin
+    if (pinyin != null && pinyin.isNotEmpty && containsMatches.isNotEmpty) {
+      final pinyinVariations = searchWithNormalization 
+          ? [
+              pinyin,
+              pinyin.toLowerCase(),
+              PinyinUtils.normalizePinyin(pinyin),
+              PinyinUtils.toNumericalPinyin(pinyin),
+              PinyinUtils.toDiacriticPinyin(pinyin)
+            ]
+          : [
+              pinyin,
+              pinyin.toLowerCase()
+            ];
+      
+      // Debug for 上 character
+      if (word.contains('上')) {
+        print('>>> Partial match for 上 with pinyin variations:');
+        for (var variation in pinyinVariations) {
+          print('>>> Variation: "$variation"');
+        }
+      }
+
+      
+      containsMatches.sort((a, b) {
+        // Check if entry's pinyin matches any of our variations
+        bool aMatch, bMatch;
+        
+        if (searchWithNormalization) {
+          aMatch = pinyinVariations.contains(a.pinyin) || 
+                  pinyinVariations.contains(a.pinyin.toLowerCase()) ||
+                  PinyinUtils.pinyinMatches(a.pinyin, pinyin);
+          bMatch = pinyinVariations.contains(b.pinyin) || 
+                  pinyinVariations.contains(b.pinyin.toLowerCase()) ||
+                  PinyinUtils.pinyinMatches(b.pinyin, pinyin);
+        } else {
+          aMatch = a.pinyin == pinyin || a.pinyin.trim() == pinyin.trim();
+          bMatch = b.pinyin == pinyin || b.pinyin.trim() == pinyin.trim();
+        }
+                       
+        // Debug for 上 character
+        if (word.contains('上') && (a.pinyin.contains('shang') || b.pinyin.contains('shang'))) {
+          print('>>> Comparing for sort:');
+          print('>>> A: ${a.simplified} [${a.pinyin}] - match: $aMatch');
+          print('>>> B: ${b.simplified} [${b.pinyin}] - match: $bMatch');
+        }
+        
+        if (aMatch && !bMatch) return -1;
+        if (!aMatch && bMatch) return 1;
+        
+        // If both match or don't match pinyin, sort by character length (shorter first)
+        return a.simplified.length.compareTo(b.simplified.length);
+      });
+    }
+    
+    return containsMatches;
+  }
+  
   // Internal search method that handles all search types
   void _performSearch() {
     if (_searchQuery.isEmpty) {
@@ -279,6 +508,7 @@ class DictionaryProvider extends ChangeNotifier {
             // If not Chinese characters, treat as pinyin
             // Search for pinyin (with or without tones)
             _allResults = _dictionaryService.searchByPinyin(query);
+            print('Pinyin search results: ${_allResults.length}');
           }
           break;
       
@@ -298,6 +528,7 @@ class DictionaryProvider extends ChangeNotifier {
                      PinyinUtils.isPotentialPinyin(query)) {
             // Search by pinyin
             _allResults = _dictionaryService.searchByPinyin(query);
+            print('Auto-detected pinyin search results: ${_allResults.length}');
           } else {
             // Default to definition search
             _allResults = _dictionaryService.searchByDefinition(query);

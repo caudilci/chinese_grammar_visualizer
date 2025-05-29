@@ -64,8 +64,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   hintText: provider.searchMode == SearchMode.english 
                       ? 'Search in English' 
                       : provider.searchMode == SearchMode.chinese
-                          ? 'Search in Chinese or pinyin'
-                           : 'Auto-detect search language',
+                          ? 'Search in Chinese or Pinyin'
+                          : 'Auto-detect search language',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -82,8 +82,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   helperText: provider.searchMode == SearchMode.auto
                       ? 'Auto-detecting search type'
                       : provider.searchMode == SearchMode.chinese
-                          ? 'Searching in Chinese or Pinyin (with or without tones)'
-                           : 'Searching in English',
+                          ? 'Searching in Chinese characters or Pinyin (with or without tones)'
+                          : 'Searching in English',
                   helperStyle: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontStyle: FontStyle.italic,
