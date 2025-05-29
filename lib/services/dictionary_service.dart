@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/dictionary_entry.dart';
 import '../utils/pinyin_utils.dart';
@@ -21,44 +22,42 @@ class DictionaryService {
   // Getter for loading completion future
   Future<void> get ready => _loadingCompleter.future;
 
-  // Load the dictionary data from the asset file
+  // Load the dictionary data from the JSON asset file
   Future<void> loadDictionary() async {
     if (_isLoaded) return;
 
     try {
       print('Starting to load dictionary from assets...');
-      final String data = await rootBundle.loadString('assets/data/cedict_ts.u8');
-      print('Dictionary file loaded, size: ${data.length} bytes');
+      final String jsonData = await rootBundle.loadString('assets/data/cedict.json');
+      print('Dictionary file loaded, size: ${jsonData.length} bytes');
       
-      final List<String> lines = data.split('\n');
-      print('Dictionary contains ${lines.length} lines');
+      // Parse the JSON data
+      final List<dynamic> entriesJson = json.decode(jsonData);
+      print('Dictionary contains ${entriesJson.length} entries');
       
-      // Skip comments and process entries in batches to avoid UI freeze
-      final validLines = lines.where((line) => line.trim().isNotEmpty && !line.startsWith('#')).toList();
-      print('Found ${validLines.length} non-comment lines to process');
-      
+      // Process entries in batches to avoid UI freeze
       const int batchSize = 1000;
       int processedCount = 0;
       int validEntryCount = 0;
       
-      for (int i = 0; i < validLines.length; i += batchSize) {
-        final end = (i + batchSize < validLines.length) ? i + batchSize : validLines.length;
-        final batch = validLines.sublist(i, end);
+      for (int i = 0; i < entriesJson.length; i += batchSize) {
+        final end = (i + batchSize < entriesJson.length) ? i + batchSize : entriesJson.length;
+        final batch = entriesJson.sublist(i, end);
         
-        for (var line in batch) {
+        for (var entryJson in batch) {
           try {
-            final entry = DictionaryEntry.fromCEDICTLine(line);
+            final entry = DictionaryEntry.fromJson(entryJson);
             if (entry.isValid) {
               _entries.add(entry);
               validEntryCount++;
             }
           } catch (e) {
-            print('Error parsing line: $e');
+            print('Error parsing entry: $e');
           }
         }
         
         processedCount += batch.length;
-        print('Processed ${processedCount}/${validLines.length} entries, valid: $validEntryCount');
+        print('Processed ${processedCount}/${entriesJson.length} entries, valid: $validEntryCount');
         
         // Allow UI to update between batches
         await Future.delayed(Duration.zero);

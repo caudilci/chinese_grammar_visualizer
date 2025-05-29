@@ -14,6 +14,28 @@ class DictionaryEntry {
     required this.definitions,
     String? plainPinyin,
   }) : plainPinyin = plainPinyin ?? PinyinUtils.getPlainPinyin(pinyin);
+  
+  // Factory constructor to create a DictionaryEntry from JSON
+  factory DictionaryEntry.fromJson(Map<String, dynamic> json) {
+    return DictionaryEntry(
+      traditional: json['traditional'] as String,
+      simplified: json['simplified'] as String,
+      pinyin: json['pinyin'] as String,
+      plainPinyin: json['plainPinyin'] as String,
+      definitions: List<String>.from(json['definitions']),
+    );
+  }
+  
+  // Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'traditional': traditional,
+      'simplified': simplified,
+      'pinyin': pinyin,
+      'plainPinyin': plainPinyin,
+      'definitions': definitions,
+    };
+  }
 
   // Static helper to remove tones from pinyin
   static String _removeTones(String pinyin) {

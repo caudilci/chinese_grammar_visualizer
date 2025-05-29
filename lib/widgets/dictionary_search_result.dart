@@ -28,6 +28,11 @@ class DictionarySearchResult extends StatelessWidget {
     final int startIndex = normalizedText.indexOf(normalizedQuery);
     final int endIndex = startIndex + normalizedQuery.length;
     
+    // Safety check to ensure we don't go out of bounds
+    if (startIndex < 0 || endIndex > text.length) {
+      return Text(text, style: style);
+    }
+    
     return RichText(
       text: TextSpan(
         children: [
@@ -97,6 +102,15 @@ class DictionarySearchResult extends StatelessWidget {
     if (originalLower.contains(queryLower)) {
       final int startIndex = originalLower.indexOf(queryLower);
       final int endIndex = startIndex + queryLower.length;
+      
+      // Safety check to ensure we don't go out of bounds
+      if (startIndex < 0 || endIndex > formattedPinyin.length) {
+        // Fallback to regular display
+        return Text(
+          formattedPinyin,
+          style: baseStyle,
+        );
+      }
       
       // Find corresponding positions in the formatted pinyin
       final String beforeMatch = formattedPinyin.substring(0, startIndex);

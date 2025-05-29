@@ -69,6 +69,7 @@ flutter:
   assets:
     - assets/data/grammar_patterns.json
     - assets/data/cedict_ts.u8
+    - assets/data/cedict.json
     - assets/images/
     - assets/icons/
     - assets/data/
