@@ -174,7 +174,10 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        GrammarVisualizer(structure: pattern.structure),
+        GrammarVisualizer(
+          structure: pattern.structure,
+          structureBreakdown: pattern.structureBreakdown,
+        ),
       ],
     );
   }

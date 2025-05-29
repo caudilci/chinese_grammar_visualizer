@@ -1,3 +1,5 @@
+
+
 class GrammarPattern {
   final String id;
   final String name;
@@ -5,10 +7,11 @@ class GrammarPattern {
   final String englishTitle;
   final String description;
   final String structure;
+  final List<StructurePart>? structureBreakdown;
   final List<GrammarExample> examples;
   final String category;
   final int difficultyLevel; // 1-5 where 5 is most difficult
-  final Map<String, String> colorCoding; // Maps part of speech to color code
+  final Map<String, String>? colorCoding; // Maps part of speech to color code (legacy - will be removed)
 
   GrammarPattern({
     required this.id,
@@ -17,10 +20,11 @@ class GrammarPattern {
     required this.englishTitle,
     required this.description,
     required this.structure,
+    this.structureBreakdown,
     required this.examples,
     required this.category,
     required this.difficultyLevel,
-    required this.colorCoding,
+    this.colorCoding,
   });
 
   factory GrammarPattern.fromJson(Map<String, dynamic> json) {
@@ -31,17 +35,24 @@ class GrammarPattern {
       englishTitle: json['englishTitle'],
       description: json['description'],
       structure: json['structure'],
+      structureBreakdown: json['structureBreakdown'] != null
+          ? (json['structureBreakdown'] as List)
+              .map((part) => StructurePart.fromJson(part))
+              .toList()
+          : null,
       examples: (json['examples'] as List)
           .map((example) => GrammarExample.fromJson(example))
           .toList(),
       category: json['category'],
       difficultyLevel: json['difficultyLevel'],
-      colorCoding: Map<String, String>.from(json['colorCoding']),
+      colorCoding: json['colorCoding'] != null 
+          ? Map<String, String>.from(json['colorCoding']) 
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'id': id,
       'name': name,
       'chineseTitle': chineseTitle,
@@ -51,8 +62,52 @@ class GrammarPattern {
       'examples': examples.map((example) => example.toJson()).toList(),
       'category': category,
       'difficultyLevel': difficultyLevel,
-      'colorCoding': colorCoding,
     };
+    
+    // Include structureBreakdown if it exists
+    if (structureBreakdown != null) {
+      data['structureBreakdown'] = structureBreakdown!.map((part) => part.toJson()).toList();
+    }
+    
+    // Only include colorCoding if it exists
+    if (colorCoding != null) {
+      data['colorCoding'] = colorCoding;
+    }
+    
+    return data;
+  }
+}
+
+class StructurePart {
+  final String text;
+  final String partOfSpeech;
+  final String? description;
+
+  StructurePart({
+    required this.text,
+    required this.partOfSpeech,
+    this.description,
+  });
+
+  factory StructurePart.fromJson(Map<String, dynamic> json) {
+    return StructurePart(
+      text: json['text'],
+      partOfSpeech: json['partOfSpeech'],
+      description: json['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'text': text,
+      'partOfSpeech': partOfSpeech,
+    };
+  
+    if (description != null) {
+      data['description'] = description;
+    }
+  
+    return data;
   }
 }
 

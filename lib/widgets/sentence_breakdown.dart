@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/grammar_pattern.dart';
 import '../utils/app_theme.dart';
+import '../services/color_service.dart';
 
 class SentenceBreakdown extends StatefulWidget {
   final List<SentencePart> parts;
-  final Map<String, String> colorCoding;
+  final Map<String, String>? colorCoding;
 
   const SentenceBreakdown({
     super.key,
     required this.parts,
-    required this.colorCoding,
+    this.colorCoding,
   });
 
   @override
@@ -18,6 +19,22 @@ class SentenceBreakdown extends StatefulWidget {
 
 class _SentenceBreakdownState extends State<SentenceBreakdown> {
   int? _selectedPartIndex;
+  final ColorService _colorService = ColorService();
+  Map<String, Color> _colors = {};
+  bool _colorsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadColors();
+  }
+  
+  Future<void> _loadColors() async {
+    _colors = await _colorService.getAllColors();
+    setState(() {
+      _colorsLoaded = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +56,35 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
         final part = widget.parts[index];
         final isSelected = _selectedPartIndex == index;
         
-        // Get color from color coding based on grammar function
-        Color componentColor = Colors.grey;
-        if (widget.colorCoding.containsKey(part.grammarFunction)) {
-          componentColor = HexColor.fromHex(widget.colorCoding[part.grammarFunction]!);
+        // Get color based on part of speech instead of grammar function
+        Color componentColor = const Color(0xFF009688); // Teal default color
+        if (_colorsLoaded) {
+          // First try to get color by part of speech
+          if (part.partOfSpeech.isNotEmpty && _colors.containsKey(part.partOfSpeech.toLowerCase())) {
+            componentColor = _colors[part.partOfSpeech.toLowerCase()]!;
+          } 
+          // If not found, try to match by grammar function 
+          else if (part.grammarFunction != null && _colors.containsKey(part.grammarFunction!.toLowerCase())) {
+            componentColor = _colors[part.grammarFunction!.toLowerCase()]!;
+          }
+          // If still not found, try partial matching
+          else {
+            for (final entry in _colors.entries) {
+              if ((part.partOfSpeech.toLowerCase().contains(entry.key) || 
+                  entry.key.contains(part.partOfSpeech.toLowerCase())) ||
+                  (part.grammarFunction != null && 
+                   (part.grammarFunction!.toLowerCase().contains(entry.key) || 
+                    entry.key.contains(part.grammarFunction!.toLowerCase())))) {
+                componentColor = entry.value;
+                break;
+              }
+            }
+          }
+        } 
+        // Legacy fallback
+        else if (widget.colorCoding != null && part.grammarFunction != null && 
+                 widget.colorCoding!.containsKey(part.grammarFunction)) {
+          componentColor = HexColor.fromHex(widget.colorCoding![part.grammarFunction]!);
         }
         
         return InkWell(
@@ -102,10 +144,41 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
       return const SizedBox.shrink();
     }
     
+    // Ensure colors are loaded
+    if (!_colorsLoaded && mounted) {
+      _loadColors();
+    }
+    
     final part = widget.parts[_selectedPartIndex!];
-    Color componentColor = Colors.grey;
-    if (widget.colorCoding.containsKey(part.grammarFunction)) {
-      componentColor = HexColor.fromHex(widget.colorCoding[part.grammarFunction]!);
+    Color componentColor = const Color(0xFF009688); // Teal default color
+    
+    if (_colorsLoaded) {
+      // First try to get color by part of speech
+      if (part.partOfSpeech.isNotEmpty && _colors.containsKey(part.partOfSpeech.toLowerCase())) {
+        componentColor = _colors[part.partOfSpeech.toLowerCase()]!;
+      } 
+      // If not found, try to match by grammar function 
+      else if (part.grammarFunction != null && _colors.containsKey(part.grammarFunction!.toLowerCase())) {
+        componentColor = _colors[part.grammarFunction!.toLowerCase()]!;
+      }
+      // If still not found, try partial matching
+      else {
+        for (final entry in _colors.entries) {
+          if ((part.partOfSpeech.toLowerCase().contains(entry.key) || 
+              entry.key.contains(part.partOfSpeech.toLowerCase())) ||
+              (part.grammarFunction != null && 
+               (part.grammarFunction!.toLowerCase().contains(entry.key) || 
+                entry.key.contains(part.grammarFunction!.toLowerCase())))) {
+            componentColor = entry.value;
+            break;
+          }
+        }
+      }
+    } 
+    // Legacy fallback
+    else if (widget.colorCoding != null && part.grammarFunction != null && 
+             widget.colorCoding!.containsKey(part.grammarFunction)) {
+      componentColor = HexColor.fromHex(widget.colorCoding![part.grammarFunction]!);
     }
     
     return Container(

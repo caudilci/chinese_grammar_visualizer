@@ -6,33 +6,6 @@
     "englishTitle": "Bǎ Sentence Structure",
     "description": "The 把 (bǎ) construction is used to emphasize what happens to the object of an action. It moves the object before the verb, emphasizing the result or effect on the object.",
     "structure": "Subject + 把 + Object + Verb + Result/Complement",
-    "structureBreakdown": [
-      {
-        "text": "Subject",
-        "partOfSpeech": "subject",
-        "description": "The doer of the action"
-      },
-      {
-        "text": "把",
-        "partOfSpeech": "marker",
-        "description": "Object marker"
-      },
-      {
-        "text": "Object",
-        "partOfSpeech": "object",
-        "description": "The thing being affected"
-      },
-      {
-        "text": "Verb",
-        "partOfSpeech": "verb",
-        "description": "The action performed"
-      },
-      {
-        "text": "Result/Complement",
-        "partOfSpeech": "complement",
-        "description": "The outcome or location"
-      }
-    ],
     "examples": [
       {
         "id": "ba-example-1",
@@ -145,7 +118,18 @@
       }
     ],
     "category": "Intermediate",
-    "difficultyLevel": 3
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "marker": "#FF3B30",
+      "object": "#5856D6",
+      "action": "#34C759",
+      "result complement": "#007AFF",
+      "location marker": "#FF9500",
+      "location": "#5856D6",
+      "location complement": "#34C759",
+      "completion marker": "#FF3B30"
+    }
   },
   {
     "id": "shi-de",
@@ -154,33 +138,6 @@
     "englishTitle": "Shì...de Construction",
     "description": "The 是...的 (shì...de) structure is used to emphasize certain aspects of a past action, such as time, place, manner, or person who performed the action.",
     "structure": "Subject + 是 + Information to emphasize + Verb + 的",
-    "structureBreakdown": [
-      {
-        "text": "Subject",
-        "partOfSpeech": "subject",
-        "description": "The person or thing performing the action"
-      },
-      {
-        "text": "是",
-        "partOfSpeech": "emphasis",
-        "description": "Emphasis marker"
-      },
-      {
-        "text": "Information to emphasize",
-        "partOfSpeech": "adverbial",
-        "description": "Time, place, manner, etc. being emphasized"
-      },
-      {
-        "text": "Verb",
-        "partOfSpeech": "verb",
-        "description": "The action that took place"
-      },
-      {
-        "text": "的",
-        "partOfSpeech": "marker",
-        "description": "Sentence-final marker that completes the emphasis structure"
-      }
-    ],
     "examples": [
       {
         "id": "shi-de-example-1",
@@ -286,27 +243,25 @@
       }
     ],
     "category": "Intermediate",
-    "difficultyLevel": 3
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "emphasis marker 1": "#FF3B30",
+      "emphasis marker 2": "#FF3B30",
+      "time (emphasized)": "#5856D6",
+      "method (emphasized)": "#5856D6",
+      "action": "#34C759",
+      "transportation": "#007AFF",
+      "destination": "#5AC8FA"
+    }
   },
   {
     "id": "topic-comment",
     "name": "Topic-Comment Structure",
-    "chineseTitle": "话题评论结构",
+    "chineseTitle": "话题-评论结构",
     "englishTitle": "Topic-Comment Structure",
-    "description": "The topic-comment structure is a fundamental pattern in Chinese where the sentence begins with a topic (what the sentence is about), followed by a comment (what is said about the topic).",
+    "description": "The topic-comment structure is fundamental in Chinese. The topic establishes what is being discussed, and the comment provides information about the topic.",
     "structure": "Topic + Comment",
-    "structureBreakdown": [
-      {
-        "text": "Topic",
-        "partOfSpeech": "topic",
-        "description": "What the sentence is about"
-      },
-      {
-        "text": "Comment",
-        "partOfSpeech": "predicate",
-        "description": "What is said about the topic"
-      }
-    ],
     "examples": [
       {
         "id": "topic-comment-example-1",
@@ -405,7 +360,18 @@
       }
     ],
     "category": "Beginner",
-    "difficultyLevel": 2
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "topic": "#FF9500",
+      "subject": "#5856D6",
+      "action": "#34C759",
+      "determiner": "#007AFF",
+      "time adverb": "#5AC8FA",
+      "aspect marker (experience)": "#FF3B30",
+      "completion marker": "#FF3B30",
+      "degree modifier": "#5AC8FA",
+      "predicate": "#34C759"
+    }
   },
   {
     "id": "comparative",
@@ -512,7 +478,16 @@
       }
     ],
     "category": "Beginner",
-    "difficultyLevel": 2
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "comparison marker": "#FF3B30",
+      "object of comparison": "#5856D6",
+      "comparative quality": "#34C759",
+      "determiner 1": "#007AFF",
+      "determiner 2": "#007AFF",
+      "degree complement": "#5AC8FA"
+    }
   },
   {
     "id": "bei-passive",
@@ -612,7 +587,15 @@
       }
     ],
     "category": "Intermediate",
-    "difficultyLevel": 3
+    "difficultyLevel": 3,
+    "colorCoding": {
+      "subject (affected)": "#FF9500",
+      "passive marker": "#FF3B30",
+      "agent": "#5856D6",
+      "action": "#34C759",
+      "completion marker": "#5AC8FA",
+      "possessive": "#007AFF"
+    }
   },
   {
     "id": "le-particle",
@@ -705,6 +688,15 @@
       }
     ],
     "category": "Beginner",
-    "difficultyLevel": 2
+    "difficultyLevel": 2,
+    "colorCoding": {
+      "subject": "#FF9500",
+      "time": "#5856D6",
+      "action": "#34C759",
+      "completion marker": "#FF3B30",
+      "change of state marker": "#FF3B30",
+      "quantity": "#007AFF",
+      "object": "#5AC8FA"
+    }
   }
 ]

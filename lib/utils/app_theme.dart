@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/color_service.dart';
+import 'colors.dart';
 
 class AppTheme {
   // Primary color palette
@@ -18,19 +20,23 @@ class AppTheme {
   static const Color pinyinColor = Color(0xFF4A6572);
   static const Color translationColor = Color(0xFF757575);
   
-  // Grammar component colors
-  static const Map<String, Color> grammarColors = {
-    'subject': Color(0xFFFF9500),
-    'object': Color(0xFF5856D6),
-    'verb': Color(0xFF34C759),
-    'marker': Color(0xFFFF3B30),
-    'adverb': Color(0xFF5AC8FA),
-    'adjective': Color(0xFF007AFF),
-    'noun': Color(0xFF5856D6),
-    'preposition': Color(0xFFFF9500),
-    'particle': Color(0xFFFF3B30),
-    'complement': Color(0xFF34C759),
+  // Grammar component colors (now using PartOfSpeechColors)
+  // These are kept for backward compatibility
+  static final Map<String, Color> grammarColors = {
+    'subject': PartOfSpeechColors.subject,
+    'object': PartOfSpeechColors.object,
+    'verb': PartOfSpeechColors.verb,
+    'marker': PartOfSpeechColors.marker,
+    'adverb': PartOfSpeechColors.adverb,
+    'adjective': PartOfSpeechColors.adjective,
+    'noun': PartOfSpeechColors.noun,
+    'preposition': PartOfSpeechColors.preposition,
+    'particle': PartOfSpeechColors.particle,
+    'complement': PartOfSpeechColors.complement,
   };
+  
+  // Color service for centralized color management
+  static final ColorService _colorService = ColorService();
   
   // Error and success colors
   static const Color errorColor = Color(0xFFD32F2F);
@@ -131,23 +137,20 @@ class AppTheme {
     height: 1.2,
   );
   
+  // Get color for a specific term (part of speech or grammar function)
   // Get color for a specific part of speech
-  static Color getPartOfSpeechColor(String partOfSpeech) {
-    final lowerPart = partOfSpeech.toLowerCase();
-    
-    if (grammarColors.containsKey(lowerPart)) {
-      return grammarColors[lowerPart]!;
-    }
-    
-    // Try to match partial keys
-    for (final entry in grammarColors.entries) {
-      if (lowerPart.contains(entry.key)) {
-        return entry.value;
-      }
-    }
-    
-    // Default color if no match found
-    return Colors.grey;
+  static Future<Color> getPartOfSpeechColor(String partOfSpeech) async {
+    return PartOfSpeechColors.getColor(partOfSpeech);
+  }
+  
+  // Synchronous version for backwards compatibility
+  static Color getPartOfSpeechColorSync(String partOfSpeech) {
+    return PartOfSpeechColors.getColor(partOfSpeech);
+  }
+  
+  // Get color for a specific grammar function (now just an alias to getPartOfSpeechColor)
+  static Future<Color> getGrammarFunctionColor(String grammarFunction) async {
+    return PartOfSpeechColors.getColor(grammarFunction);
   }
   
   // Get a color for a difficulty level (1-5)
