@@ -34,7 +34,12 @@ class PinyinUtils {
   /// Example: "ni3 hao3" becomes "ni hao"
   static String removeToneNumbers(String pinyin) {
     // Regular expression to remove tone numbers (digits 1-5 after letters)
-    return pinyin.replaceAll(RegExp(r'([a-zA-Z:üÜ]+)([1-5])'), r'$1');
+    String result = pinyin;
+    // Handle tone numbers at the end of syllables
+    result = result.replaceAll(RegExp(r'([a-zA-Z:üÜ]+)([1-5])'), r'$1');
+    // Handle tone numbers in the middle of words like "zhong1guo2"
+    result = result.replaceAll(RegExp(r'([a-zA-Z:üÜ]+)([1-5])([a-zA-Z:üÜ]+)'), r'$1$3');
+    return result;
   }
   
   /// Converts pinyin with tone numbers to plain pinyin (without tones)
@@ -94,6 +99,7 @@ class PinyinUtils {
     
     // Handle other common substitutions (u: for ü, etc)
     normalized = normalized.replaceAll('u:', 'ü');
+    normalized = normalized.replaceAll('v', 'ü');
     
     return normalized;
   }
@@ -111,7 +117,8 @@ class PinyinUtils {
   static bool containsToneNumbers(String text) {
     // Regex that matches pinyin with tone numbers (1-5)
     // Allow for whitespace between syllable and tone number
-    final RegExp toneNumberRegex = RegExp(r'[a-zA-Z:üÜ]+\s*[1-5]');
+    // Look for letters followed by a tone number, or letters with tone numbers in the middle of a word
+    final RegExp toneNumberRegex = RegExp(r'[a-zA-Z:üÜ]+\s*[1-5]|[a-zA-Z:üÜ]+[1-5][a-zA-Z:üÜ]+');
     return toneNumberRegex.hasMatch(text);
   }
 
@@ -242,7 +249,7 @@ class PinyinUtils {
     // Regular expression to match syllables with tone numbers
     final RegExp syllableRegex = RegExp(r'([a-zA-Z:üÜv]+)([1-5])');
 
-    // Special rule for compound words like "Zhong1guo2"
+    // Special rule for compound words like "Zhong1guo2" and "zhong1guo2ren2"
     // First find all individual syllables with their tone numbers
     final List<RegExpMatch> matches = syllableRegex.allMatches(pinyin).toList();
     String result = pinyin;
@@ -375,6 +382,14 @@ class PinyinUtils {
   /// Compares two pinyin strings for matching without tones
   /// More sophisticated than simple contains() - handles partial syllable matching
   static bool pinyinMatches(String entryPinyin, String queryPinyin) {
+    // First check numerical form for exact tone match
+    final entryNumerical = toNumericalPinyin(entryPinyin);
+    final queryNumerical = toNumericalPinyin(queryPinyin);
+    
+    if (entryNumerical == queryNumerical) {
+      return true;
+    }
+    
     // Normalize both strings
     final normalizedEntry = normalizePinyin(entryPinyin);
     final normalizedQuery = normalizePinyin(queryPinyin);

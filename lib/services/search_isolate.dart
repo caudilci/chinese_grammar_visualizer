@@ -97,41 +97,68 @@ List<DictionaryEntry> _performSearch(
 
 /// Search automatically detecting the query type
 List<DictionaryEntry> _autoSearch(List<DictionaryEntry> entries, String query) {
+  // For auto mode, we search both Chinese/Pinyin and English
+  // First we check if it's Chinese or potentially pinyin
+  List<DictionaryEntry> results = [];
+  
   if (_containsChineseCharacters(query)) {
-    return _chineseSearch(entries, query);
+    // If it contains Chinese, use Chinese search which also searches pinyin
+    results = _chineseSearch(entries, query);
   } else if (PinyinUtils.isPotentialPinyin(query)) {
-    return _pinyinSearch(entries, query);
+    // If it's potentially pinyin, use pinyin search
+    results = _pinyinSearch(entries, query);
   } else {
-    return _englishSearch(entries, query);
+    // Otherwise use English search
+    results = _englishSearch(entries, query);
   }
+  
+  return results;
 }
 
 /// Search Chinese characters
 List<DictionaryEntry> _chineseSearch(List<DictionaryEntry> entries, String query) {
-  // Try exact matches first
-  var exactMatches = entries.where((entry) =>
-      entry.simplified == query ||
-      entry.traditional == query
-  ).toList();
+  // For Chinese/Pinyin mode, search both character and pinyin
+  List<DictionaryEntry> results = [];
+  
+  // If query contains Chinese characters, search by characters
+  if (_containsChineseCharacters(query)) {
+    // Try exact matches first
+    var exactMatches = entries.where((entry) =>
+        entry.simplified == query ||
+        entry.traditional == query
+    ).toList();
 
-  if (exactMatches.isNotEmpty) {
-    return exactMatches;
+    if (exactMatches.isNotEmpty) {
+      results.addAll(exactMatches);
+    } else {
+      // If no exact matches, look for partial matches
+      var partialMatches = entries.where((entry) =>
+          entry.simplified.contains(query) ||
+          entry.traditional.contains(query)
+      ).toSet().toList();
+
+      // Sort by length to prioritize shorter matches which are likely more relevant
+      partialMatches.sort((a, b) {
+        // Compare by character length
+        final aLength = a.simplified.length;
+        final bLength = b.simplified.length;
+        return aLength.compareTo(bLength);
+      });
+      
+      results.addAll(partialMatches);
+    }
   }
-
-  // If no exact matches, look for partial matches
-  var results = entries.where((entry) =>
-      entry.simplified.contains(query) ||
-      entry.traditional.contains(query)
-  ).toSet().toList();
-
-  // Sort by length to prioritize shorter matches which are likely more relevant
-  results.sort((a, b) {
-    // Compare by character length
-    final aLength = a.simplified.length;
-    final bLength = b.simplified.length;
-    return aLength.compareTo(bLength);
-  });
-
+  
+  // Also search for pinyin matches regardless of whether query has Chinese chars
+  final pinyinMatches = _pinyinSearch(entries, query);
+  
+  // Add pinyin matches that aren't already in results
+  for (var entry in pinyinMatches) {
+    if (!results.contains(entry)) {
+      results.add(entry);
+    }
+  }
+  
   return results.take(100).toList();
 }
 
@@ -139,20 +166,25 @@ List<DictionaryEntry> _chineseSearch(List<DictionaryEntry> entries, String query
 List<DictionaryEntry> _pinyinSearch(List<DictionaryEntry> entries, String query) {
   final bool hasToneMarks = PinyinUtils.containsToneMarks(query);
   final bool hasToneNumbers = PinyinUtils.containsToneNumbers(query);
+  final String queryLower = query.toLowerCase();
   
   List<DictionaryEntry> results = [];
   
   if (hasToneMarks || hasToneNumbers) {
     // Search with tone markers - use exact pinyin matching
+    // For better matching, also try numerical conversion
+    String queryNumerical = PinyinUtils.toNumericalPinyin(query);
+    
     results = entries.where((entry) => 
-      entry.pinyin.toLowerCase().contains(query.toLowerCase())
+      entry.pinyin.toLowerCase().contains(queryLower) ||
+      PinyinUtils.toNumericalPinyin(entry.pinyin).contains(queryNumerical)
     ).toList();
   } else {
     // For no-tone searches, use the plainPinyin field
     results = entries.where((entry) {
       // Generate plain pinyin by removing tone numbers
       String plainPinyin = PinyinUtils.getPlainPinyin(entry.pinyin);
-      return plainPinyin.contains(query.toLowerCase());
+      return plainPinyin.contains(queryLower);
     }).toList();
   }
   

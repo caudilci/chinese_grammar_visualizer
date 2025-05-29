@@ -493,23 +493,34 @@ class DictionaryProvider extends ChangeNotifier {
       // Perform search based on selected mode
       switch (_searchMode) {
         case SearchMode.chinese:
-          // Check if the query contains Chinese characters
+          // For Chinese/Pinyin mode, always search both character and pinyin 
+          List<DictionaryEntry> results = [];
+          
+          // If query contains Chinese characters, search by characters
           if (_containsChineseCharacters(query)) {
             // Search by Chinese characters
-            _allResults = _dictionaryService.searchBySimplified(query);
+            results = _dictionaryService.searchBySimplified(query);
             // Add traditional search results without duplicates
             final traditionalResults = _dictionaryService.searchByTraditional(query);
             for (var entry in traditionalResults) {
-              if (!_allResults.contains(entry)) {
-                _allResults.add(entry);
+              if (!results.contains(entry)) {
+                results.add(entry);
               }
             }
-          } else {
-            // If not Chinese characters, treat as pinyin
-            // Search for pinyin (with or without tones)
-            _allResults = _dictionaryService.searchByPinyin(query);
-            print('Pinyin search results: ${_allResults.length}');
           }
+          
+          // Also search for pinyin regardless of whether query has Chinese chars
+          final pinyinResults = _dictionaryService.searchByPinyin(query);
+          print('Pinyin search results: ${pinyinResults.length}');
+          
+          // Combine results without duplicates
+          for (var entry in pinyinResults) {
+            if (!results.contains(entry)) {
+              results.add(entry);
+            }
+          }
+          
+          _allResults = results;
           break;
       
         case SearchMode.english:
