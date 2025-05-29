@@ -5,6 +5,7 @@ import '../providers/grammar_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/grammar_visualizer.dart';
 import '../widgets/sentence_breakdown.dart';
+import 'practice_screen.dart';
 
 class PatternDetailScreen extends StatefulWidget {
   final String patternId;
@@ -36,6 +37,33 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
       appBar: AppBar(
         title: const Text('Grammar Pattern'),
         centerTitle: true,
+        actions: [
+          Consumer<GrammarProvider>(
+            builder: (context, provider, child) {
+              if (provider.selectedPattern != null) {
+                return TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PracticeScreen(
+                          grammarPatternId: provider.selectedPattern!.id,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.fitness_center, color: Colors.white),
+                  label: const Text(
+                    'Practice',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ],
       ),
       body: Consumer<GrammarProvider>(
         builder: (context, provider, child) {

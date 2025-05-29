@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'providers/grammar_provider.dart';
 import 'providers/dictionary_provider.dart';
+import 'providers/practice_provider.dart';
 import 'screens/main_screen.dart';
 import 'utils/app_theme.dart';
 
@@ -12,6 +13,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => GrammarProvider()),
         ChangeNotifierProvider(create: (context) => DictionaryProvider()),
+        ChangeNotifierProvider(create: (context) => PracticeProvider()),
       ],
       child: const MyApp(),
     ),

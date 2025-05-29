@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/grammar_pattern.dart';
 import '../utils/app_theme.dart';
+import '../screens/practice_screen.dart';
 
 class PatternCard extends StatelessWidget {
   final GrammarPattern pattern;
   final VoidCallback onTap;
+  final bool showPracticeButton;
 
   const PatternCard({
     super.key,
     required this.pattern,
     required this.onTap,
+    this.showPracticeButton = true,
   });
 
   @override
@@ -87,9 +90,28 @@ class PatternCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: AppTheme.primaryColor,
+                  Row(
+                    children: [
+                      if (showPracticeButton && pattern.examples.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.fitness_center, color: AppTheme.primaryColor),
+                          tooltip: 'Practice this pattern',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PracticeScreen(
+                                  grammarPatternId: pattern.id,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      const Icon(
+                        Icons.arrow_forward,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ],
                   ),
                 ],
               ),
