@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/word_list.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
 import 'flash_card_review_screen.dart';
@@ -50,7 +49,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
     }
 
     final flashCardProvider = Provider.of<FlashCardProvider>(context, listen: false);
-    
+
     // Check if there's already an active session
     if (flashCardProvider.isSessionActive) {
       // Show confirmation dialog
@@ -58,7 +57,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       if (!shouldContinue) {
         return; // User canceled, do not start a new session
       }
-      
+
       // End the current session before starting a new one
       flashCardProvider.endSession();
     }
@@ -92,7 +91,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       );
     }
   }
-  
+
   // Show confirmation dialog when trying to start a new session while one is ongoing
   Future<bool> _showSessionOverwriteConfirmation() async {
     return await showDialog<bool>(
@@ -133,7 +132,13 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flash Cards'),
+        title: Text(
+          'Flash Cards',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Consumer2<WordListProvider, FlashCardProvider>(
         builder: (context, wordListProvider, flashCardProvider, child) {
@@ -147,7 +152,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
           final hasActiveSession = flashCardProvider.isSessionActive;
 
           final wordLists = wordListProvider.wordLists;
-          
+
           if (wordLists.isEmpty) {
             return const Center(
               child: Text('No word lists found. Create some lists in the Word Lists section.'),
@@ -223,7 +228,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                   const Divider(),
                   const SizedBox(height: 16),
                 ],
-                
+
                 const Text(
                   'Select Word Lists',
                   style: TextStyle(
@@ -249,7 +254,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                       final wordList = wordLists[index];
                       final stats = flashCardProvider.getStatsForWordList(wordList.id);
                       final isSelected = _selectedListIds.contains(wordList.id);
-                      
+
                       return CheckboxListTile(
                         title: Text(
                           wordList.name,
@@ -259,7 +264,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                           '${wordList.entries.length} words · ${stats['dueCards']} due for review',
                         ),
                         secondary: CircleAvatar(
-                          backgroundColor: isSelected 
+                          backgroundColor: isSelected
                               ? Theme.of(context).primaryColor
                               : Colors.grey.shade300,
                           child: Text(
@@ -277,7 +282,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                     },
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
                 const Text(
                   'Study Options',
@@ -287,7 +292,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Number of cards
                 Card(
                   child: Padding(
@@ -361,14 +366,14 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
                 // Study statistics
                 if (_selectedListIds.isNotEmpty) ...[
                   _buildSessionSummary(flashCardProvider),
                   const SizedBox(height: 24),
                 ],
-                
+
                 // Start button
                 SizedBox(
                   width: double.infinity,
@@ -378,21 +383,25 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                     onPressed: _selectedListIds.isEmpty ? null : _startSession,
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: hasActiveSession 
+                      backgroundColor: hasActiveSession
                           ? Colors.orange // Use a different color if there's already an active session
                           : Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      // Ensure disabled style is consistent
-                      disabledForegroundColor: Colors.white.withOpacity(0.5),
-                      disabledBackgroundColor: Colors.grey.shade400,
+                      // Ensure disabled style is consistent and readable
+                      disabledForegroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[300]
+                          : Colors.white.withOpacity(0.7),
+                      disabledBackgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade400,
                     ),
                     child: Text(
-                      _selectedListIds.isEmpty 
-                          ? 'Select at least one list' 
+                      _selectedListIds.isEmpty
+                          ? 'Select at least one list'
                           : hasActiveSession
-                              ? 'Start New Session' 
+                              ? 'Start New Session'
                               : 'Start Studying',
                       style: const TextStyle(
                         fontSize: 16,
@@ -415,7 +424,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
     int masteredCards = 0;
     int learningCards = 0;
     int difficultCards = 0;
-    
+
     for (final listId in _selectedListIds) {
       final stats = flashCardProvider.getStatsForWordList(listId);
       totalCards += stats['totalCards'] as int;
@@ -424,7 +433,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       learningCards += stats['learningLevel'] as int;
       difficultCards += stats['difficultLevel'] as int;
     }
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),

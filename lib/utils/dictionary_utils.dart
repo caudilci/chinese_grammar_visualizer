@@ -121,16 +121,19 @@ class DictionaryUtils {
         builder: (_, controller) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? Theme.of(context).colorScheme.surfaceContainer
+                  : Colors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  spreadRadius: 5,
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, -3),
                 ),
               ],
             ),
@@ -146,7 +149,9 @@ class DictionaryUtils {
                           width: 40,
                           height: 5,
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.grey[600] 
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           margin: const EdgeInsets.only(bottom: 16),
@@ -162,17 +167,19 @@ class DictionaryUtils {
                               children: [
                                 Text(
                                   entry.simplified,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onBackground,
                                   ),
                                 ),
                                 if (entry.traditional != entry.simplified)
                                   Text(
                                     '(${entry.traditional})',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w300,
+                                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
                                     ),
                                   ),
                               ],
@@ -190,17 +197,18 @@ class DictionaryUtils {
                       const SizedBox(height: 8),
                       Text(
                         PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
-                          color: Colors.blue,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       const Divider(height: 32),
-                      const Text(
+                      Text(
                         'Definitions:',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -209,7 +217,10 @@ class DictionaryUtils {
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '• $definition',
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
                           ),
                         ),
                       ),
@@ -234,7 +245,9 @@ class DictionaryUtils {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark 
+          ? Theme.of(context).colorScheme.surfaceContainer
+          : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -270,9 +283,13 @@ class DictionaryUtils {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'In Word Lists:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16, 
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -280,9 +297,8 @@ class DictionaryUtils {
               children: containingLists.map((list) {
                 return Chip(
                   label: Text(list.name),
-                  backgroundColor: Theme.of(
-                    context,
-                  ).primaryColor.withOpacity(0.1),
+                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                  labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                   deleteIcon: const Icon(Icons.close, size: 18),
                   onDeleted: () {
                     provider.removeEntryFromList(list.id, entry);

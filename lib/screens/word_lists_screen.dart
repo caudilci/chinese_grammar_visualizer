@@ -237,7 +237,9 @@ class _WordListsScreenState extends State<WordListsScreen> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Card(
-                        color: Colors.green.shade50,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Color(0xFF313244) // Dark mode surface variant
+                            : Colors.green.shade50,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -252,7 +254,9 @@ class _WordListsScreenState extends State<WordListsScreen> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green.shade800,
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.green[300]
+                                          : Colors.green.shade800,
                                     ),
                                   ),
                                 ],
@@ -263,6 +267,7 @@ class _WordListsScreenState extends State<WordListsScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,
                                   foregroundColor: Colors.white,
+                                  elevation: Theme.of(context).brightness == Brightness.dark ? 4 : 1,
                                 ),
                                 child: const Text('Continue Session'),
                               ),
@@ -286,7 +291,9 @@ class _WordListsScreenState extends State<WordListsScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Card(
-                    color: Colors.green.shade50,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Color(0xFF313244) // Dark mode surface variant
+                        : Colors.green.shade50,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -300,7 +307,9 @@ class _WordListsScreenState extends State<WordListsScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green.shade800,
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.green[300]
+                                      : Colors.green.shade800,
                                 ),
                               ),
                             ],
@@ -308,7 +317,11 @@ class _WordListsScreenState extends State<WordListsScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'You have an unfinished flash card session. Would you like to continue where you left off?',
-                            style: TextStyle(color: Colors.grey.shade700),
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.grey[300]
+                                  : Colors.grey.shade700,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -327,7 +340,9 @@ class _WordListsScreenState extends State<WordListsScreen> {
                               ElevatedButton(
                                 onPressed: _startNewSession,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
+                                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                      ? Color(0xFFF5A97F) // Catppuccin macchiato peach
+                                      : Colors.orange,
                                   foregroundColor: Colors.white,
                                 ),
                                 child: const Text('New Session'),
@@ -561,7 +576,7 @@ class WordListDetailScreen extends StatelessWidget {
         builder: (_, controller) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
@@ -583,7 +598,7 @@ class WordListDetailScreen extends StatelessWidget {
                     width: 40,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     margin: const EdgeInsets.only(bottom: 16),
@@ -591,28 +606,34 @@ class WordListDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   entry.simplified,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 if (entry.traditional != entry.simplified)
                   Text(
                     '(${entry.traditional})',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w300,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 const SizedBox(height: 8),
                 Text(
                   PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                  style: const TextStyle(fontSize: 20, color: Colors.blue),
+                  style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.primary),
                 ),
                 const Divider(height: 32),
-                const Text(
+                Text(
                   'Definitions:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16, 
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 ...entry.definitions.map(
@@ -620,7 +641,7 @@ class WordListDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Text(
                       '• $definition',
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ),

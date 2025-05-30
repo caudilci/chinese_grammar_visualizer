@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/grammar_pattern.dart';
 import '../utils/app_theme.dart';
 import '../screens/practice_screen.dart';
+import '../utils/catppuccin_theme.dart';
 
 class PatternCard extends StatelessWidget {
   final GrammarPattern pattern;
@@ -36,10 +37,10 @@ class PatternCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       pattern.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -51,23 +52,28 @@ class PatternCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 pattern.chineseTitle,
-                style: AppTheme.chineseTextStyle.copyWith(fontSize: 20),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onBackground,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 pattern.englishTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppTheme.textSecondary,
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                   fontStyle: FontStyle.italic,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 pattern.description,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -81,12 +87,12 @@ class PatternCard extends StatelessWidget {
                   Chip(
                     label: Text(
                       pattern.category,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: EdgeInsets.zero,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -94,7 +100,7 @@ class PatternCard extends StatelessWidget {
                     children: [
                       if (showPracticeButton && pattern.examples.isNotEmpty)
                         IconButton(
-                          icon: const Icon(Icons.fitness_center, color: AppTheme.primaryColor),
+                          icon: Icon(Icons.fitness_center, color: Theme.of(context).colorScheme.primary),
                           tooltip: 'Practice this pattern',
                           onPressed: () {
                             Navigator.push(
@@ -107,9 +113,9 @@ class PatternCard extends StatelessWidget {
                             );
                           },
                         ),
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward,
-                        color: AppTheme.primaryColor,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ],
                   ),
@@ -123,37 +129,45 @@ class PatternCard extends StatelessWidget {
   }
 
   Widget _buildDifficultyIndicator(int level) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (index) {
-        return Icon(
-          index < level ? Icons.star : Icons.star_border,
-          color: index < level
-              ? AppTheme.getDifficultyColor(level)
-              : AppTheme.textLight,
-          size: 16,
-        );
-      }),
+    return Builder(
+      builder: (context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(5, (index) {
+          return Icon(
+            index < level ? Icons.star : Icons.star_border,
+            color: index < level
+                ? Theme.of(context).brightness == Brightness.dark 
+                  ? CatppuccinTheme.mochaPeach 
+                  : AppTheme.getDifficultyColor(level)
+                : Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+            size: 16,
+          );
+        }),
+      ),
     );
   }
 
   Widget _buildStructurePreview(String structure) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppTheme.textLight.withOpacity(0.3),
+    return Builder(
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark 
+              ? Theme.of(context).colorScheme.surfaceContainer 
+              : AppTheme.backgroundColor,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+          ),
         ),
-      ),
-      child: Text(
-        structure,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: AppTheme.primaryColor,
-          fontFamily: 'monospace',
+        child: Text(
+          structure,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.primary,
+            fontFamily: 'monospace',
+          ),
         ),
       ),
     );

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'providers/grammar_provider.dart';
 import 'providers/dictionary_provider.dart';
 import 'providers/practice_provider.dart';
 import 'providers/word_list_provider.dart';
 import 'providers/flash_card_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/main_screen.dart';
-import 'utils/app_theme.dart';
+import 'utils/catppuccin_theme.dart';
 
 void main() {
   runApp(
@@ -21,6 +23,7 @@ void main() {
             Provider.of<WordListProvider>(context, listen: false),
           ),
         ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: const MyApp(),
     ),
@@ -32,11 +35,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chinese Grammar Visualizer',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          title: 'Chinese Grammar Visualizer',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.currentTheme,
+          darkTheme: themeProvider.darkTheme,
+          themeMode: themeProvider.themeMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }
@@ -67,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: CatppuccinTheme.mochaBlue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(height: 24),
             Text(
               '汉语语法可视化',
-              style: AppTheme.chineseTextStyle.copyWith(
+              style: GoogleFonts.notoSansSc(
                 fontSize: 32,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

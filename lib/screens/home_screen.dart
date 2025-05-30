@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/grammar_provider.dart';
 import '../utils/app_theme.dart';
+import '../utils/catppuccin_theme.dart';
 import '../widgets/pattern_card.dart';
 import 'pattern_detail_screen.dart';
 
@@ -56,10 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chinese Grammar Visualizer'),
-        centerTitle: true,
-      ),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -75,12 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: _searchController,
+        style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
         decoration: InputDecoration(
           hintText: 'Search grammar patterns...',
-          prefixIcon: const Icon(Icons.search),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
+          prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.primary),
                   onPressed: () {
                     _searchController.clear();
                     Provider.of<GrammarProvider>(
@@ -91,6 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : null,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.surfaceContainer
+              : null,
         ),
         onChanged: (value) {
           Provider.of<GrammarProvider>(
@@ -111,10 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<String?>(
               decoration: InputDecoration(
                 labelText: 'Category',
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8)),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
                 ),
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surfaceContainer
+                    : null,
               ),
               value: _selectedCategory,
               items: [
@@ -147,10 +153,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<int?>(
               decoration: InputDecoration(
                 labelText: 'Difficulty',
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8)),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
                 ),
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surfaceContainer
+                    : null,
               ),
               value: _selectedDifficultyLevel,
               items: [
@@ -166,11 +176,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Icon(
                               Icons.star,
-                              color: AppTheme.getDifficultyColor(level),
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? CatppuccinTheme.mochaPeach
+                                  : AppTheme.getDifficultyColor(level),
                               size: 16,
                             ),
                             const SizedBox(width: 4),
-                            Text('Level $level'),
+                            Text(
+                              'Level $level',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onBackground,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -203,11 +220,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         if (provider.filteredPatterns.isEmpty) {
-          return const Expanded(
+          return Expanded(
             child: Center(
               child: Text(
                 'No grammar patterns found',
-                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7)
+                ),
               ),
             ),
           );

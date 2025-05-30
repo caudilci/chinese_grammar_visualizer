@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dictionary_entry.dart';
 
 /// Represents the difficulty/familiarity level of a card
 enum CardLevel {
   /// New or difficult cards (reviewed frequently)
   difficult,
-  
+
   /// Cards that have been answered correctly a few times (reviewed occasionally)
   learning,
-  
+
   /// Cards that have been mastered (reviewed infrequently)
   mastered
 }
@@ -17,7 +16,7 @@ enum CardLevel {
 class ReviewAttempt {
   /// When the review was performed
   final DateTime reviewedAt;
-  
+
   /// Whether the user got the card correct
   final bool wasCorrect;
 
@@ -47,28 +46,28 @@ class ReviewAttempt {
 class FlashCard {
   /// The dictionary entry to study
   final DictionaryEntry entry;
-  
+
   /// When the card was created
   final DateTime createdAt;
-  
+
   /// When the card was last reviewed
   DateTime? lastReviewedAt;
-  
+
   /// Current difficulty/familiarity level
   CardLevel level;
-  
+
   /// Number of consecutive correct answers
   int consecutiveCorrect;
-  
+
   /// Total number of reviews
   int totalReviews;
-  
+
   /// Number of correct reviews
   int correctReviews;
-  
+
   /// History of review attempts
   List<ReviewAttempt> reviewHistory;
-  
+
   /// Due date for next review (calculated based on level and last review)
   DateTime? dueDate;
 
@@ -82,14 +81,14 @@ class FlashCard {
     this.correctReviews = 0,
     List<ReviewAttempt>? reviewHistory,
     this.dueDate,
-  }) : 
+  }) :
     createdAt = createdAt ?? DateTime.now(),
     reviewHistory = reviewHistory ?? [];
 
   /// Record a review attempt and update card statistics
   void recordReview(bool correct) {
     final now = DateTime.now();
-    
+
     // Update statistics
     totalReviews++;
     if (correct) {
@@ -98,13 +97,13 @@ class FlashCard {
     } else {
       consecutiveCorrect = 0;
     }
-    
+
     // Add to history
     reviewHistory.add(ReviewAttempt(
       reviewedAt: now,
       wasCorrect: correct,
     ));
-    
+
     // Update level based on performance
     if (correct) {
       if (level == CardLevel.difficult && consecutiveCorrect >= 2) {
@@ -116,10 +115,10 @@ class FlashCard {
       // If incorrect, move card back to difficult
       level = CardLevel.difficult;
     }
-    
+
     // Update review date
     lastReviewedAt = now;
-    
+
     // Calculate next due date based on level
     _calculateNextDueDate();
   }
@@ -132,7 +131,7 @@ class FlashCard {
     }
 
     final now = DateTime.now();
-    
+
     // Spaced repetition intervals based on difficulty level
     switch (level) {
       case CardLevel.difficult:
@@ -167,8 +166,8 @@ class FlashCard {
     return FlashCard(
       entry: DictionaryEntry.fromJson(json['entry'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      lastReviewedAt: json['lastReviewedAt'] != null 
-          ? DateTime.parse(json['lastReviewedAt'] as String) 
+      lastReviewedAt: json['lastReviewedAt'] != null
+          ? DateTime.parse(json['lastReviewedAt'] as String)
           : null,
       level: CardLevel.values.byName(json['level'] as String),
       consecutiveCorrect: json['consecutiveCorrect'] as int,
@@ -177,8 +176,8 @@ class FlashCard {
       reviewHistory: (json['reviewHistory'] as List<dynamic>)
           .map((e) => ReviewAttempt.fromJson(e as Map<String, dynamic>))
           .toList(),
-      dueDate: json['dueDate'] != null 
-          ? DateTime.parse(json['dueDate'] as String) 
+      dueDate: json['dueDate'] != null
+          ? DateTime.parse(json['dueDate'] as String)
           : null,
     );
   }
@@ -197,7 +196,7 @@ class FlashCard {
       'dueDate': dueDate?.toIso8601String(),
     };
   }
-  
+
   /// Check if this flash card represents the same dictionary entry
   @override
   bool operator ==(Object other) =>
@@ -214,25 +213,25 @@ class FlashCard {
 class FlashCardSession {
   /// Unique identifier for the session
   final String id;
-  
+
   /// When the session was started
   final DateTime startedAt;
-  
+
   /// When the session was completed
   DateTime? completedAt;
-  
+
   /// IDs of word lists included in this session
   final List<String> wordListIds;
-  
+
   /// Total cards in the session
   final int totalCards;
-  
+
   /// Whether the session is in endless mode
   final bool isEndless;
-  
+
   /// Cards reviewed in this session (key: unique review ID, value: was correct)
   final Map<String, bool> reviewedCards;
-  
+
   /// Count of unique words reviewed (for stats)
   final Set<String> uniqueWordsReviewed;
 
@@ -245,7 +244,7 @@ class FlashCardSession {
     this.completedAt,
     Map<String, bool>? reviewedCards,
     Set<String>? uniqueWordsReviewed,
-  }) : 
+  }) :
     startedAt = startedAt ?? DateTime.now(),
     reviewedCards = reviewedCards ?? {},
     uniqueWordsReviewed = uniqueWordsReviewed ?? {};
@@ -254,7 +253,7 @@ class FlashCardSession {
   void markCardReviewed(String reviewId, bool wasCorrect) {
     // Store the review result with the unique review ID
     reviewedCards[reviewId] = wasCorrect;
-    
+
     // Extract the base entry ID (without timestamp) to track unique words
     if (reviewId.contains('-')) {
       String baseEntryId = reviewId.split('-').first;
@@ -286,7 +285,7 @@ class FlashCardSession {
     if (cardsReviewed == 0) return 0.0;
     return (correctAnswers / cardsReviewed) * 100;
   }
-  
+
   /// Get the completion percentage (0-100)
   double get completionPercentage {
     if (isEndless || totalCards <= 0) return 0.0;
@@ -298,7 +297,7 @@ class FlashCardSession {
     if (completedAt != null) return true;
     if (isEndless) return false;
     if (totalCards <= 0) return false;
-    
+
     // Compare the number of reviewed cards to the total cards requested
     int reviewed = reviewedCards.length;
     return reviewed >= totalCards;
@@ -316,15 +315,15 @@ class FlashCardSession {
     final session = FlashCardSession(
       id: json['id'] as String,
       startedAt: DateTime.parse(json['startedAt'] as String),
-      completedAt: json['completedAt'] != null 
-          ? DateTime.parse(json['completedAt'] as String) 
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'] as String)
           : null,
       wordListIds: (json['wordListIds'] as List<dynamic>).cast<String>(),
       totalCards: json['totalCards'] as int,
       isEndless: json['isEndless'] as bool,
       reviewedCards: Map<String, bool>.from(json['reviewedCards'] as Map),
     );
-    
+
     // Rebuild uniqueWordsReviewed set from the review IDs
     for (String reviewId in session.reviewedCards.keys) {
       if (reviewId.contains('-')) {
@@ -334,7 +333,7 @@ class FlashCardSession {
         session.uniqueWordsReviewed.add(reviewId);
       }
     }
-    
+
     return session;
   }
 

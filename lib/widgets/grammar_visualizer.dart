@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
+import '../utils/catppuccin_theme.dart';
 import '../services/color_service.dart';
 import '../models/grammar_pattern.dart';
+import '../utils/colors.dart';
 
 class GrammarVisualizer extends StatefulWidget {
   final String structure;
@@ -28,11 +30,21 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
     _loadColors();
   }
   
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Safe to access Theme here
+    PartOfSpeechColors.isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    _loadColors();
+  }
+  
   Future<void> _loadColors() async {
     _colors = await _colorService.getAllColors();
-    setState(() {
-      _colorsLoaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        _colorsLoaded = true;
+      });
+    }
   }
 
   @override
@@ -43,10 +55,12 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainer
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.textLight.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -237,27 +251,8 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
       }
     }
     
-    // Fallback to the old system if colors aren't loaded yet
-    if (lowerComponent.contains('subject')) {
-      return AppTheme.grammarColors['subject'] ?? Colors.orange;
-    } else if (lowerComponent.contains('object')) {
-      return AppTheme.grammarColors['object'] ?? Colors.purple;
-    } else if (lowerComponent.contains('verb') || lowerComponent.contains('action')) {
-      return AppTheme.grammarColors['verb'] ?? Colors.green;
-    } else if (lowerComponent.contains('complement') || lowerComponent.contains('result')) {
-      return AppTheme.grammarColors['complement'] ?? Colors.blue;
-    } else if (lowerComponent.contains('adverb') || lowerComponent.contains('time')) {
-      return AppTheme.grammarColors['adverb'] ?? Colors.lightBlue;
-    } else if (lowerComponent.contains('adjective')) {
-      return AppTheme.grammarColors['adjective'] ?? Colors.blue;
-    } else if (lowerComponent.contains('marker') || lowerComponent.contains('particle')) {
-      return AppTheme.grammarColors['marker'] ?? Colors.red;
-    } else if (lowerComponent.contains('preposition')) {
-      return AppTheme.grammarColors['preposition'] ?? Colors.orange;
-    } else {
-      // Default color - using a teal color instead of grey
-      return const Color(0xFF009688);
-    }
+    // Fallback to the theme-aware color system
+    return PartOfSpeechColors.getColor(lowerComponent, context);
   }
 }
 
@@ -301,11 +296,21 @@ class _AnimatedGrammarVisualizerState extends State<AnimatedGrammarVisualizer> w
     _loadColors();
   }
   
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Safe to access Theme here
+    PartOfSpeechColors.isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    _loadColors();
+  }
+  
   Future<void> _loadColors() async {
     _colors = await _colorService.getAllColors();
-    setState(() {
-      _colorsLoaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        _colorsLoaded = true;
+      });
+    }
   }
 
   @override
@@ -333,10 +338,12 @@ class _AnimatedGrammarVisualizerState extends State<AnimatedGrammarVisualizer> w
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainer
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.textLight.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -485,26 +492,7 @@ class _AnimatedGrammarVisualizerState extends State<AnimatedGrammarVisualizer> w
       }
     }
     
-    // Fallback to the old system if colors aren't loaded yet
-    if (lowerComponent.contains('subject')) {
-      return AppTheme.grammarColors['subject'] ?? Colors.orange;
-    } else if (lowerComponent.contains('object')) {
-      return AppTheme.grammarColors['object'] ?? Colors.purple;
-    } else if (lowerComponent.contains('verb') || lowerComponent.contains('action')) {
-      return AppTheme.grammarColors['verb'] ?? Colors.green;
-    } else if (lowerComponent.contains('complement') || lowerComponent.contains('result')) {
-      return AppTheme.grammarColors['complement'] ?? Colors.blue;
-    } else if (lowerComponent.contains('adverb') || lowerComponent.contains('time')) {
-      return AppTheme.grammarColors['adverb'] ?? Colors.lightBlue;
-    } else if (lowerComponent.contains('adjective')) {
-      return AppTheme.grammarColors['adjective'] ?? Colors.blue;
-    } else if (lowerComponent.contains('marker') || lowerComponent.contains('particle')) {
-      return AppTheme.grammarColors['marker'] ?? Colors.red;
-    } else if (lowerComponent.contains('preposition')) {
-      return AppTheme.grammarColors['preposition'] ?? Colors.orange;
-    } else {
-      // Default color - using a teal color instead of grey
-      return const Color(0xFF009688);
-    }
+    // Fallback to the theme-aware color system
+    return PartOfSpeechColors.getColor(lowerComponent, context);
   }
 }

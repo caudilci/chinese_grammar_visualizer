@@ -44,22 +44,6 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chinese Dictionary'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            tooltip: 'Word Lists',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const WordListsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -78,18 +62,29 @@ class DictionaryScreenState extends State<DictionaryScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
-                controller: _searchController,
-                focusNode: _searchFocusNode,
-                decoration: InputDecoration(
-                  hintText: provider.searchMode == SearchMode.english 
-                      ? 'Search in English' 
-                      : provider.searchMode == SearchMode.chinese
-                          ? 'Search in Chinese or Pinyin'
-                          : 'Auto-detect search language',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white 
+                    : Theme.of(context).colorScheme.onSurface,
+                fontSize: 16.0,
+              ),
+              decoration: InputDecoration(
+                hintText: provider.searchMode == SearchMode.english
+                    ? 'Search in English'
+                    : provider.searchMode == SearchMode.chinese
+                        ? 'Search in Chinese or Pinyin'
+                        : 'Auto-detect search language',
+                hintStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.white70 
+                      : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
+                prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.primary),
                           onPressed: () {
                             _searchController.clear();
                             provider.setSearchQuery('');
@@ -98,14 +93,18 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                       : null,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                   filled: true,
-                  fillColor: Colors.grey[100],
+                  fillColor: Theme.of(context).brightness == Brightness.dark 
+                      ? Theme.of(context).colorScheme.surfaceVariant
+                      : Colors.grey[100],
                   helperText: provider.searchMode == SearchMode.auto
                       ? 'Auto-detecting search type'
                       : provider.searchMode == SearchMode.chinese
                           ? 'Searching in Chinese characters or Pinyin (with or without tones)'
                           : 'Searching in English',
                   helperStyle: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).brightness == Brightness.dark 
+                        ? Colors.white70
+                        : Theme.of(context).primaryColor,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -120,10 +119,14 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ChoiceChip(
-                    label: const Text('Auto'),
+                    label: Text('Auto', style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
+                    )),
                     selected: provider.searchMode == SearchMode.auto,
                     selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                    avatar: provider.searchMode == SearchMode.auto 
+                    avatar: provider.searchMode == SearchMode.auto
                         ? Icon(Icons.auto_awesome, color: Theme.of(context).primaryColor, size: 18)
                         : null,
                     onSelected: (selected) {
@@ -134,10 +137,14 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   ),
                   const SizedBox(width: 16),
                   ChoiceChip(
-                    label: const Text('Chinese/Pinyin'),
+                    label: Text('Chinese/Pinyin', style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
+                    )),
                     selected: provider.searchMode == SearchMode.chinese,
                     selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                    avatar: provider.searchMode == SearchMode.chinese 
+                    avatar: provider.searchMode == SearchMode.chinese
                         ? Icon(Icons.language, color: Theme.of(context).primaryColor, size: 18)
                         : null,
                     onSelected: (selected) {
@@ -148,10 +155,14 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   ),
                   const SizedBox(width: 16),
                   ChoiceChip(
-                    label: const Text('English'),
+                    label: Text('English', style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
+                    )),
                     selected: provider.searchMode == SearchMode.english,
                     selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                    avatar: provider.searchMode == SearchMode.english 
+                    avatar: provider.searchMode == SearchMode.english
                         ? Icon(Icons.abc, color: Theme.of(context).primaryColor, size: 18)
                         : null,
                     onSelected: (selected) {
@@ -173,18 +184,23 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     return Consumer<DictionaryProvider>(
       builder: (context, provider, child) {
         if (!provider.isInitialized) {
-          return const Expanded(
+          return Expanded(
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(
-                    'Dictionary is loading...',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                ],
+              child: Builder(
+                builder: (context) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Dictionary is loading...',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -206,28 +222,34 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
                       ),
-                      child: Column(
-                        children: const [
-                          Text(
-                            'Pinyin Search Tips:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                      child: Builder(
+                        builder: (context) => Column(
+                          children: [
+                            Text(
+                              'Pinyin Search Tips:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            '• Search with or without tone marks\n'
-                            '• Try single syllables like "hao" or full words like "ni hao"\n'
-                            '• First-letter search: "nh" → "ni hao"',
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(
+                              '• Search with or without tone marks\n'
+                              '• Use numbers for tones (e.g., "ni3")\n'
+                              '• Search by English meaning\n'
+                              '• Search by Chinese characters',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: Theme.of(context).colorScheme.onBackground,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -237,16 +259,19 @@ class DictionaryScreenState extends State<DictionaryScreen> {
           }
 
           if (provider.isLoading && searchResults.isEmpty) {
-            return const Expanded(
+            return Expanded(
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
                     Text(
-                      'Searching...',
-                      style: TextStyle(fontSize: 16.0),
+                      'Dictionary is loading...',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
                   ],
                 ),
@@ -255,12 +280,12 @@ class DictionaryScreenState extends State<DictionaryScreen> {
           }
 
           if (searchResults.isEmpty && !provider.isLoading) {
-            final String modeText = provider.searchMode == SearchMode.english 
-        ? "English" 
-        : provider.searchMode == SearchMode.chinese 
-            ? "Chinese/Pinyin" 
+            final String modeText = provider.searchMode == SearchMode.english
+        ? "English"
+        : provider.searchMode == SearchMode.chinese
+            ? "Chinese/Pinyin"
             : "any language";
-                  
+
             return Expanded(
               child: Center(
                 child: Column(
@@ -274,7 +299,12 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Current search mode: $modeText',
-                      style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : Colors.grey[600],
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -319,7 +349,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                     ),
                   );
                 }
-                
+
                 final entry = searchResults[index];
                 return DictionarySearchResult(
                   entry: entry,
@@ -345,10 +375,10 @@ class DictionaryScreenState extends State<DictionaryScreen> {
         onTap: _launchCCCedictWebsite,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: const Text(
+          child: Text(
             'Powered by CC-CEDICT',
             style: TextStyle(
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
               decoration: TextDecoration.underline,
               fontSize: 12.0,
             ),
@@ -363,7 +393,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<WordListProvider>(context, listen: false).initialize();
     });
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -378,16 +408,19 @@ class DictionaryScreenState extends State<DictionaryScreen> {
         builder: (_, controller) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).colorScheme.surfaceContainer
+                  : Colors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  spreadRadius: 5,
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, -3),
                 ),
               ],
             ),
@@ -403,7 +436,9 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                           width: 40,
                           height: 5,
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[600]
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           margin: const EdgeInsets.only(bottom: 16),
@@ -419,17 +454,19 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                               children: [
                                 Text(
                                   entry.simplified,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onBackground,
                                   ),
                                 ),
                                 if (entry.traditional != entry.simplified)
                                   Text(
                                     '(${entry.traditional})',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w300,
+                                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
                                     ),
                                   ),
                               ],
@@ -447,12 +484,21 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                       const SizedBox(height: 8),
                       Text(
                         PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: const TextStyle(fontSize: 20, color: Colors.blue),
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.blue
+                        ),
                       ),
                       const Divider(height: 32),
-                      const Text(
+                      Text(
                         'Definitions:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       ...entry.definitions.map(
@@ -460,7 +506,10 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '• $definition',
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
                           ),
                         ),
                       ),
@@ -476,21 +525,21 @@ class DictionaryScreenState extends State<DictionaryScreen> {
       ),
     );
   }
-  
+
   Widget _buildWordListChips(BuildContext context, DictionaryEntry entry) {
     return Consumer<WordListProvider>(
       builder: (context, provider, child) {
         final containingLists = provider.getListsContainingEntry(entry);
-        
+
         if (!provider.isInitialized) {
           provider.initialize();
           return const SizedBox.shrink();
         }
-        
+
         if (containingLists.isEmpty) {
           return const SizedBox.shrink();
         }
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -517,7 +566,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
       },
     );
   }
-  
+
   void _showWordListSelection(BuildContext context, DictionaryEntry entry) {
     showModalBottomSheet(
       context: context,

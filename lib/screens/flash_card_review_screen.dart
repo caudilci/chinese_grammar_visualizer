@@ -345,7 +345,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.blue.shade50],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [Color(0xFF1E1E2E), Color(0xFF313244)]
+                : [Colors.white, Colors.blue.shade50],
           ),
         ),
         padding: const EdgeInsets.all(24.0),
@@ -356,9 +358,12 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
             const Spacer(),
             Text(
               card.entry.simplified,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 64,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -367,9 +372,12 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   '(${card.entry.traditional})',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w300,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black54,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -380,10 +388,12 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
               children: [
                 Icon(Icons.touch_app, size: 14, color: Colors.grey),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   'Tap to flip',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
                     fontSize: 12,
                   ),
                 ),
@@ -407,7 +417,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.amber.shade50],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [Color(0xFF1E1E2E), Color(0xFF313244)]
+                : [Colors.white, Colors.amber.shade50],
           ),
         ),
         padding: const EdgeInsets.all(24.0),
@@ -418,19 +430,23 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
             const Spacer(),
             Text(
               PinyinUtils.toDiacriticPinyin(card.entry.pinyin),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 28,
-                color: Colors.blue,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF89B4FA) // Catppuccin mocha blue
+                    : Colors.blue,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Meaning:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[300]
+                    : Colors.grey[700],
               ),
               textAlign: TextAlign.center,
             ),
@@ -443,7 +459,12 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Text(
                         '• $definition',
-                        style: const TextStyle(fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -456,10 +477,12 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen> with Sing
               children: [
                 Icon(Icons.touch_app, size: 14, color: Colors.grey),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   'Tap to flip back',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
                     fontSize: 12,
                   ),
                 ),

@@ -52,17 +52,19 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('${currentItem.grammarPattern.name} Practice'),
-            actions: [
-              TextButton.icon(
-                icon: const Icon(Icons.close, color: Colors.white),
-                label: const Text('End', style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  _showEndSessionDialog(context, provider);
-                },
+                title: Text('${currentItem.grammarPattern.name} Practice'),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                actions: [
+                  TextButton.icon(
+                    icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimary),
+                    label: Text('End', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                    onPressed: () {
+                      _showEndSessionDialog(context, provider);
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
           body: SafeArea(
             child: Column(
               children: [
@@ -84,6 +86,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Widget _buildSentenceArea(PracticeProvider provider) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Center(
         child: SingleChildScrollView(child: _buildSlotArea(provider)),
       ),
@@ -100,19 +106,25 @@ class _PracticeScreenState extends State<PracticeScreen> {
             children: [
               Text(
                 'Item ${session.currentItemIndex + 1} of ${session.items.length}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
               Text(
                 '${(session.completionPercentage * 100).toStringAsFixed(0)}% Complete',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           LinearProgressIndicator(
             value: session.completionPercentage,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
           ),
         ],
       ),
@@ -124,16 +136,21 @@ class _PracticeScreenState extends State<PracticeScreen> {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.blue[200]!),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [
           Expanded(
-            child: const Text(
+            child: Text(
               'Arrange the words in the correct order to form a sentence. Drag words from the word bank below to the empty slots.',
-              style: TextStyle(fontSize: 16.0),
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
           IconButton(
@@ -158,22 +175,31 @@ class _PracticeScreenState extends State<PracticeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'English Translation:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            style: TextStyle(
+              fontWeight: FontWeight.bold, 
+              fontSize: 16.0,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
             ),
             child: Text(
               item.englishTranslation,
-              style: const TextStyle(fontSize: 16.0),
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
             ),
           ),
         ],
@@ -188,12 +214,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -215,21 +243,29 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   color: word == null
-                      ? Colors.grey[100]
+                      ? Theme.of(context).colorScheme.surfaceVariant
                       : isSubmitted
                       ? isCorrectPosition
-                            ? Colors.green[50]
-                            : Colors.red[50]
-                      : Colors.blue[50],
+                            ? Theme.of(context).brightness == Brightness.dark 
+                                ? Color(0xFF1E392A) // dark green background
+                                : Color(0xFFE6F4EA) // light green background
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? Color(0xFF3B1D1D) // dark red background
+                                : Color(0xFFFBEDED) // light red background
+                      : Theme.of(context).colorScheme.primary.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(
                     color: word == null
-                        ? Colors.grey[300]!
+                        ? Theme.of(context).colorScheme.outline
                         : isSubmitted
                         ? isCorrectPosition
-                              ? Colors.green
-                              : Colors.red
-                        : Colors.blue,
+                              ? Theme.of(context).brightness == Brightness.dark
+                                  ? Color(0xFF81C995) // dark green border
+                                  : Color(0xFF34A853) // light green border
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? Color(0xFFE07676) // dark red border
+                                  : Color(0xFFEA4335) // light red border
+                        : Theme.of(context).colorScheme.primary,
                     width: 2.0,
                   ),
                 ),
@@ -243,16 +279,18 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               children: [
                                 Text(
                                   word.text,
-                                  style: const TextStyle(
-                                    fontSize: 20.0,
+                                  style: TextStyle(
+                                    fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 Text(
                                   PinyinUtils.toDiacriticPinyin(word.pinyin),
-                                  style: const TextStyle(
-                                    fontSize: 12.0,
-                                    color: Colors.blue,
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                               ],
@@ -301,12 +339,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
             blurRadius: 5,
             offset: const Offset(0, -2),
           ),
@@ -315,9 +353,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Word Bank:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            style: TextStyle(
+              fontWeight: FontWeight.bold, 
+              fontSize: 16.0,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 12),
           SingleChildScrollView(
@@ -332,9 +374,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     width: 80,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.grey[400]!),
+                      border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
                     ),
                   );
                 }
@@ -344,13 +386,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   feedback: Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: Colors.blue[100],
-                      borderRadius: BorderRadius.circular(8.0),
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(4.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
+                          color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
+                          blurRadius: 2.0,
+                          spreadRadius: 0.0,
                         ),
                       ],
                     ),
@@ -359,16 +401,17 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       children: [
                         Text(
                           word.text,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         Text(
                           PinyinUtils.toDiacriticPinyin(word.pinyin),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.0,
-                            color: Colors.blue,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -378,9 +421,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     width: 80,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.grey[400]!),
+                      border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
                     ),
                   ),
                   child: Container(
@@ -388,9 +431,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     height: 60,
                     padding: const EdgeInsets.all(4.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.blue),
+                      border: Border.all(color: Theme.of(context).colorScheme.primary),
                     ),
                     child: Center(
                       child: Column(
@@ -398,16 +441,17 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         children: [
                           Text(
                             word.text,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
                           Text(
                             PinyinUtils.toDiacriticPinyin(word.pinyin),
-                            style: const TextStyle(
-                              fontSize: 10.0,
-                              color: Colors.blue,
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -438,17 +482,36 @@ class _PracticeScreenState extends State<PracticeScreen> {
               padding: const EdgeInsets.all(12.0),
               margin: const EdgeInsets.only(bottom: 16.0),
               decoration: BoxDecoration(
-                color: isCorrect ? Colors.green[50] : Colors.red[50],
+                color: isCorrect 
+                    ? Theme.of(context).brightness == Brightness.dark 
+                        ? Color(0xFF1E392A) // dark green background
+                        : Color(0xFFE6F4EA) // light green background
+                    : Theme.of(context).brightness == Brightness.dark
+                        ? Color(0xFF3B1D1D) // dark red background
+                        : Color(0xFFFBEDED), // light red background
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(
-                  color: isCorrect ? Colors.green : Colors.red,
+                  color: isCorrect 
+                      ? Theme.of(context).brightness == Brightness.dark 
+                          ? Color(0xFF81C995) // dark green border
+                          : Color(0xFF34A853) // light green border
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? Color(0xFFE07676) // dark red border
+                          : Color(0xFFEA4335), // light red border
+                  width: 2.0,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     isCorrect ? Icons.check_circle : Icons.cancel,
-                    color: isCorrect ? Colors.green : Colors.red,
+                    color: isCorrect 
+                        ? Theme.of(context).brightness == Brightness.dark 
+                            ? Color(0xFF81C995) // dark green icon
+                            : Color(0xFF34A853) // light green icon
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? Color(0xFFE07676) // dark red icon
+                            : Color(0xFFEA4335), // light red icon
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -458,7 +521,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           : 'Not quite right. Try again or check the solution.',
                       style: TextStyle(
                         fontSize: 16.0,
-                        color: isCorrect ? Colors.green[800] : Colors.red[800],
+                        color: isCorrect 
+                            ? Theme.of(context).brightness == Brightness.dark 
+                                ? Color(0xFF81C995) // dark green text
+                                : Color(0xFF0D652D) // light green text (darker for readability)
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? Color(0xFFE07676) // dark red text
+                                : Color(0xFFC5221F), // light red text (darker for readability)
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -478,25 +548,31 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         ? () => provider.submitArrangement()
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 8.0,
                       ),
                     ),
-                    child: const Text('Check Answer'),
+                    child: Text(
+                      'Check Answer',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    ),
                   )
                 else
                   ElevatedButton(
                     onPressed: () => provider.retryCurrentItem(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 8.0,
                       ),
                     ),
-                    child: const Text('Try Again'),
+                    child: Text(
+                      'Try Again',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    ),
                   ),
 
                 const SizedBox(width: 8),
@@ -505,26 +581,33 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ElevatedButton(
                     onPressed: () => provider.showSolution(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 8.0,
                       ),
                     ),
-                    child: const Text('Show Solution'),
+                    child: Text(
+                      'Show Solution',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                    ),
                   ),
 
                 if (isSubmitted && isCorrect)
                   ElevatedButton(
                     onPressed: () => provider.moveToNextItem(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      foregroundColor: Theme.of(context).colorScheme.onSecondary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 8.0,
                       ),
                     ),
-                    child: const Text('Next'),
+                    child: Text(
+                      'Next',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                    ),
                   ),
 
                 const SizedBox(width: 16),
@@ -532,10 +615,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 // Navigation buttons
                 if (provider.activeSession!.currentItemIndex > 0)
                   TextButton.icon(
-                    icon: const Icon(Icons.arrow_back, size: 16),
-                    label: const Text(
+                    icon: Icon(Icons.arrow_back, size: 16, color: Theme.of(context).colorScheme.primary),
+                    label: Text(
                       'Previous',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
                     ),
                     onPressed: () => provider.moveToPreviousItem(),
                     style: TextButton.styleFrom(
@@ -546,8 +629,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 if (provider.activeSession!.currentItemIndex <
                     provider.activeSession!.items.length - 1)
                   TextButton.icon(
-                    icon: const Icon(Icons.arrow_forward, size: 16),
-                    label: const Text('Skip', style: TextStyle(fontSize: 12)),
+                    icon: Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
+                    label: Text('Skip', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
                     onPressed: () => provider.moveToNextItem(),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -559,13 +642,21 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
           // If instructions are hidden, show a button to display them again
           if (!_showInstructions)
-            TextButton(
+            TextButton.icon(
               onPressed: () {
                 setState(() {
                   _showInstructions = true;
                 });
               },
-              child: const Text('Show Instructions'),
+              icon: Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              label: Text(
+                'Show Instructions',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
         ],
       ),
@@ -581,19 +672,21 @@ class _PracticeScreenState extends State<PracticeScreen> {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('End Practice Session?'),
-          content: const Text(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text('End Practice Session?', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+          content: Text(
             'Are you sure you want to end this practice session? Your progress will not be saved.',
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: const Text('End Session'),
+              child: Text('End Session', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onPressed: () {
                 provider.endPracticeSession();
                 Navigator.of(dialogContext).pop();

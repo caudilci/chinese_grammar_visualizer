@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../models/flash_card.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
 import 'flash_card_setup_screen.dart';
@@ -14,7 +13,7 @@ class FlashCardResultsScreen extends StatelessWidget {
     return Consumer<FlashCardProvider>(
       builder: (context, provider, child) {
         final session = provider.currentSession;
-        
+
         if (session == null) {
           return Scaffold(
             appBar: AppBar(
@@ -25,22 +24,22 @@ class FlashCardResultsScreen extends StatelessWidget {
             ),
           );
         }
-        
+
         final accuracy = session.accuracy;
         final correctCount = session.correctAnswers;
         final incorrectCount = session.incorrectAnswers;
         final totalReviewed = session.cardsReviewed;
-        
+
         // Format duration
         final duration = session.duration;
         final minutes = duration.inMinutes;
         final seconds = duration.inSeconds % 60;
         final durationText = '$minutes:${seconds.toString().padLeft(2, '0')}';
-        
+
         // Format date
         final dateFormat = DateFormat('MMM d, yyyy • h:mm a');
         final dateText = dateFormat.format(session.startedAt);
-        
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('Session Results'),
@@ -63,8 +62,8 @@ class FlashCardResultsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          accuracy >= 80 ? '👍 Great Job!' : 
-                          accuracy >= 60 ? '👌 Good Effort!' : 
+                          accuracy >= 80 ? '👍 Great Job!' :
+                          accuracy >= 60 ? '👌 Good Effort!' :
                           '🔄 Keep Practicing!',
                           style: const TextStyle(
                             fontSize: 28,
@@ -94,9 +93,9 @@ class FlashCardResultsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Session statistics
                 const Text(
                   'Session Statistics',
@@ -113,9 +112,9 @@ class FlashCardResultsScreen extends StatelessWidget {
                   totalReviewed: totalReviewed,
                   duration: durationText,
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Word lists studied
                 const Text(
                   'Word Lists Studied',
@@ -126,9 +125,9 @@ class FlashCardResultsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildWordListsCard(context, session.wordListIds),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Call to action buttons
                 Row(
                   children: [
@@ -178,7 +177,7 @@ class FlashCardResultsScreen extends StatelessWidget {
       },
     );
   }
-  
+
   Widget _buildStatisticsCard({
     required BuildContext context,
     required int correctCount,
@@ -237,7 +236,7 @@ class FlashCardResultsScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatItem({
     required IconData icon,
     required Color iconColor,
@@ -271,7 +270,7 @@ class FlashCardResultsScreen extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildWordListsCard(BuildContext context, List<String> wordListIds) {
     return Consumer<WordListProvider>(
       builder: (context, wordListProvider, child) {
@@ -279,7 +278,7 @@ class FlashCardResultsScreen extends StatelessWidget {
             .map((id) => wordListProvider.getWordListById(id))
             .where((list) => list != null)
             .toList();
-        
+
         if (wordLists.isEmpty) {
           return const Card(
             child: Padding(
@@ -288,7 +287,7 @@ class FlashCardResultsScreen extends StatelessWidget {
             ),
           );
         }
-        
+
         return Card(
           child: ListView.separated(
             shrinkWrap: true,
@@ -314,7 +313,7 @@ class FlashCardResultsScreen extends StatelessWidget {
       },
     );
   }
-  
+
   Color _getAccuracyColor(double accuracy) {
     if (accuracy >= 80) {
       return Colors.green;

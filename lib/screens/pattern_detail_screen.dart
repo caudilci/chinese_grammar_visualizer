@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/grammar_pattern.dart';
 import '../providers/grammar_provider.dart';
 import '../utils/app_theme.dart';
+import '../utils/catppuccin_theme.dart';
 import '../widgets/grammar_visualizer.dart';
 import '../widgets/sentence_breakdown.dart';
 import 'practice_screen.dart';
@@ -52,10 +53,10 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.fitness_center, color: Colors.white),
-                  label: const Text(
+                  icon: Icon(Icons.fitness_center, color: Theme.of(context).colorScheme.onPrimary),
+                  label: Text(
                     'Practice',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                   ),
                 );
               } else {
@@ -110,10 +111,10 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
             Expanded(
               child: Text(
                 pattern.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
             ),
@@ -123,14 +124,19 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         const SizedBox(height: 8),
         Text(
           pattern.chineseTitle,
-          style: AppTheme.chineseTextStyle.copyWith(fontSize: 28),
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onBackground,
+            height: 1.5,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           pattern.englishTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
-            color: AppTheme.textSecondary,
+            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
             fontStyle: FontStyle.italic,
           ),
         ),
@@ -138,12 +144,12 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         Chip(
           label: Text(
             pattern.category,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       ],
     );
@@ -156,8 +162,10 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         return Icon(
           index < level ? Icons.star : Icons.star_border,
           color: index < level
-              ? AppTheme.getDifficultyColor(level)
-              : AppTheme.textLight,
+              ? Theme.of(context).brightness == Brightness.dark 
+                  ? CatppuccinTheme.mochaPeach 
+                  : AppTheme.getDifficultyColor(level)
+              : Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
           size: 20,
         );
       }),
@@ -168,20 +176,20 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Description',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           pattern.description,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
-            color: AppTheme.textPrimary,
+            color: Theme.of(context).colorScheme.onBackground,
             height: 1.5,
           ),
         ),
@@ -193,12 +201,12 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Structure',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -220,23 +228,27 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Examples',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Theme.of(context).colorScheme.surfaceContainer
+                : Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black.withOpacity(0.2)
+                    : Colors.grey.withOpacity(0.1),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 1),
@@ -248,27 +260,43 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
             children: [
               Text(
                 currentExample.chineseSentence,
-                style: AppTheme.chineseTextStyle,
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onBackground,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 currentExample.pinyinSentence,
-                style: AppTheme.pinyinTextStyle,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.primary,
+                  height: 1.2,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 currentExample.englishTranslation,
-                style: AppTheme.translationTextStyle,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                  fontStyle: FontStyle.italic,
+                  height: 1.2,
+                ),
               ),
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Sentence Breakdown',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
               const SizedBox(height: 8),
@@ -281,27 +309,33 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.1),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? CatppuccinTheme.mochaYellow.withOpacity(0.2)
+                        : Colors.amber.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.amber,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? CatppuccinTheme.mochaYellow
+                          : Colors.amber,
                       width: 1,
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.lightbulb_outline,
-                        color: Colors.amber,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? CatppuccinTheme.mochaYellow
+                            : Colors.amber,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           currentExample.note!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).colorScheme.onBackground,
                           ),
                         ),
                       ),
@@ -331,8 +365,8 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
               const SizedBox(width: 16),
               Text(
                 '${_currentExampleIndex + 1} / ${pattern.examples.length}',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                 ),
               ),
               const SizedBox(width: 16),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/grammar_pattern.dart';
-import '../utils/app_theme.dart';
 import '../services/color_service.dart';
+import '../utils/colors.dart';
 import '../utils/dictionary_utils.dart';
+import '../utils/catppuccin_theme.dart';
 
 class SentenceBreakdown extends StatefulWidget {
   final List<SentencePart> parts;
@@ -29,12 +30,22 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
     super.initState();
     _loadColors();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Safe to access Theme here
+    PartOfSpeechColors.isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    _loadColors();
+  }
   
   Future<void> _loadColors() async {
     _colors = await _colorService.getAllColors();
-    setState(() {
-      _colorsLoaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        _colorsLoaded = true;
+      });
+    }
   }
 
   @override
@@ -58,7 +69,8 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
         final isSelected = _selectedPartIndex == index;
         
         // Get color based on part of speech instead of grammar function
-        Color componentColor = const Color(0xFF009688); // Teal default color
+        Color componentColor = PartOfSpeechColors.getDefaultColor(context);
+        
         if (_colorsLoaded) {
           // First try to get color by part of speech
           if (part.partOfSpeech.isNotEmpty && _colors.containsKey(part.partOfSpeech.toLowerCase())) {
@@ -70,6 +82,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
           }
           // If still not found, try partial matching
           else {
+            bool found = false;
             for (final entry in _colors.entries) {
               if ((part.partOfSpeech.toLowerCase().contains(entry.key) || 
                   entry.key.contains(part.partOfSpeech.toLowerCase())) ||
@@ -77,15 +90,31 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                    (part.grammarFunction!.toLowerCase().contains(entry.key) || 
                     entry.key.contains(part.grammarFunction!.toLowerCase())))) {
                 componentColor = entry.value;
+                found = true;
                 break;
               }
             }
+            if (!found) {
+              // Use theme-aware default color
+              componentColor = PartOfSpeechColors.getDefaultColor(context);
+            }
           }
         } 
+        // If colors aren't loaded yet, use direct PartOfSpeech color lookup with context
+        else if (part.partOfSpeech.isNotEmpty) {
+          componentColor = PartOfSpeechColors.getColor(part.partOfSpeech, context);
+        }
+        else if (part.grammarFunction != null) {
+          componentColor = PartOfSpeechColors.getColor(part.grammarFunction, context);
+        }
         // Legacy fallback
         else if (widget.colorCoding != null && part.grammarFunction != null && 
                  widget.colorCoding!.containsKey(part.grammarFunction)) {
           componentColor = HexColor.fromHex(widget.colorCoding![part.grammarFunction]!);
+        }
+        else {
+          // Final fallback - default teal
+          componentColor = PartOfSpeechColors.getDefaultColor(context);
         }
         
         return InkWell(
@@ -121,7 +150,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? componentColor : AppTheme.chineseCharColor,
+                    color: isSelected ? componentColor : Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -129,7 +158,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                   part.pinyin,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isSelected ? componentColor : AppTheme.pinyinColor,
+                    color: isSelected ? componentColor : Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -151,7 +180,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
     }
     
     final part = widget.parts[_selectedPartIndex!];
-    Color componentColor = const Color(0xFF009688); // Teal default color
+    Color componentColor = PartOfSpeechColors.getDefaultColor(context);
     
     if (_colorsLoaded) {
       // First try to get color by part of speech
@@ -164,6 +193,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
       }
       // If still not found, try partial matching
       else {
+        bool found = false;
         for (final entry in _colors.entries) {
           if ((part.partOfSpeech.toLowerCase().contains(entry.key) || 
               entry.key.contains(part.partOfSpeech.toLowerCase())) ||
@@ -171,25 +201,43 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                (part.grammarFunction!.toLowerCase().contains(entry.key) || 
                 entry.key.contains(part.grammarFunction!.toLowerCase())))) {
             componentColor = entry.value;
+            found = true;
             break;
           }
         }
+        if (!found) {
+          // Use theme-aware default color
+          componentColor = PartOfSpeechColors.getDefaultColor(context);
+        }
       }
     } 
+    // If colors aren't loaded yet, use direct PartOfSpeech color lookup with context
+    else if (part.partOfSpeech.isNotEmpty) {
+      componentColor = PartOfSpeechColors.getColor(part.partOfSpeech, context);
+    }
+    else if (part.grammarFunction != null) {
+      componentColor = PartOfSpeechColors.getColor(part.grammarFunction, context);
+    }
     // Legacy fallback
     else if (widget.colorCoding != null && part.grammarFunction != null && 
              widget.colorCoding!.containsKey(part.grammarFunction)) {
       componentColor = HexColor.fromHex(widget.colorCoding![part.grammarFunction]!);
+    }
+    else {
+      // Final fallback - default teal
+      componentColor = PartOfSpeechColors.getDefaultColor(context);
     }
     
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: componentColor.withOpacity(0.05),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? componentColor.withOpacity(0.2)
+            : componentColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: componentColor.withOpacity(0.3),
+          color: componentColor.withOpacity(0.4),
           width: 1,
         ),
       ),
@@ -217,13 +265,13 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   part.partOfSpeech,
                   style: TextStyle(
-                    color: Colors.grey.shade700,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 12,
                   ),
                 ),
@@ -238,19 +286,20 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Chinese Character',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       part.text,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                   ],
@@ -260,19 +309,19 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Pinyin',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       part.pinyin,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
-                        color: AppTheme.pinyinColor,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -285,16 +334,16 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Meaning',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppTheme.textSecondary,
+                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                   ),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.menu_book, size: 16),
-                  label: const Text('Dictionary', style: TextStyle(fontSize: 12)),
+                  label: Text('Dictionary', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
                   onPressed: () {
                     DictionaryUtils.findAndShowDictionaryEntry(context, part);
                   },
@@ -309,34 +358,34 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
             const SizedBox(height: 4),
             Text(
               part.meaning!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 12),
           ],
           if (part.grammarFunction != null) ...[
-            const Text(
+            Text(
               'Grammatical Function',
               style: TextStyle(
                 fontSize: 12,
-                color: AppTheme.textSecondary,
+                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               _getFunctionDescription(part.grammarFunction!),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
           ],
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            icon: const Icon(Icons.menu_book),
-            label: const Text('Open in Dictionary'),
+            icon: Icon(Icons.menu_book, color: componentColor),
+            label: Text('Open in Dictionary', style: TextStyle(color: componentColor)),
             onPressed: () {
               DictionaryUtils.findAndShowDictionaryEntry(context, part);
             },

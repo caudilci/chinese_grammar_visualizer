@@ -44,7 +44,7 @@ class DictionarySearchResult extends StatelessWidget {
           TextSpan(
             text: text.substring(startIndex, endIndex),
             style: style.copyWith(
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -63,17 +63,17 @@ class DictionarySearchResult extends StatelessWidget {
     if (query.isEmpty || !PinyinUtils.isPotentialPinyin(query)) {
       return Text(
         PinyinUtils.toDiacriticPinyin(originalPinyin),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16.0,
-          color: Colors.blue,
+          color: Theme.of(context).colorScheme.primary,
         ),
       );
     }
     
     final formattedPinyin = PinyinUtils.toDiacriticPinyin(originalPinyin);
-    final baseStyle = const TextStyle(
+    final baseStyle = TextStyle(
       fontSize: 16.0,
-      color: Colors.blue,
+      color: Theme.of(context).colorScheme.primary,
     );
     
     // Check if we need to use plain pinyin (without tones) for matching
@@ -86,7 +86,7 @@ class DictionarySearchResult extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.08),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
           borderRadius: BorderRadius.circular(4.0),
         ),
         child: Text(
@@ -125,7 +125,7 @@ class DictionarySearchResult extends StatelessWidget {
             TextSpan(
               text: matchPart,
               style: baseStyle.copyWith(
-                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -200,15 +200,17 @@ class DictionarySearchResult extends StatelessWidget {
                   if (entry.traditional != entry.simplified)
                     Text(
                       '(${entry.traditional})',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16.0,
-                        color: Colors.grey,
+                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                       ),
                     ),
                   const Spacer(),
                   Icon(
                     Icons.chevron_right,
-                    color: Colors.grey[400],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[500]
+                        : Colors.grey[400],
                   ),
                 ],
               ),
@@ -223,9 +225,9 @@ class DictionarySearchResult extends StatelessWidget {
                 )
               : Text(
                   formattedPinyin,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16.0,
-                    color: Colors.blue,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               const SizedBox(height: 4.0),
@@ -236,17 +238,17 @@ class DictionarySearchResult extends StatelessWidget {
               ? _highlightText(
                   definitionPreview,
                   searchQuery,
-                  const TextStyle(
+                  TextStyle(
                     fontSize: 14.0,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                   context,
                 )
               : Text(
                   definitionPreview,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14.0,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
