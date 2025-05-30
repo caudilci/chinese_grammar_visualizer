@@ -28,6 +28,10 @@ class AppBottomNav extends StatelessWidget {
           icon: Icon(Icons.book),
           label: 'Dictionary',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.bookmark),
+          label: 'Word Lists',
+        ),
       ],
     );
   }

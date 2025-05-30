@@ -1,0 +1,437 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/dictionary_entry.dart';
+import '../models/word_list.dart';
+import '../providers/word_list_provider.dart';
+import '../utils/pinyin_utils.dart';
+
+class WordListsScreen extends StatefulWidget {
+  const WordListsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<WordListsScreen> createState() => _WordListsScreenState();
+}
+
+class _WordListsScreenState extends State<WordListsScreen> {
+  final TextEditingController _newListController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WordListProvider>(context, listen: false).initialize();
+    });
+  }
+
+  @override
+  void dispose() {
+    _newListController.dispose();
+    super.dispose();
+  }
+
+  void _showCreateListDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Create New Word List'),
+        content: TextField(
+          controller: _newListController,
+          decoration: const InputDecoration(
+            labelText: 'List Name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _newListController.clear();
+            },
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              final name = _newListController.text.trim();
+              if (name.isNotEmpty) {
+                Provider.of<WordListProvider>(context, listen: false)
+                    .createWordList(name);
+                Navigator.of(ctx).pop();
+                _newListController.clear();
+              }
+            },
+            child: const Text('CREATE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRenameListDialog(WordList wordList) {
+    final TextEditingController controller = TextEditingController(text: wordList.name);
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Rename Word List'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'New Name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              final name = controller.text.trim();
+              if (name.isNotEmpty && name != wordList.name) {
+                Provider.of<WordListProvider>(context, listen: false)
+                    .renameWordList(wordList.id, name);
+              }
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('RENAME'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(WordList wordList) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Word List'),
+        content: Text(
+          'Are you sure you want to delete "${wordList.name}"? '
+          'This will remove the list but not the dictionary entries themselves.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () {
+              Provider.of<WordListProvider>(context, listen: false)
+                  .deleteWordList(wordList.id);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWordListDetails(WordList wordList) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => WordListDetailScreen(wordList: wordList),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Word Lists'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Create new list',
+            onPressed: _showCreateListDialog,
+          ),
+        ],
+      ),
+      body: Consumer<WordListProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (provider.wordLists.isEmpty) {
+            return const Center(
+              child: Text('No word lists found. Create your first list!'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: provider.wordLists.length,
+            itemBuilder: (context, index) {
+              final wordList = provider.wordLists[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text(
+                    wordList.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${wordList.entries.length} words'),
+                  leading: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      wordList.name.substring(0, 1).toUpperCase(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  trailing: wordList.id == 'uncategorized'
+                      ? null
+                      : PopupMenuButton(
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'rename',
+                              child: Text('Rename'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                          onSelected: (value) {
+                            if (value == 'rename') {
+                              _showRenameListDialog(wordList);
+                            } else if (value == 'delete') {
+                              _showDeleteConfirmation(wordList);
+                            }
+                          },
+                        ),
+                  onTap: () => _showWordListDetails(wordList),
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateListDialog,
+        tooltip: 'Create new list',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class WordListDetailScreen extends StatelessWidget {
+  final WordList wordList;
+
+  const WordListDetailScreen({Key? key, required this.wordList}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(wordList.name),
+      ),
+      body: Consumer<WordListProvider>(
+        builder: (context, provider, child) {
+          if (wordList.entries.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.book_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No words in this list yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Add words from the dictionary',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: wordList.entries.length,
+            itemBuilder: (context, index) {
+              final entry = wordList.entries[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                    entry.simplified,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        PinyinUtils.toDiacriticPinyin(entry.pinyin),
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        entry.definitions.first,
+                        style: const TextStyle(fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: () {
+                      _showRemoveConfirmation(context, entry);
+                    },
+                  ),
+                  onTap: () {
+                    _showEntryDetails(context, entry);
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _showRemoveConfirmation(BuildContext context, DictionaryEntry entry) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove from List'),
+        content: Text(
+          'Remove "${entry.simplified}" from this list? '
+          'This will not delete the dictionary entry itself.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () {
+              Provider.of<WordListProvider>(context, listen: false)
+                  .removeEntryFromList(wordList.id, entry);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('REMOVE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEntryDetails(BuildContext context, DictionaryEntry entry) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (_, controller) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: ListView(
+              controller: controller,
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 16),
+                  ),
+                ),
+                Text(
+                  entry.simplified,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (entry.traditional != entry.simplified)
+                  Text(
+                    '(${entry.traditional})',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                Text(
+                  PinyinUtils.toDiacriticPinyin(entry.pinyin),
+                  style: const TextStyle(fontSize: 20, color: Colors.blue),
+                ),
+                const Divider(height: 32),
+                const Text(
+                  'Definitions:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...entry.definitions.map(
+                  (definition) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      '• $definition',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

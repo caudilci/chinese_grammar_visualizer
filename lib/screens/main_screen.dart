@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/dictionary_provider.dart';
 import '../providers/grammar_provider.dart';
+import '../providers/word_list_provider.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'dictionary_screen.dart';
 import 'home_screen.dart';
+import 'word_lists_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const DictionaryScreen(),
+    const WordListsScreen(),
   ];
 
   @override
@@ -48,6 +51,9 @@ class _MainScreenState extends State<MainScreen> {
     } else if (index == 1) {
       // Dictionary screen
       Provider.of<DictionaryProvider>(context, listen: false).loadDictionary();
+    } else if (index == 2) {
+      // Word Lists screen
+      Provider.of<WordListProvider>(context, listen: false).initialize();
     }
   }
 

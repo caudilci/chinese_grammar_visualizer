@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
+import '../providers/word_list_provider.dart';
 import '../services/search_isolate.dart';
 import '../utils/pinyin_utils.dart';
 import '../widgets/dictionary_search_result.dart';
+import '../widgets/word_list_selector.dart';
+import 'word_lists_screen.dart';
 
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({Key? key}) : super(key: key);
@@ -25,6 +28,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Load dictionary data on first build
       Provider.of<DictionaryProvider>(context, listen: false).loadDictionary();
+      // Initialize word list provider
+      Provider.of<WordListProvider>(context, listen: false).initialize();
     });
   }
 
@@ -39,7 +44,22 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chinese Dictionary')),
+      appBar: AppBar(
+        title: const Text('Chinese Dictionary'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            tooltip: 'Word Lists',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const WordListsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -339,6 +359,11 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   void _showEntryDetails(BuildContext context, DictionaryEntry entry) {
+    // Initialize the word list provider if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WordListProvider>(context, listen: false).initialize();
+    });
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -366,54 +391,82 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                 ),
               ],
             ),
-            child: ListView(
-              controller: controller,
-              padding: const EdgeInsets.all(16.0),
+            child: Column(
               children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                  ),
-                ),
-                Text(
-                  entry.simplified,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (entry.traditional != entry.simplified)
-                  Text(
-                    '(${entry.traditional})',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                Text(
-                  PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                  style: const TextStyle(fontSize: 20, color: Colors.blue),
-                ),
-                const Divider(height: 32),
-                const Text(
-                  'Definitions:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...entry.definitions.map(
-                  (definition) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      '• $definition',
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                Expanded(
+                  child: ListView(
+                    controller: controller,
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          margin: const EdgeInsets.only(bottom: 16),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  entry.simplified,
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (entry.traditional != entry.simplified)
+                                  Text(
+                                    '(${entry.traditional})',
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.playlist_add),
+                            label: const Text('Add to List'),
+                            onPressed: () {
+                              _showWordListSelection(context, entry);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        PinyinUtils.toDiacriticPinyin(entry.pinyin),
+                        style: const TextStyle(fontSize: 20, color: Colors.blue),
+                      ),
+                      const Divider(height: 32),
+                      const Text(
+                        'Definitions:',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      ...entry.definitions.map(
+                        (definition) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Text(
+                            '• $definition',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildWordListChips(context, entry),
+                    ],
                   ),
                 ),
               ],
@@ -421,6 +474,66 @@ class DictionaryScreenState extends State<DictionaryScreen> {
           );
         },
       ),
+    );
+  }
+  
+  Widget _buildWordListChips(BuildContext context, DictionaryEntry entry) {
+    return Consumer<WordListProvider>(
+      builder: (context, provider, child) {
+        final containingLists = provider.getListsContainingEntry(entry);
+        
+        if (!provider.isInitialized) {
+          provider.initialize();
+          return const SizedBox.shrink();
+        }
+        
+        if (containingLists.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'In Word Lists:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: containingLists.map((list) {
+                return Chip(
+                  label: Text(list.name),
+                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  deleteIcon: const Icon(Icons.close, size: 18),
+                  onDeleted: () {
+                    provider.removeEntryFromList(list.id, entry);
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  void _showWordListSelection(BuildContext context, DictionaryEntry entry) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          child: WordListSelector(entry: entry),
+        );
+      },
     );
   }
 
