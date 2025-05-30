@@ -10,50 +10,66 @@ import 'package:provider/provider.dart';
 class DictionaryUtils {
   /// Find dictionary entries for a given SentencePart
   static void findAndShowDictionaryEntry(
-    BuildContext context, 
+    BuildContext context,
     SentencePart part,
   ) {
-    final dictionaryProvider = Provider.of<DictionaryProvider>(context, listen: false);
-    
+    final dictionaryProvider = Provider.of<DictionaryProvider>(
+      context,
+      listen: false,
+    );
+
     // Debug information
     print('Finding dictionary entry for:');
     print('Character: "${part.text}"');
     print('Pinyin: "${part.pinyin}"');
-    
+
     // Always do exact tone matching for examples
     List<DictionaryEntry> entries;
-    
+
     // First get all character matches
-    entries = dictionaryProvider.getDictionaryEntriesForWord(part.text, searchWithNormalization: false);
-    
+    entries = dictionaryProvider.getDictionaryEntriesForWord(
+      part.text,
+      searchWithNormalization: false,
+    );
+
     // Filter for exact numerical pinyin match
     if (entries.isNotEmpty && part.pinyin.isNotEmpty) {
-      final String expectedNumericalPinyin = PinyinUtils.toNumericalPinyin(part.pinyin);
-      print('Looking for exact tone match: $expectedNumericalPinyin for ${part.text}');
-      
+      final String expectedNumericalPinyin = PinyinUtils.toNumericalPinyin(
+        part.pinyin,
+      );
+      print(
+        'Looking for exact tone match: $expectedNumericalPinyin for ${part.text}',
+      );
+
       final exactMatches = entries.where((entry) {
-        final entryNumericalPinyin = PinyinUtils.toNumericalPinyin(entry.pinyin);
+        final entryNumericalPinyin = PinyinUtils.toNumericalPinyin(
+          entry.pinyin,
+        );
         final isMatch = entryNumericalPinyin == expectedNumericalPinyin;
-        print('  Comparing: [${entry.pinyin}] -> $entryNumericalPinyin - Match: $isMatch');
+        print(
+          '  Comparing: [${entry.pinyin}] -> $entryNumericalPinyin - Match: $isMatch',
+        );
         return isMatch;
       }).toList();
-      
+
       if (exactMatches.isNotEmpty) {
         print('Found ${exactMatches.length} exact tone matches');
         entries = exactMatches;
       }
     }
-    
+
     // Print the results for debugging
     if (entries.isNotEmpty) {
       print('Found ${entries.length} entries:');
       for (var i = 0; i < entries.length; i++) {
-        print('Entry $i: ${entries[i].simplified} [${entries[i].pinyin}] - ${entries[i].definitions.join('; ')}');
+        print(
+          'Entry $i: ${entries[i].simplified} [${entries[i].pinyin}] - ${entries[i].definitions.join('; ')}',
+        );
       }
     } else {
       print('No entries found');
     }
-    
+
     if (entries.isEmpty) {
       // Show message if no entries found
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,40 +80,33 @@ class DictionaryUtils {
       );
       return;
     }
-    
+
     // The entries are already sorted by pinyin match relevance by getDictionaryEntriesForWord
-    
+
     // Select the first entry (most relevant)
     dictionaryProvider.selectEntry(entries.first);
-    
+
     // Special debug for shang case
     if (part.text == '上') {
-      print('SHANG DEBUG: Selected entry: ${entries.first.simplified} [${entries.first.pinyin}]');
+      print(
+        'SHANG DEBUG: Selected entry: ${entries.first.simplified} [${entries.first.pinyin}]',
+      );
     }
-    
+
     // Show dictionary entry details
     _showDictionaryEntryDetails(context, entries.first);
   }
-  
-  /// Get simplified numerical version of pinyin for comparison
-  /// Normalizes spacing and removes any extra characters
-  static String _getNormalizedNumericalPinyin(String pinyin) {
-    // Convert to numerical format
-    String numerical = PinyinUtils.toNumericalPinyin(pinyin);
-    
-    // Normalize spacing and trim
-    numerical = numerical.trim().replaceAll(RegExp(r'\s+'), ' ');
-    
-    return numerical;
-  }
-  
+
   /// Shows the dictionary entry details in a modal bottom sheet
-  static void _showDictionaryEntryDetails(BuildContext context, DictionaryEntry entry) {
+  static void _showDictionaryEntryDetails(
+    BuildContext context,
+    DictionaryEntry entry,
+  ) {
     // Initialize the word list provider if needed
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<WordListProvider>(context, listen: false).initialize();
     });
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -181,12 +190,18 @@ class DictionaryUtils {
                       const SizedBox(height: 8),
                       Text(
                         PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: const TextStyle(fontSize: 20, color: Colors.blue),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.blue,
+                        ),
                       ),
                       const Divider(height: 32),
                       const Text(
                         'Definitions:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       ...entry.definitions.map(
@@ -210,9 +225,12 @@ class DictionaryUtils {
       ),
     );
   }
-  
+
   /// Show word list selection dialog
-  static void _showWordListSelection(BuildContext context, DictionaryEntry entry) {
+  static void _showWordListSelection(
+    BuildContext context,
+    DictionaryEntry entry,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -230,22 +248,25 @@ class DictionaryUtils {
       },
     );
   }
-  
+
   /// Build word list chips showing which lists this entry belongs to
-  static Widget _buildWordListChips(BuildContext context, DictionaryEntry entry) {
+  static Widget _buildWordListChips(
+    BuildContext context,
+    DictionaryEntry entry,
+  ) {
     return Consumer<WordListProvider>(
       builder: (context, provider, child) {
         final containingLists = provider.getListsContainingEntry(entry);
-        
+
         if (!provider.isInitialized) {
           provider.initialize();
           return const SizedBox.shrink();
         }
-        
+
         if (containingLists.isEmpty) {
           return const SizedBox.shrink();
         }
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -259,7 +280,9 @@ class DictionaryUtils {
               children: containingLists.map((list) {
                 return Chip(
                   label: Text(list.name),
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).primaryColor.withOpacity(0.1),
                   deleteIcon: const Icon(Icons.close, size: 18),
                   onDeleted: () {
                     provider.removeEntryFromList(list.id, entry);

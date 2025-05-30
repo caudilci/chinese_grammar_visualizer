@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/grammar_pattern.dart';
 import '../models/practice_item.dart';
 import '../providers/practice_provider.dart';
 import '../utils/app_theme.dart';
@@ -9,10 +8,8 @@ import '../utils/pinyin_utils.dart';
 class PracticeScreen extends StatefulWidget {
   final String grammarPatternId;
 
-  const PracticeScreen({
-    Key? key,
-    required this.grammarPatternId,
-  }) : super(key: key);
+  const PracticeScreen({Key? key, required this.grammarPatternId})
+    : super(key: key);
 
   @override
   _PracticeScreenState createState() => _PracticeScreenState();
@@ -20,14 +17,16 @@ class PracticeScreen extends StatefulWidget {
 
 class _PracticeScreenState extends State<PracticeScreen> {
   bool _showInstructions = true;
-  
+
   @override
   void initState() {
     super.initState();
     // Initialize practice session
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PracticeProvider>(context, listen: false)
-          .startPracticeForGrammarPattern(widget.grammarPatternId);
+      Provider.of<PracticeProvider>(
+        context,
+        listen: false,
+      ).startPracticeForGrammarPattern(widget.grammarPatternId);
     });
   }
 
@@ -37,18 +36,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
       builder: (context, provider, child) {
         if (provider.isLoading) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
         if (!provider.hasActiveSession) {
           return Scaffold(
             appBar: AppBar(title: const Text('Practice')),
-            body: const Center(
-              child: Text('No active practice session.'),
-            ),
+            body: const Center(child: Text('No active practice session.')),
           );
         }
 
@@ -74,9 +69,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 _buildProgressIndicator(session),
                 if (_showInstructions) _buildInstructions(),
                 _buildEnglishTranslation(currentItem),
-                Expanded(
-                  child: _buildSentenceArea(provider),
-                ),
+                Expanded(child: _buildSentenceArea(provider)),
                 _buildActionButtons(provider),
                 _buildWordBank(provider),
               ],
@@ -86,15 +79,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
       },
     );
   }
-  
+
   // New method to wrap the slot area in a scrollable container
   Widget _buildSentenceArea(PracticeProvider provider) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Center(
-        child: SingleChildScrollView(
-          child: _buildSlotArea(provider),
-        ),
+        child: SingleChildScrollView(child: _buildSlotArea(provider)),
       ),
     );
   }
@@ -169,10 +160,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
         children: [
           const Text(
             'English Translation:',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
           ),
           const SizedBox(height: 8),
           Container(
@@ -196,7 +184,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Widget _buildSlotArea(PracticeProvider provider) {
     final currentArrangement = provider.currentArrangement;
     final isSubmitted = provider.isSubmitted;
-    
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -219,7 +207,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           // Check if this slot has a word
           final word = currentArrangement[index];
           final bool isCorrectPosition = provider.isSlotCorrect(index);
-          
+
           return DragTarget<PracticeWordItem>(
             builder: (context, candidateData, rejectedData) {
               return Container(
@@ -229,29 +217,24 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   color: word == null
                       ? Colors.grey[100]
                       : isSubmitted
-                          ? isCorrectPosition
-                              ? Colors.green[50]
-                              : Colors.red[50]
-                          : Colors.blue[50],
+                      ? isCorrectPosition
+                            ? Colors.green[50]
+                            : Colors.red[50]
+                      : Colors.blue[50],
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(
                     color: word == null
                         ? Colors.grey[300]!
                         : isSubmitted
-                            ? isCorrectPosition
-                                ? Colors.green
-                                : Colors.red
-                            : Colors.blue,
+                        ? isCorrectPosition
+                              ? Colors.green
+                              : Colors.red
+                        : Colors.blue,
                     width: 2.0,
                   ),
                 ),
                 child: word == null
-                    ? const Center(
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.grey,
-                        ),
-                      )
+                    ? const Center(child: Icon(Icons.add, color: Colors.grey))
                     : Stack(
                         children: [
                           Center(
@@ -313,7 +296,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   Widget _buildWordBank(PracticeProvider provider) {
     final shuffledWords = provider.shuffledWords;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
@@ -334,10 +317,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
         children: [
           const Text(
             'Word Bank:',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
           ),
           const SizedBox(height: 12),
           SingleChildScrollView(
@@ -358,7 +338,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                   );
                 }
-                
+
                 return Draggable<PracticeWordItem>(
                   data: word,
                   feedback: Container(
@@ -447,7 +427,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final isSubmitted = provider.isSubmitted;
     final isCorrect = provider.isCorrect;
     final canSubmit = provider.areAllSlotsFilled && !isSubmitted;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -485,7 +465,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ],
               ),
             ),
-          
+
           // Main action buttons
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -494,7 +474,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               children: [
                 if (!isSubmitted)
                   ElevatedButton(
-                    onPressed: canSubmit ? () => provider.submitArrangement() : null,
+                    onPressed: canSubmit
+                        ? () => provider.submitArrangement()
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       padding: const EdgeInsets.symmetric(
@@ -516,9 +498,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: const Text('Try Again'),
                   ),
-                
+
                 const SizedBox(width: 8),
-                
+
                 if (isSubmitted && !isCorrect)
                   ElevatedButton(
                     onPressed: () => provider.showSolution(),
@@ -531,7 +513,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: const Text('Show Solution'),
                   ),
-                
+
                 if (isSubmitted && isCorrect)
                   ElevatedButton(
                     onPressed: () => provider.moveToNextItem(),
@@ -544,22 +526,25 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: const Text('Next'),
                   ),
-                  
+
                 const SizedBox(width: 16),
-                
+
                 // Navigation buttons
                 if (provider.activeSession!.currentItemIndex > 0)
                   TextButton.icon(
                     icon: const Icon(Icons.arrow_back, size: 16),
-                    label: const Text('Previous', style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      'Previous',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     onPressed: () => provider.moveToPreviousItem(),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     ),
                   ),
-                  
-                if (provider.activeSession!.currentItemIndex < 
-                       provider.activeSession!.items.length - 1)
+
+                if (provider.activeSession!.currentItemIndex <
+                    provider.activeSession!.items.length - 1)
                   TextButton.icon(
                     icon: const Icon(Icons.arrow_forward, size: 16),
                     label: const Text('Skip', style: TextStyle(fontSize: 12)),
@@ -571,7 +556,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ],
             ),
           ),
-          
+
           // If instructions are hidden, show a button to display them again
           if (!_showInstructions)
             TextButton(
@@ -587,7 +572,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
     );
   }
 
-  Future<void> _showEndSessionDialog(BuildContext context, PracticeProvider provider) async {
+  Future<void> _showEndSessionDialog(
+    BuildContext context,
+    PracticeProvider provider,
+  ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
