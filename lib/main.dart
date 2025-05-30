@@ -4,6 +4,7 @@ import 'providers/grammar_provider.dart';
 import 'providers/dictionary_provider.dart';
 import 'providers/practice_provider.dart';
 import 'providers/word_list_provider.dart';
+import 'providers/flash_card_provider.dart';
 import 'screens/main_screen.dart';
 import 'utils/app_theme.dart';
 
@@ -15,6 +16,11 @@ void main() {
         ChangeNotifierProvider(create: (context) => DictionaryProvider()),
         ChangeNotifierProvider(create: (context) => PracticeProvider()),
         ChangeNotifierProvider(create: (context) => WordListProvider()),
+        ChangeNotifierProvider<FlashCardProvider>(
+          create: (context) => FlashCardProvider(
+            Provider.of<WordListProvider>(context, listen: false),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),

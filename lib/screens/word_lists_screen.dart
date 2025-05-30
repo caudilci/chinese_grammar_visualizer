@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/dictionary_entry.dart';
 import '../models/word_list.dart';
+import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
 import '../utils/pinyin_utils.dart';
+import 'flash_card_review_screen.dart';
+import 'flash_card_setup_screen.dart';
 
 class WordListsScreen extends StatefulWidget {
   const WordListsScreen({Key? key}) : super(key: key);
@@ -20,6 +23,7 @@ class _WordListsScreenState extends State<WordListsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<WordListProvider>(context, listen: false).initialize();
+      Provider.of<FlashCardProvider>(context, listen: false).initialize();
     });
   }
 
@@ -141,6 +145,65 @@ class _WordListsScreenState extends State<WordListsScreen> {
     );
   }
 
+  // Continue an ongoing flash card session
+  void _continueSession() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const FlashCardReviewScreen(),
+      ),
+    );
+  }
+  
+  // Start a new session with a confirmation if needed
+  void _startNewSession() async {
+    final flashCardProvider = Provider.of<FlashCardProvider>(context, listen: false);
+    
+    // Check if there's already an active session
+    if (flashCardProvider.isSessionActive) {
+      bool shouldContinue = await _showSessionOverwriteConfirmation();
+      if (!shouldContinue) {
+        return; // User canceled, do not start a new session
+      }
+      
+      // End the current session before starting a new one
+      flashCardProvider.endSession();
+    }
+    
+    // Navigate to flash card setup screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const FlashCardSetupScreen(),
+      ),
+    );
+  }
+  
+  // Show confirmation dialog when trying to start a new session while one is ongoing
+  Future<bool> _showSessionOverwriteConfirmation() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Session Already in Progress'),
+        content: const Text(
+          'You have an active flash card session. Starting a new session will end the current one.\n\n'
+          'Do you want to continue?'
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Cancel
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // Proceed
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('END CURRENT & START NEW'),
+          ),
+        ],
+      ),
+    ) ?? false; // Default to false if dialog is dismissed
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,74 +217,208 @@ class _WordListsScreenState extends State<WordListsScreen> {
           ),
         ],
       ),
-      body: Consumer<WordListProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
+      body: Consumer2<WordListProvider, FlashCardProvider>(
+        builder: (context, wordListProvider, flashCardProvider, child) {
+          if (wordListProvider.isLoading || flashCardProvider.isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (provider.wordLists.isEmpty) {
-            return const Center(
-              child: Text('No word lists found. Create your first list!'),
+          // Check if there's an active session to continue
+          final hasActiveSession = flashCardProvider.isSessionActive;
+
+          if (wordListProvider.wordLists.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (hasActiveSession) ...[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Card(
+                        color: Colors.green.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.play_circle_filled, color: Colors.green),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Active Session Available',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green.shade800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton(
+                                onPressed: _continueSession,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('Continue Session'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                  const Text('No word lists found. Create your first list!'),
+                ],
+              ),
             );
           }
 
-          return ListView.builder(
-            itemCount: provider.wordLists.length,
-            itemBuilder: (context, index) {
-              final wordList = provider.wordLists[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  title: Text(
-                    wordList.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${wordList.entries.length} words'),
-                  leading: CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      wordList.name.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(color: Colors.white),
+          return Column(
+            children: [
+              // Show continue session banner if there's an active session
+              if (hasActiveSession)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Card(
+                    color: Colors.green.shade50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.play_circle_filled, color: Colors.green),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Active Flash Card Session',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'You have an unfinished flash card session. Would you like to continue where you left off?',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _continueSession,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: const Text('Continue Session'),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                onPressed: _startNewSession,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('New Session'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  trailing: wordList.id == 'uncategorized'
-                      ? null
-                      : PopupMenuButton(
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: 'rename',
-                              child: Text('Rename'),
-                            ),
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          ],
-                          onSelected: (value) {
-                            if (value == 'rename') {
-                              _showRenameListDialog(wordList);
-                            } else if (value == 'delete') {
-                              _showDeleteConfirmation(wordList);
-                            }
-                          },
-                        ),
-                  onTap: () => _showWordListDetails(wordList),
                 ),
-              );
-            },
+              
+              // Word lists
+              Expanded(
+                child: ListView.builder(
+                  itemCount: wordListProvider.wordLists.length,
+                  itemBuilder: (context, index) {
+                    final wordList = wordListProvider.wordLists[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        title: Text(
+                          wordList.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text('${wordList.entries.length} words'),
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Text(
+                            wordList.name.substring(0, 1).toUpperCase(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        trailing: wordList.id == 'uncategorized'
+                            ? null
+                            : PopupMenuButton(
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'rename',
+                                    child: Text('Rename'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                                onSelected: (value) {
+                                  if (value == 'rename') {
+                                    _showRenameListDialog(wordList);
+                                  } else if (value == 'delete') {
+                                    _showDeleteConfirmation(wordList);
+                                  }
+                                },
+                              ),
+                        onTap: () => _showWordListDetails(wordList),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateListDialog,
-        tooltip: 'Create new list',
-        child: const Icon(Icons.add),
+      floatingActionButton: Consumer<FlashCardProvider>(
+        builder: (context, flashCardProvider, _) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!flashCardProvider.isSessionActive)
+                FloatingActionButton(
+                  heroTag: 'startFlashCardsFAB',
+                  onPressed: _startNewSession,
+                  tooltip: 'Start flash cards',
+                  backgroundColor: Colors.orange,
+                  mini: true,
+                  child: const Icon(Icons.school),
+                ),
+              const SizedBox(height: 8),
+              FloatingActionButton(
+                heroTag: 'createListFAB',
+                onPressed: _showCreateListDialog,
+                tooltip: 'Create new list',
+                child: const Icon(Icons.add),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

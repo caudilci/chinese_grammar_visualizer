@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/dictionary_provider.dart';
+import '../providers/flash_card_provider.dart';
 import '../providers/grammar_provider.dart';
 import '../providers/word_list_provider.dart';
 import '../widgets/app_bottom_nav.dart';
 import 'dictionary_screen.dart';
+import 'flash_card_setup_screen.dart';
 import 'home_screen.dart';
 import 'word_lists_screen.dart';
 
@@ -21,6 +23,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const DictionaryScreen(),
     const WordListsScreen(),
+    const FlashCardSetupScreen(),
   ];
 
   @override
@@ -54,6 +57,10 @@ class _MainScreenState extends State<MainScreen> {
     } else if (index == 2) {
       // Word Lists screen
       Provider.of<WordListProvider>(context, listen: false).initialize();
+    } else if (index == 3) {
+      // Flash Cards screen
+      Provider.of<WordListProvider>(context, listen: false).initialize();
+      Provider.of<FlashCardProvider>(context, listen: false).initialize();
     }
   }
 
