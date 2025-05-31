@@ -40,58 +40,6 @@ class CatppuccinTheme {
   static const Color latteMantle = Color(0xFFE6E9EF);
   static const Color latteCrust = Color(0xFFDCE0E8);
 
-  // Frappe (Medium Dark) palette
-  static const Color frappeRosewater = Color(0xFFF2D5CF);
-  static const Color frappeRed = Color(0xFFE78284);
-  static const Color frappeMaroon = Color(0xFFEA999C);
-  static const Color frappePeach = Color(0xFFEF9F76);
-  static const Color frappeYellow = Color(0xFFE5C890);
-  static const Color frappeGreen = Color(0xFFA6D189);
-  static const Color frappeTeal = Color(0xFF81C8BE);
-  static const Color frappeSky = Color(0xFF99D1DB);
-  static const Color frappeBlue = Color(0xFF8CAAEE);
-  static const Color frappeLavender = Color(0xFFBBBBFF);
-  static const Color frappeMauve = Color(0xFFCA9EE6);
-  static const Color frappePink = Color(0xFFF4B8E4);
-  static const Color frappeText = Color(0xFFC6D0F5);
-  static const Color frappeSubtext1 = Color(0xFFB5BFE2);
-  static const Color frappeSubtext0 = Color(0xFFA5ADCE);
-  static const Color frappeOverlay2 = Color(0xFF949CBB);
-  static const Color frappeOverlay1 = Color(0xFF838BA7);
-  static const Color frappeOverlay0 = Color(0xFF737994);
-  static const Color frappeSurface2 = Color(0xFF626880);
-  static const Color frappeSurface1 = Color(0xFF51576D);
-  static const Color frappeSurface0 = Color(0xFF414559);
-  static const Color frappeBase = Color(0xFF303446);
-  static const Color frappeMantle = Color(0xFF292C3C);
-  static const Color frappeCrust = Color(0xFF232634);
-
-  // Macchiato (Dark) palette
-  static const Color macchiatoRosewater = Color(0xFFF4DBD6);
-  static const Color macchiatoRed = Color(0xFFED8796);
-  static const Color macchiatoMaroon = Color(0xFFEE99A0);
-  static const Color macchiatoPeach = Color(0xFFF5A97F);
-  static const Color macchiatoYellow = Color(0xFFEED49F);
-  static const Color macchiatoGreen = Color(0xFFA6DA95);
-  static const Color macchiatoTeal = Color(0xFF8BD5CA);
-  static const Color macchiatoSky = Color(0xFF91D7E3);
-  static const Color macchiatoBlue = Color(0xFF8AADF4);
-  static const Color macchiatoLavender = Color(0xFFB7BDF8);
-  static const Color macchiatoMauve = Color(0xFFC6A0F6);
-  static const Color macchiatoPink = Color(0xFFF5BDE6);
-  static const Color macchiatoText = Color(0xFFCAD3F5);
-  static const Color macchiatoSubtext1 = Color(0xFFB8C0E0);
-  static const Color macchiatoSubtext0 = Color(0xFFA5ADCB);
-  static const Color macchiatoOverlay2 = Color(0xFF939AB7);
-  static const Color macchiatoOverlay1 = Color(0xFF8087A2);
-  static const Color macchiatoOverlay0 = Color(0xFF6E738D);
-  static const Color macchiatoSurface2 = Color(0xFF5B6078);
-  static const Color macchiatoSurface1 = Color(0xFF494D64);
-  static const Color macchiatoSurface0 = Color(0xFF363A4F);
-  static const Color macchiatoBase = Color(0xFF24273A);
-  static const Color macchiatoMantle = Color(0xFF1E2030);
-  static const Color macchiatoCrust = Color(0xFF181926);
-
   // Mocha (Darker) palette
   static const Color mochaRosewater = Color(0xFFF5E0DC);
   static const Color mochaRed = Color(0xFFF38BA8);
@@ -186,9 +134,9 @@ class CatppuccinTheme {
   }) {
     final ColorScheme colorScheme = ColorScheme(
       primary: primary,
-      primaryContainer: primary.withOpacity(0.8),
+      primaryContainer: primary.withValues(alpha: 0.8),
       secondary: secondary,
-      secondaryContainer: secondary.withOpacity(0.8),
+      secondaryContainer: secondary.withValues(alpha: 0.8),
       surface: surface,
       background: background,
       error: error,
@@ -238,50 +186,31 @@ class CatppuccinTheme {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        iconTheme: IconThemeData(
-          color: onPrimary,
-        ),
-        actionsIconTheme: IconThemeData(
-          color: onPrimary,
-        ),
+        iconTheme: IconThemeData(color: onPrimary),
+        actionsIconTheme: IconThemeData(color: onPrimary),
       ),
       // Card theme explicitly set above
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primary,
           side: BorderSide(color: primary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -299,21 +228,25 @@ class CatppuccinTheme {
           horizontal: 16,
           vertical: 16,
         ),
-        labelStyle: TextStyle(color: textColor.withOpacity(0.8)),
-        hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
+        labelStyle: TextStyle(color: textColor.withValues(alpha: 0.8)),
+        hintStyle: TextStyle(color: textColor.withValues(alpha: 0.5)),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
             return primary;
           }
-          return isDark ? onSurface.withOpacity(0.5) : onSurface.withOpacity(0.4);
+          return isDark
+              ? onSurface.withValues(alpha: 0.5)
+              : onSurface.withValues(alpha: 0.4);
         }),
         trackColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
-            return primary.withOpacity(0.5);
+            return primary.withValues(alpha: 0.5);
           }
-          return isDark ? onSurface.withOpacity(0.2) : onSurface.withOpacity(0.2);
+          return isDark
+              ? onSurface.withValues(alpha: 0.2)
+              : onSurface.withValues(alpha: 0.2);
         }),
       ),
       checkboxTheme: CheckboxThemeData(
@@ -324,21 +257,21 @@ class CatppuccinTheme {
           return Colors.transparent;
         }),
         checkColor: MaterialStateProperty.all(onPrimary),
-        side: BorderSide(color: textColor.withOpacity(0.5), width: 1.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        side: BorderSide(color: textColor.withValues(alpha: 0.5), width: 1.5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
       radioTheme: RadioThemeData(
         fillColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
             return primary;
           }
-          return textColor.withOpacity(0.5);
+          return textColor.withValues(alpha: 0.5);
         }),
       ),
       dividerTheme: DividerThemeData(
-        color: isDark ? onSurface.withOpacity(0.2) : onSurface.withOpacity(0.1),
+        color: isDark
+            ? onSurface.withValues(alpha: 0.2)
+            : onSurface.withValues(alpha: 0.1),
         thickness: 1,
       ),
       // Dialog settings in Material 3
@@ -346,16 +279,12 @@ class CatppuccinTheme {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primary,
         foregroundColor: onPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       listTileTheme: ListTileThemeData(
         tileColor: Colors.transparent,
-        selectedTileColor: primary.withOpacity(0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        selectedTileColor: primary.withValues(alpha: 0.1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         textColor: textColor,
         iconColor: primary,
       ),
@@ -363,9 +292,7 @@ class CatppuccinTheme {
         backgroundColor: isDark ? surfaceContainer : surface,
         contentTextStyle: TextStyle(color: textColor),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: isDark ? surfaceContainer : Colors.white,
@@ -380,7 +307,7 @@ class CatppuccinTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isDark ? surface : Colors.white,
-        indicatorColor: primary.withOpacity(0.2),
+        indicatorColor: primary.withValues(alpha: 0.2),
         labelTextStyle: MaterialStateProperty.all(
           TextStyle(color: textColor, fontSize: 12),
         ),
@@ -388,7 +315,7 @@ class CatppuccinTheme {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: isDark ? surface : Colors.white,
         selectedItemColor: primary,
-        unselectedItemColor: textColor.withOpacity(0.6),
+        unselectedItemColor: textColor.withValues(alpha: 0.6),
       ),
       drawerTheme: DrawerThemeData(
         backgroundColor: isDark ? surface : Colors.white,

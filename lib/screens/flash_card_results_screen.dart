@@ -16,12 +16,8 @@ class FlashCardResultsScreen extends StatelessWidget {
 
         if (session == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Session Results'),
-            ),
-            body: const Center(
-              child: Text('No session data available'),
-            ),
+            appBar: AppBar(title: const Text('Session Results')),
+            body: const Center(child: Text('No session data available')),
           );
         }
 
@@ -43,6 +39,8 @@ class FlashCardResultsScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Session Results'),
+            centerTitle: true,
+            titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
             automaticallyImplyLeading: false,
           ),
           body: SingleChildScrollView(
@@ -62,9 +60,11 @@ class FlashCardResultsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          accuracy >= 80 ? '👍 Great Job!' :
-                          accuracy >= 60 ? '👌 Good Effort!' :
-                          '🔄 Keep Practicing!',
+                          accuracy >= 80
+                              ? '👍 Great Job!'
+                              : accuracy >= 60
+                              ? '👌 Good Effort!'
+                              : '🔄 Keep Practicing!',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -99,10 +99,7 @@ class FlashCardResultsScreen extends StatelessWidget {
                 // Session statistics
                 const Text(
                   'Session Statistics',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 _buildStatisticsCard(
@@ -118,10 +115,7 @@ class FlashCardResultsScreen extends StatelessWidget {
                 // Word lists studied
                 const Text(
                   'Word Lists Studied',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 _buildWordListsCard(context, session.wordListIds),
@@ -138,7 +132,8 @@ class FlashCardResultsScreen extends StatelessWidget {
                           provider.resetSession();
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => const FlashCardSetupScreen(),
+                              builder: (context) =>
+                                  const FlashCardSetupScreen(),
                             ),
                           );
                         },
@@ -245,11 +240,7 @@ class FlashCardResultsScreen extends StatelessWidget {
   }) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: iconColor,
-          size: 28,
-        ),
+        Icon(icon, color: iconColor, size: 28),
         const SizedBox(height: 8),
         Text(
           value,
@@ -260,13 +251,7 @@ class FlashCardResultsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
       ],
     );
   }

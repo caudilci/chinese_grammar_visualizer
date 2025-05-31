@@ -48,7 +48,10 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       return;
     }
 
-    final flashCardProvider = Provider.of<FlashCardProvider>(context, listen: false);
+    final flashCardProvider = Provider.of<FlashCardProvider>(
+      context,
+      listen: false,
+    );
 
     // Check if there's already an active session
     if (flashCardProvider.isSessionActive) {
@@ -78,14 +81,14 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
 
     if (success) {
       Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const FlashCardReviewScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const FlashCardReviewScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Failed to start session. Make sure the selected lists contain words.'),
+          content: Text(
+            'Failed to start session. Make sure the selected lists contain words.',
+          ),
           duration: Duration(seconds: 3),
         ),
       );
@@ -95,36 +98,33 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
   // Show confirmation dialog when trying to start a new session while one is ongoing
   Future<bool> _showSessionOverwriteConfirmation() async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Session Already in Progress'),
-        content: const Text(
-          'You have an active flash card session. Starting a new session will end the current one.\n\n'
-          'Do you want to continue?'
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false), // Cancel
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true), // Proceed
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Session Already in Progress'),
+            content: const Text(
+              'You have an active flash card session. Starting a new session will end the current one.\n\n'
+              'Do you want to continue?',
             ),
-            child: const Text('END CURRENT & START NEW'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false), // Cancel
+                child: const Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true), // Proceed
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('END CURRENT & START NEW'),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ?? false; // Default to false if dialog is dismissed
+        ) ??
+        false; // Default to false if dialog is dismissed
   }
 
   // Add method to continue an ongoing session
   void _continueSession() {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const FlashCardReviewScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const FlashCardReviewScreen()),
     );
   }
 
@@ -134,18 +134,15 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       appBar: AppBar(
         title: Text(
           'Flash Cards',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: Consumer2<WordListProvider, FlashCardProvider>(
         builder: (context, wordListProvider, flashCardProvider, child) {
-          if (wordListProvider.isLoading || flashCardProvider.isLoading || _isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+          if (wordListProvider.isLoading ||
+              flashCardProvider.isLoading ||
+              _isLoading) {
+            return const Center(child: CircularProgressIndicator());
           }
 
           // Check if there's an active session to continue
@@ -155,7 +152,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
 
           if (wordLists.isEmpty) {
             return const Center(
-              child: Text('No word lists found. Create some lists in the Word Lists section.'),
+              child: Text(
+                'No word lists found. Create some lists in the Word Lists section.',
+              ),
             );
           }
 
@@ -194,9 +193,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'You have an unfinished flash card session. Would you like to continue where you left off?',
-                            style: TextStyle(
-                              color: Colors.grey.shade700,
-                            ),
+                            style: TextStyle(color: Colors.grey.shade700),
                           ),
                           const SizedBox(height: 16),
                           SizedBox(
@@ -231,17 +228,12 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
 
                 const Text(
                   'Select Word Lists',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Choose one or more lists to study:',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
                 Card(
@@ -249,10 +241,13 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: wordLists.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final wordList = wordLists[index];
-                      final stats = flashCardProvider.getStatsForWordList(wordList.id);
+                      final stats = flashCardProvider.getStatsForWordList(
+                        wordList.id,
+                      );
                       final isSelected = _selectedListIds.contains(wordList.id);
 
                       return CheckboxListTile(
@@ -270,7 +265,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                           child: Text(
                             wordList.name.substring(0, 1).toUpperCase(),
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.grey.shade700,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
                             ),
                           ),
                         ),
@@ -286,10 +283,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                 const SizedBox(height: 24),
                 const Text(
                   'Study Options',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
 
@@ -336,8 +330,12 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                         Text(
                           _isEndless ? 'Endless Mode' : '$_numberOfCards cards',
                           style: TextStyle(
-                            color: _isEndless ? Theme.of(context).primaryColor : Colors.grey.shade700,
-                            fontWeight: _isEndless ? FontWeight.bold : FontWeight.normal,
+                            color: _isEndless
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey.shade700,
+                            fontWeight: _isEndless
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                         if (!_isEndless) ...[
@@ -356,10 +354,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text('5'),
-                              Text('50'),
-                            ],
+                            children: const [Text('5'), Text('50')],
                           ),
                         ],
                       ],
@@ -384,16 +379,19 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: hasActiveSession
-                          ? Colors.orange // Use a different color if there's already an active session
+                          ? Colors
+                                .orange // Use a different color if there's already an active session
                           : Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       // Ensure disabled style is consistent and readable
-                      disabledForegroundColor: Theme.of(context).brightness == Brightness.dark
+                      disabledForegroundColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey[300]
-                          : Colors.white.withOpacity(0.7),
-                      disabledBackgroundColor: Theme.of(context).brightness == Brightness.dark
+                          : Colors.white.withValues(alpha: 0.7),
+                      disabledBackgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey.shade800
                           : Colors.grey.shade400,
                     ),
@@ -401,8 +399,8 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                       _selectedListIds.isEmpty
                           ? 'Select at least one list'
                           : hasActiveSession
-                              ? 'Start New Session'
-                              : 'Start Studying',
+                          ? 'Start New Session'
+                          : 'Start Studying',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -442,10 +440,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
           children: [
             const Text(
               'Session Summary',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -516,10 +511,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           textAlign: TextAlign.center,
         ),
       ],

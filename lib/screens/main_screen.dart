@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/dictionary_provider.dart';
-import '../providers/flash_card_provider.dart';
 import '../providers/grammar_provider.dart';
-import '../providers/word_list_provider.dart';
 import '../widgets/app_drawer.dart';
 import 'dictionary_screen.dart';
 import 'home_screen.dart';
@@ -17,10 +15,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   // Only keep the main screens
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const DictionaryScreen(),
-  ];
+  final List<Widget> _screens = [const HomeScreen(), const DictionaryScreen()];
   int _currentIndex = 0;
 
   @override
@@ -47,7 +42,10 @@ class _MainScreenState extends State<MainScreen> {
     // Load data for the selected screen if needed
     if (index == 0) {
       // Home screen - grammar data
-      Provider.of<GrammarProvider>(context, listen: false).loadGrammarPatterns();
+      Provider.of<GrammarProvider>(
+        context,
+        listen: false,
+      ).loadGrammarPatterns();
     } else if (index == 1) {
       // Dictionary screen
       Provider.of<DictionaryProvider>(context, listen: false).loadDictionary();
@@ -57,27 +55,19 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final String title = _currentIndex == 0 ? 'Grammar' : 'Dictionary';
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           title,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: const AppDrawer(),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onNavigationTap,
@@ -86,10 +76,7 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.format_list_bulleted),
             label: 'Grammar',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Dictionary',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Dictionary'),
         ],
       ),
     );

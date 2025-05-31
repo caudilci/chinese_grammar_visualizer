@@ -72,14 +72,24 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: _searchController,
-        style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Search grammar patterns...',
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
-          prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
+          hintStyle: TextStyle(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.primary),
+                  icon: Icon(
+                    Icons.clear,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     Provider.of<GrammarProvider>(
@@ -113,7 +123,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<String?>(
               decoration: InputDecoration(
                 labelText: 'Category',
-                labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8)),
+                labelStyle: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
+                ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -153,7 +167,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DropdownButtonFormField<int?>(
               decoration: InputDecoration(
                 labelText: 'Difficulty',
-                labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8)),
+                labelStyle: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
+                ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -176,7 +194,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Icon(
                               Icons.star,
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? CatppuccinTheme.mochaPeach
                                   : AppTheme.getDifficultyColor(level),
                               size: 16,
@@ -185,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               'Level $level',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.onBackground,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -226,7 +246,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 'No grammar patterns found',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7)
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ),

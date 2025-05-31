@@ -20,9 +20,7 @@ class PatternCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -40,7 +38,7 @@ class PatternCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -55,7 +53,7 @@ class PatternCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.5,
                 ),
               ),
@@ -64,7 +62,9 @@ class PatternCard extends StatelessWidget {
                 pattern.englishTitle,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -73,7 +73,7 @@ class PatternCard extends StatelessWidget {
                 pattern.description,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -100,7 +100,10 @@ class PatternCard extends StatelessWidget {
                     children: [
                       if (showPracticeButton && pattern.examples.isNotEmpty)
                         IconButton(
-                          icon: Icon(Icons.fitness_center, color: Theme.of(context).colorScheme.primary),
+                          icon: Icon(
+                            Icons.fitness_center,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           tooltip: 'Practice this pattern',
                           onPressed: () {
                             Navigator.push(
@@ -136,10 +139,12 @@ class PatternCard extends StatelessWidget {
           return Icon(
             index < level ? Icons.star : Icons.star_border,
             color: index < level
-                ? Theme.of(context).brightness == Brightness.dark 
-                  ? CatppuccinTheme.mochaPeach 
-                  : AppTheme.getDifficultyColor(level)
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                ? Theme.of(context).brightness == Brightness.dark
+                      ? CatppuccinTheme.mochaPeach
+                      : AppTheme.getDifficultyColor(level)
+                : Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
             size: 16,
           );
         }),
@@ -152,12 +157,14 @@ class PatternCard extends StatelessWidget {
       builder: (context) => Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark 
-              ? Theme.of(context).colorScheme.surfaceContainer 
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.surfaceContainer
               : AppTheme.backgroundColor,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.2),
           ),
         ),
         child: Text(

@@ -10,55 +10,60 @@ class DictionarySearchResult extends StatelessWidget {
   final VoidCallback onTap;
 
   const DictionarySearchResult({
-    Key? key, 
+    Key? key,
     required this.entry,
     required this.onTap,
   }) : super(key: key);
-  
+
   // Helper method to highlight the matched terms
-  Widget _highlightText(String text, String query, TextStyle style, BuildContext context) {
+  Widget _highlightText(
+    String text,
+    String query,
+    TextStyle style,
+    BuildContext context,
+  ) {
     if (query.isEmpty) return Text(text, style: style);
-    
+
     final String normalizedQuery = query.toLowerCase();
     final String normalizedText = text.toLowerCase();
-    
+
     if (!normalizedText.contains(normalizedQuery)) {
       return Text(text, style: style);
     }
-    
+
     final int startIndex = normalizedText.indexOf(normalizedQuery);
     final int endIndex = startIndex + normalizedQuery.length;
-    
+
     // Safety check to ensure we don't go out of bounds
     if (startIndex < 0 || endIndex > text.length) {
       return Text(text, style: style);
     }
-    
+
     return RichText(
       text: TextSpan(
         children: [
-          TextSpan(
-            text: text.substring(0, startIndex),
-            style: style,
-          ),
+          TextSpan(text: text.substring(0, startIndex), style: style),
           TextSpan(
             text: text.substring(startIndex, endIndex),
             style: style.copyWith(
-              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.2),
               fontWeight: FontWeight.bold,
             ),
           ),
-          TextSpan(
-            text: text.substring(endIndex),
-            style: style,
-          ),
+          TextSpan(text: text.substring(endIndex), style: style),
         ],
       ),
     );
   }
-  
+
   // Simplified helper for highlighting pinyin matches
-  Widget _buildPinyinHighlight(String originalPinyin, String query, BuildContext context) {
+  Widget _buildPinyinHighlight(
+    String originalPinyin,
+    String query,
+    BuildContext context,
+  ) {
     // If no query or not a valid pinyin query, just show formatted pinyin
     if (query.isEmpty || !PinyinUtils.isPotentialPinyin(query)) {
       return Text(
@@ -69,55 +74,50 @@ class DictionarySearchResult extends StatelessWidget {
         ),
       );
     }
-    
+
     final formattedPinyin = PinyinUtils.toDiacriticPinyin(originalPinyin);
     final baseStyle = TextStyle(
       fontSize: 16.0,
       color: Theme.of(context).colorScheme.primary,
     );
-    
+
     // Check if we need to use plain pinyin (without tones) for matching
-    final bool hasTones = PinyinUtils.containsToneMarks(query) || 
-                         PinyinUtils.containsToneNumbers(query);
-    
+    final bool hasTones =
+        PinyinUtils.containsToneMarks(query) ||
+        PinyinUtils.containsToneNumbers(query);
+
     if (!hasTones) {
       // For searches without tones, highlight the whole string
       // (we can't easily align the matches with tones visually)
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(4.0),
         ),
-        child: Text(
-          formattedPinyin,
-          style: baseStyle,
-        ),
+        child: Text(formattedPinyin, style: baseStyle),
       );
     }
-    
+
     // For searches with tones, try to highlight the exact match
     final queryLower = query.toLowerCase();
     final originalLower = originalPinyin.toLowerCase();
-    
+
     if (originalLower.contains(queryLower)) {
       final int startIndex = originalLower.indexOf(queryLower);
       final int endIndex = startIndex + queryLower.length;
-      
+
       // Safety check to ensure we don't go out of bounds
       if (startIndex < 0 || endIndex > formattedPinyin.length) {
         // Fallback to regular display
-        return Text(
-          formattedPinyin,
-          style: baseStyle,
-        );
+        return Text(formattedPinyin, style: baseStyle);
       }
-      
+
       // Find corresponding positions in the formatted pinyin
       final String beforeMatch = formattedPinyin.substring(0, startIndex);
       final String matchPart = formattedPinyin.substring(startIndex, endIndex);
       final String afterMatch = formattedPinyin.substring(endIndex);
-      
+
       return RichText(
         text: TextSpan(
           children: [
@@ -125,7 +125,9 @@ class DictionarySearchResult extends StatelessWidget {
             TextSpan(
               text: matchPart,
               style: baseStyle.copyWith(
-                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.2),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -134,29 +136,29 @@ class DictionarySearchResult extends StatelessWidget {
         ),
       );
     }
-    
+
     // Default case - just show the pinyin
-    return Text(
-      formattedPinyin,
-      style: baseStyle,
-    );
+    return Text(formattedPinyin, style: baseStyle);
   }
 
   @override
   Widget build(BuildContext context) {
     // Get the current search query
-    final dictionaryProvider = Provider.of<DictionaryProvider>(context, listen: false);
+    final dictionaryProvider = Provider.of<DictionaryProvider>(
+      context,
+      listen: false,
+    );
     final String searchQuery = dictionaryProvider.searchQuery;
     final searchMode = dictionaryProvider.searchMode;
-    
+
     // Convert numerical pinyin to diacritic pinyin
     final String formattedPinyin = PinyinUtils.toDiacriticPinyin(entry.pinyin);
-    
+
     // Get first definition for preview
-    final String firstDefinition = entry.definitions.isNotEmpty 
-        ? entry.definitions.first 
+    final String firstDefinition = entry.definitions.isNotEmpty
+        ? entry.definitions.first
         : '';
-    
+
     // If there are more definitions, add an ellipsis
     final String definitionPreview = entry.definitions.length > 1
         ? '$firstDefinition ...'
@@ -178,31 +180,36 @@ class DictionarySearchResult extends StatelessWidget {
                 textBaseline: TextBaseline.ideographic,
                 children: [
                   // Highlight matched Chinese characters if in Chinese search mode
-                  (searchMode == SearchMode.chinese || 
-                   (searchMode == SearchMode.auto && PinyinUtils.containsChineseCharacters(searchQuery)))
-                  ? _highlightText(
-                      entry.simplified,
-                      searchQuery,
-                      const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      context,
-                    )
-                  : Text(
-                      entry.simplified,
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  (searchMode == SearchMode.chinese ||
+                          (searchMode == SearchMode.auto &&
+                              PinyinUtils.containsChineseCharacters(
+                                searchQuery,
+                              )))
+                      ? _highlightText(
+                          entry.simplified,
+                          searchQuery,
+                          const TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          context,
+                        )
+                      : Text(
+                          entry.simplified,
+                          style: const TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                   const SizedBox(width: 8.0),
                   if (entry.traditional != entry.simplified)
                     Text(
                       '(${entry.traditional})',
                       style: TextStyle(
                         fontSize: 16.0,
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   const Spacer(),
@@ -216,43 +223,41 @@ class DictionarySearchResult extends StatelessWidget {
               ),
               const SizedBox(height: 4.0),
               // Highlight pinyin if in Chinese mode or auto mode with pinyin query
-              (searchMode == SearchMode.chinese || 
-               (searchMode == SearchMode.auto && PinyinUtils.isPotentialPinyin(searchQuery)))
-              ? _buildPinyinHighlight(
-                  entry.pinyin,
-                  searchQuery,
-                  context,
-                )
-              : Text(
-                  formattedPinyin,
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+              (searchMode == SearchMode.chinese ||
+                      (searchMode == SearchMode.auto &&
+                          PinyinUtils.isPotentialPinyin(searchQuery)))
+                  ? _buildPinyinHighlight(entry.pinyin, searchQuery, context)
+                  : Text(
+                      formattedPinyin,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
               const SizedBox(height: 4.0),
               // Highlight definition if in English mode
-              (searchMode == SearchMode.english || 
-               (searchMode == SearchMode.auto && !PinyinUtils.isPotentialPinyin(searchQuery) && 
-                !PinyinUtils.containsChineseCharacters(searchQuery)))
-              ? _highlightText(
-                  definitionPreview,
-                  searchQuery,
-                  TextStyle(
-                    fontSize: 14.0,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-                  context,
-                )
-              : Text(
-                  definitionPreview,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              (searchMode == SearchMode.english ||
+                      (searchMode == SearchMode.auto &&
+                          !PinyinUtils.isPotentialPinyin(searchQuery) &&
+                          !PinyinUtils.containsChineseCharacters(searchQuery)))
+                  ? _highlightText(
+                      definitionPreview,
+                      searchQuery,
+                      TextStyle(
+                        fontSize: 14.0,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      context,
+                    )
+                  : Text(
+                      definitionPreview,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
             ],
           ),
         ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/practice_item.dart';
 import '../providers/practice_provider.dart';
-import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
 
 class PracticeScreen extends StatefulWidget {
@@ -52,19 +51,27 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
         return Scaffold(
           appBar: AppBar(
-                title: Text('${currentItem.grammarPattern.name} Practice'),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                actions: [
-                  TextButton.icon(
-                    icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimary),
-                    label: Text('End', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-                    onPressed: () {
-                      _showEndSessionDialog(context, provider);
-                    },
+            title: Text('${currentItem.grammarPattern.name} Practice'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            actions: [
+              TextButton.icon(
+                icon: Icon(
+                  Icons.close,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                label: Text(
+                  'End',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
-                ],
+                ),
+                onPressed: () {
+                  _showEndSessionDialog(context, provider);
+                },
               ),
+            ],
+          ),
           body: SafeArea(
             child: Column(
               children: [
@@ -108,14 +115,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 'Item ${session.currentItemIndex + 1} of ${session.items.length}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
                 '${(session.completionPercentage * 100).toStringAsFixed(0)}% Complete',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -124,7 +131,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
           LinearProgressIndicator(
             value: session.completionPercentage,
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Theme.of(context).colorScheme.primary,
+            ),
           ),
         ],
       ),
@@ -136,10 +145,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -178,7 +187,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           Text(
             'English Translation:',
             style: TextStyle(
-              fontWeight: FontWeight.bold, 
+              fontWeight: FontWeight.bold,
               fontSize: 16.0,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -191,14 +200,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
               color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Text(
               item.englishTranslation,
               style: TextStyle(
                 fontSize: 16.0,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -217,11 +228,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -246,13 +257,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       ? Theme.of(context).colorScheme.surfaceVariant
                       : isSubmitted
                       ? isCorrectPosition
-                            ? Theme.of(context).brightness == Brightness.dark 
-                                ? Color(0xFF1E392A) // dark green background
-                                : Color(0xFFE6F4EA) // light green background
+                            ? Theme.of(context).brightness == Brightness.dark
+                                  ? Color(0xFF1E392A) // dark green background
+                                  : Color(0xFFE6F4EA) // light green background
                             : Theme.of(context).brightness == Brightness.dark
-                                ? Color(0xFF3B1D1D) // dark red background
-                                : Color(0xFFFBEDED) // light red background
-                      : Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                            ? Color(0xFF3B1D1D) // dark red background
+                            : Color(0xFFFBEDED) // light red background
+                      : Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(
                     color: word == null
@@ -260,11 +273,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         : isSubmitted
                         ? isCorrectPosition
                               ? Theme.of(context).brightness == Brightness.dark
-                                  ? Color(0xFF81C995) // dark green border
-                                  : Color(0xFF34A853) // light green border
+                                    ? Color(0xFF81C995) // dark green border
+                                    : Color(0xFF34A853) // light green border
                               : Theme.of(context).brightness == Brightness.dark
-                                  ? Color(0xFFE07676) // dark red border
-                                  : Color(0xFFEA4335) // light red border
+                              ? Color(0xFFE07676) // dark red border
+                              : Color(0xFFEA4335) // light red border
                         : Theme.of(context).colorScheme.primary,
                     width: 2.0,
                   ),
@@ -282,7 +295,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                                 Text(
@@ -290,7 +305,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                               ],
@@ -341,10 +358,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.2),
             blurRadius: 5,
             offset: const Offset(0, -2),
           ),
@@ -356,7 +375,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           Text(
             'Word Bank:',
             style: TextStyle(
-              fontWeight: FontWeight.bold, 
+              fontWeight: FontWeight.bold,
               fontSize: 16.0,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -376,7 +395,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.5),
+                      ),
                     ),
                   );
                 }
@@ -390,7 +413,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       borderRadius: BorderRadius.circular(4.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.shadow.withValues(alpha: 0.2),
                           blurRadius: 2.0,
                           spreadRadius: 0.0,
                         ),
@@ -423,7 +448,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
+                      ),
                     ),
                   ),
                   child: Container(
@@ -433,7 +462,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Theme.of(context).colorScheme.primary),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     child: Center(
                       child: Column(
@@ -444,7 +475,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           Text(
@@ -482,22 +513,22 @@ class _PracticeScreenState extends State<PracticeScreen> {
               padding: const EdgeInsets.all(12.0),
               margin: const EdgeInsets.only(bottom: 16.0),
               decoration: BoxDecoration(
-                color: isCorrect 
-                    ? Theme.of(context).brightness == Brightness.dark 
-                        ? Color(0xFF1E392A) // dark green background
-                        : Color(0xFFE6F4EA) // light green background
+                color: isCorrect
+                    ? Theme.of(context).brightness == Brightness.dark
+                          ? Color(0xFF1E392A) // dark green background
+                          : Color(0xFFE6F4EA) // light green background
                     : Theme.of(context).brightness == Brightness.dark
-                        ? Color(0xFF3B1D1D) // dark red background
-                        : Color(0xFFFBEDED), // light red background
+                    ? Color(0xFF3B1D1D) // dark red background
+                    : Color(0xFFFBEDED), // light red background
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(
-                  color: isCorrect 
-                      ? Theme.of(context).brightness == Brightness.dark 
-                          ? Color(0xFF81C995) // dark green border
-                          : Color(0xFF34A853) // light green border
+                  color: isCorrect
+                      ? Theme.of(context).brightness == Brightness.dark
+                            ? Color(0xFF81C995) // dark green border
+                            : Color(0xFF34A853) // light green border
                       : Theme.of(context).brightness == Brightness.dark
-                          ? Color(0xFFE07676) // dark red border
-                          : Color(0xFFEA4335), // light red border
+                      ? Color(0xFFE07676) // dark red border
+                      : Color(0xFFEA4335), // light red border
                   width: 2.0,
                 ),
               ),
@@ -505,13 +536,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 children: [
                   Icon(
                     isCorrect ? Icons.check_circle : Icons.cancel,
-                    color: isCorrect 
-                        ? Theme.of(context).brightness == Brightness.dark 
-                            ? Color(0xFF81C995) // dark green icon
-                            : Color(0xFF34A853) // light green icon
+                    color: isCorrect
+                        ? Theme.of(context).brightness == Brightness.dark
+                              ? Color(0xFF81C995) // dark green icon
+                              : Color(0xFF34A853) // light green icon
                         : Theme.of(context).brightness == Brightness.dark
-                            ? Color(0xFFE07676) // dark red icon
-                            : Color(0xFFEA4335), // light red icon
+                        ? Color(0xFFE07676) // dark red icon
+                        : Color(0xFFEA4335), // light red icon
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -521,13 +552,17 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           : 'Not quite right. Try again or check the solution.',
                       style: TextStyle(
                         fontSize: 16.0,
-                        color: isCorrect 
-                            ? Theme.of(context).brightness == Brightness.dark 
-                                ? Color(0xFF81C995) // dark green text
-                                : Color(0xFF0D652D) // light green text (darker for readability)
+                        color: isCorrect
+                            ? Theme.of(context).brightness == Brightness.dark
+                                  ? Color(0xFF81C995) // dark green text
+                                  : Color(
+                                      0xFF0D652D,
+                                    ) // light green text (darker for readability)
                             : Theme.of(context).brightness == Brightness.dark
-                                ? Color(0xFFE07676) // dark red text
-                                : Color(0xFFC5221F), // light red text (darker for readability)
+                            ? Color(0xFFE07676) // dark red text
+                            : Color(
+                                0xFFC5221F,
+                              ), // light red text (darker for readability)
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -556,7 +591,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: Text(
                       'Check Answer',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                     ),
                   )
                 else
@@ -571,7 +608,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: Text(
                       'Try Again',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                     ),
                   ),
 
@@ -589,7 +628,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: Text(
                       'Show Solution',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
                     ),
                   ),
 
@@ -598,7 +639,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     onPressed: () => provider.moveToNextItem(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
-                      foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                      foregroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onSecondary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 8.0,
@@ -606,7 +649,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                     child: Text(
                       'Next',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
                     ),
                   ),
 
@@ -615,10 +660,17 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 // Navigation buttons
                 if (provider.activeSession!.currentItemIndex > 0)
                   TextButton.icon(
-                    icon: Icon(Icons.arrow_back, size: 16, color: Theme.of(context).colorScheme.primary),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     label: Text(
                       'Previous',
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     onPressed: () => provider.moveToPreviousItem(),
                     style: TextButton.styleFrom(
@@ -629,8 +681,18 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 if (provider.activeSession!.currentItemIndex <
                     provider.activeSession!.items.length - 1)
                   TextButton.icon(
-                    icon: Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
-                    label: Text('Skip', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+                    icon: Icon(
+                      Icons.arrow_forward,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    label: Text(
+                      'Skip',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
                     onPressed: () => provider.moveToNextItem(),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -673,20 +735,29 @@ class _PracticeScreenState extends State<PracticeScreen> {
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text('End Practice Session?', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+          title: Text(
+            'End Practice Session?',
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          ),
           content: Text(
             'Are you sure you want to end this practice session? Your progress will not be saved.',
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: Text('End Session', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text(
+                'End Session',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
               onPressed: () {
                 provider.endPracticeSession();
                 Navigator.of(dialogContext).pop();

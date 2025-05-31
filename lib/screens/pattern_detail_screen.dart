@@ -11,10 +11,7 @@ import 'practice_screen.dart';
 class PatternDetailScreen extends StatefulWidget {
   final String patternId;
 
-  const PatternDetailScreen({
-    super.key,
-    required this.patternId,
-  });
+  const PatternDetailScreen({super.key, required this.patternId});
 
   @override
   State<PatternDetailScreen> createState() => _PatternDetailScreenState();
@@ -53,10 +50,15 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                       ),
                     );
                   },
-                  icon: Icon(Icons.fitness_center, color: Theme.of(context).colorScheme.onPrimary),
+                  icon: Icon(
+                    Icons.fitness_center,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                   label: Text(
                     'Practice',
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
                 );
               } else {
@@ -69,16 +71,12 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
       body: Consumer<GrammarProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final pattern = provider.selectedPattern;
           if (pattern == null) {
-            return const Center(
-              child: Text('Pattern not found'),
-            );
+            return const Center(child: Text('Pattern not found'));
           }
 
           return SingleChildScrollView(
@@ -114,7 +112,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -127,7 +125,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             height: 1.5,
           ),
         ),
@@ -136,7 +134,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           pattern.englishTitle,
           style: TextStyle(
             fontSize: 16,
-            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             fontStyle: FontStyle.italic,
           ),
         ),
@@ -162,10 +162,10 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         return Icon(
           index < level ? Icons.star : Icons.star_border,
           color: index < level
-              ? Theme.of(context).brightness == Brightness.dark 
-                  ? CatppuccinTheme.mochaPeach 
-                  : AppTheme.getDifficultyColor(level)
-              : Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+              ? Theme.of(context).brightness == Brightness.dark
+                    ? CatppuccinTheme.mochaPeach
+                    : AppTheme.getDifficultyColor(level)
+              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
           size: 20,
         );
       }),
@@ -189,7 +189,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           pattern.description,
           style: TextStyle(
             fontSize: 16,
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             height: 1.5,
           ),
         ),
@@ -240,15 +240,15 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark 
+            color: Theme.of(context).brightness == Brightness.dark
                 ? Theme.of(context).colorScheme.surfaceContainer
                 : Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.1),
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 1),
@@ -263,7 +263,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.5,
                 ),
               ),
@@ -283,7 +283,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.normal,
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontStyle: FontStyle.italic,
                   height: 1.2,
                 ),
@@ -296,7 +298,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 8),
@@ -310,8 +312,8 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? CatppuccinTheme.mochaYellow.withOpacity(0.2)
-                        : Colors.amber.withOpacity(0.1),
+                        ? CatppuccinTheme.mochaYellow.withValues(alpha: 0.2)
+                        : Colors.amber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: Theme.of(context).brightness == Brightness.dark
@@ -335,7 +337,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                           currentExample.note!,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -366,7 +368,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
               Text(
                 '${_currentExampleIndex + 1} / ${pattern.examples.length}',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(width: 16),
