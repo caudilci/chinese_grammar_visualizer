@@ -115,10 +115,10 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
             ),
             child: Text(
               part.text,
-              style: TextStyle(
+              style: AppTheme.bodyDefault(
+                context,
                 color: color,
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
+                weight: FontWeight.w500,
               ),
             ),
           );
@@ -143,10 +143,10 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
           ),
           child: Text(
             component,
-            style: TextStyle(
+            style: AppTheme.bodyDefault(
+              context,
               color: color,
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
+              weight: FontWeight.w500,
             ),
           ),
         );
@@ -180,7 +180,7 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
               Text(
                 part.text +
                     (part.description != null ? ' (${part.description})' : ''),
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                style: AppTheme.caption(context, color: AppTheme.textSecondary),
               ),
             ],
           );
@@ -208,7 +208,7 @@ class _GrammarVisualizerState extends State<GrammarVisualizer> {
             const SizedBox(width: 4),
             Text(
               component,
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+              style: AppTheme.caption(context, color: AppTheme.textSecondary),
             ),
           ],
         );
@@ -404,10 +404,10 @@ class _AnimatedGrammarVisualizerState extends State<AnimatedGrammarVisualizer>
                 ),
                 child: Text(
                   part.text,
-                  style: TextStyle(
+                  style: AppTheme.bodyDefault(
+                    context,
                     color: color.withValues(alpha: animation.value),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    weight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -465,10 +465,10 @@ class _AnimatedGrammarVisualizerState extends State<AnimatedGrammarVisualizer>
                 ),
                 child: Text(
                   component,
-                  style: TextStyle(
+                  style: AppTheme.bodyDefault(
+                    context,
                     color: color.withValues(alpha: animation.value),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    weight: FontWeight.w500,
                   ),
                 ),
               ),

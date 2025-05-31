@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../utils/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -10,7 +11,10 @@ class SettingsScreen extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        title: const Text('Settings'),
+        titleTextStyle: AppTheme.appBarTitleStyle(),
+      ),
       body: ListView(
         children: [
           _buildSectionHeader(context, 'Appearance'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/dictionary_provider.dart';
 import '../providers/grammar_provider.dart';
+import '../utils/app_theme.dart';
 import '../widgets/app_drawer.dart';
 import 'dictionary_screen.dart';
 import 'home_screen.dart';
@@ -58,10 +59,8 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        title: Text(title),
+        titleTextStyle: AppTheme.appBarTitleStyle(),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),

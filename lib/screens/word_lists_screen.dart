@@ -4,6 +4,7 @@ import '../models/dictionary_entry.dart';
 import '../models/word_list.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
 import 'flash_card_review_screen.dart';
 import 'flash_card_setup_screen.dart';
@@ -214,7 +215,8 @@ class _WordListsScreenState extends State<WordListsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Word Lists'),
+        title: const Text('Word Lists'),
+        titleTextStyle: AppTheme.appBarTitleStyle(),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -475,7 +477,10 @@ class WordListDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(wordList.name)),
+      appBar: AppBar(
+        title: Text(wordList.name),
+        titleTextStyle: AppTheme.appBarTitleStyle(),
+      ),
       body: Consumer<WordListProvider>(
         builder: (context, provider, child) {
           if (wordList.entries.isEmpty) {

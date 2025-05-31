@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/practice_item.dart';
 import '../providers/practice_provider.dart';
 import '../utils/pinyin_utils.dart';
+import '../utils/app_theme.dart';
+import '../models/practice_item.dart';
 
 class PracticeScreen extends StatefulWidget {
   final String grammarPatternId;
@@ -41,7 +42,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
         if (!provider.hasActiveSession) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Practice')),
+            appBar: AppBar(
+              title: const Text('Practice'),
+              titleTextStyle: AppTheme.appBarTitleStyle(),
+            ),
             body: const Center(child: Text('No active practice session.')),
           );
         }

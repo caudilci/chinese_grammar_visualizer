@@ -9,6 +9,7 @@ import 'providers/flash_card_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/main_screen.dart';
 import 'utils/catppuccin_theme.dart';
+import 'utils/app_theme.dart';
 
 void main() {
   runApp(
@@ -90,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Text(
               '汉语语法可视化',
               style: GoogleFonts.notoSansSc(
-                fontSize: 32,
+                fontSize: AppTheme.fontSizeXXLarge,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -99,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Text(
               'Chinese Grammar Visualizer',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppTheme.fontSizeMediumLarge,
                 color: Colors.white,
                 fontWeight: FontWeight.w300,
               ),

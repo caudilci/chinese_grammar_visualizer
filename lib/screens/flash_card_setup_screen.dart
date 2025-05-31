@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../utils/app_theme.dart';
 import 'flash_card_review_screen.dart';
 
 class FlashCardSetupScreen extends StatefulWidget {
@@ -108,6 +109,7 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false), // Cancel
+                style: TextButton.styleFrom(foregroundColor: Colors.white),
                 child: const Text('CANCEL'),
               ),
               TextButton(
@@ -132,10 +134,8 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Flash Cards',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Flash Cards'),
+        titleTextStyle: AppTheme.appBarTitleStyle(),
       ),
       body: Consumer2<WordListProvider, FlashCardProvider>(
         builder: (context, wordListProvider, flashCardProvider, child) {
@@ -182,9 +182,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 'Active Session Available',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTheme.bodyLarge(
+                                  context,
+                                  weight: FontWeight.bold,
                                   color: Colors.green.shade800,
                                 ),
                               ),
@@ -208,11 +208,11 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Continue Session',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTheme.bodyDefault(
+                                  context,
+                                  weight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -226,9 +226,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                   const SizedBox(height: 16),
                 ],
 
-                const Text(
+                Text(
                   'Select Word Lists',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: AppTheme.bodyLarge(context, weight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -281,9 +281,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                 ),
 
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Study Options',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: AppTheme.bodyLarge(context, weight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
 
@@ -297,19 +297,19 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Number of Cards',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                              style: AppTheme.bodyDefault(
+                                context,
+                                weight: FontWeight.bold,
                               ),
                             ),
                             Row(
                               children: [
                                 Text(
                                   'Endless Mode',
-                                  style: TextStyle(
-                                    fontSize: 14,
+                                  style: AppTheme.bodySmall(
+                                    context,
                                     color: Colors.grey[700],
                                   ),
                                 ),
@@ -401,9 +401,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
                           : hasActiveSession
                           ? 'Start New Session'
                           : 'Start Studying',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: AppTheme.bodyDefault(
+                        context,
+                        weight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -438,9 +438,9 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Session Summary',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: AppTheme.bodyDefault(context, weight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -502,16 +502,16 @@ class _FlashCardSetupScreenState extends State<FlashCardSetupScreen> {
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+          style: AppTheme.headingLarge(
+            context,
+            weight: FontWeight.bold,
             color: color,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: AppTheme.caption(context, color: Colors.grey.shade600),
           textAlign: TextAlign.center,
         ),
       ],

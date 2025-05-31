@@ -4,6 +4,7 @@ import '../screens/flash_card_review_screen.dart';
 import '../screens/word_lists_screen.dart';
 import '../screens/settings_screen.dart';
 import '../providers/flash_card_provider.dart';
+import '../utils/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -34,20 +35,20 @@ class AppDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Text(
+                Text(
                   'Chinese Grammar Visualizer',
-                  style: TextStyle(
+                  style: AppTheme.headingMedium(
+                    context,
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    weight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Learn Chinese with ease',
-                  style: TextStyle(
+                  style: AppTheme.bodySmall(
+                    context,
                     color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 14,
                   ),
                 ),
               ],

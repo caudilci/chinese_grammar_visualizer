@@ -5,6 +5,7 @@ import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
 import '../providers/word_list_provider.dart';
 import '../services/search_isolate.dart';
+import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
 import '../widgets/dictionary_search_result.dart';
 import '../widgets/word_list_selector.dart';
@@ -63,11 +64,11 @@ class DictionaryScreenState extends State<DictionaryScreen> {
               child: TextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
-                style: TextStyle(
+                style: AppTheme.bodyDefault(
+                  context,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
                       : Theme.of(context).colorScheme.onSurface,
-                  fontSize: 16.0,
                 ),
                 decoration: InputDecoration(
                   hintText: provider.searchMode == SearchMode.english
@@ -233,8 +234,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Dictionary is loading...',
-                      style: TextStyle(
-                        fontSize: 16.0,
+                      style: AppTheme.bodyDefault(
+                        context,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -253,9 +254,9 @@ class DictionaryScreenState extends State<DictionaryScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     'Enter a search term to find words',
-                    style: TextStyle(fontSize: 16.0),
+                    style: AppTheme.bodyDefault(context),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -276,9 +277,9 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                         children: [
                           Text(
                             'Pinyin Search Tips:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                            style: AppTheme.bodySmall(
+                              context,
+                              weight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
@@ -288,8 +289,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                             '• Use numbers for tones (e.g., "ni3")\n'
                             '• Search by English meaning\n'
                             '• Search by Chinese characters',
-                            style: TextStyle(
-                              fontSize: 12.0,
+                            style: AppTheme.caption(
+                              context,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
@@ -313,8 +314,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Dictionary is loading...',
-                    style: TextStyle(
-                      fontSize: 16.0,
+                    style: AppTheme.bodyDefault(
+                      context,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -338,17 +339,17 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                 children: [
                   Text(
                     'No results found for "${_searchController.text}"',
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
+                    style: AppTheme.bodyDefault(
+                      context,
+                      weight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Current search mode: $modeText',
-                    style: TextStyle(
-                      fontSize: 14.0,
+                    style: AppTheme.bodySmall(
+                      context,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey[400]
                           : Colors.grey[600],
@@ -429,11 +430,10 @@ class DictionaryScreenState extends State<DictionaryScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(
             'Powered by CC-CEDICT',
-            style: TextStyle(
+            style: AppTheme.caption(
+              context,
               color: Theme.of(context).colorScheme.primary,
-              decoration: TextDecoration.underline,
-              fontSize: 12.0,
-            ),
+            ).copyWith(decoration: TextDecoration.underline),
           ),
         ),
       ),
@@ -507,20 +507,18 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                               children: [
                                 Text(
                                   entry.simplified,
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
+                                  style: AppTheme.headingXXLarge(
+                                    context,
+                                    weight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 if (entry.traditional != entry.simplified)
                                   Text(
                                     '(${entry.traditional})',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w300,
+                                    style: AppTheme.headingLarge(
+                                      context,
+                                      weight: FontWeight.w300,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onSurface
@@ -542,8 +540,9 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                       const SizedBox(height: 8),
                       Text(
                         PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: TextStyle(
-                          fontSize: 20,
+                        style: AppTheme.headingMedium(
+                          context,
+                          weight: FontWeight.normal,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Theme.of(context).colorScheme.primary
                               : Colors.blue,
@@ -552,9 +551,9 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                       const Divider(height: 32),
                       Text(
                         'Definitions:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: AppTheme.bodyDefault(
+                          context,
+                          weight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
@@ -564,8 +563,8 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '• $definition',
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: AppTheme.bodyDefault(
+                              context,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
@@ -601,9 +600,12 @@ class DictionaryScreenState extends State<DictionaryScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'In Word Lists:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: AppTheme.bodyDefault(
+                context,
+                weight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(

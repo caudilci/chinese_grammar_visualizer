@@ -34,7 +34,7 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Grammar Pattern'),
-        centerTitle: true,
+        titleTextStyle: AppTheme.appBarTitleStyle(),
         actions: [
           Consumer<GrammarProvider>(
             builder: (context, provider, child) {
@@ -109,9 +109,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
             Expanded(
               child: Text(
                 pattern.name,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                style: AppTheme.headingLarge(
+                  context,
+                  weight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -122,30 +122,28 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
         const SizedBox(height: 8),
         Text(
           pattern.chineseTitle,
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w500,
+          style: AppTheme.headingXLarge(
+            context,
+            weight: FontWeight.w500,
             color: Theme.of(context).colorScheme.onSurface,
-            height: 1.5,
-          ),
+          ).copyWith(height: 1.5),
         ),
         const SizedBox(height: 4),
         Text(
           pattern.englishTitle,
-          style: TextStyle(
-            fontSize: 16,
+          style: AppTheme.bodyDefault(
+            context,
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.7),
-            fontStyle: FontStyle.italic,
-          ),
+          ).copyWith(fontStyle: FontStyle.italic),
         ),
         const SizedBox(height: 8),
         Chip(
           label: Text(
             pattern.category,
-            style: TextStyle(
-              fontSize: 14,
+            style: AppTheme.bodySmall(
+              context,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
@@ -178,20 +176,19 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
       children: [
         Text(
           'Description',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTheme.bodyLarge(
+            context,
+            weight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           pattern.description,
-          style: TextStyle(
-            fontSize: 16,
+          style: AppTheme.bodyDefault(
+            context,
             color: Theme.of(context).colorScheme.onSurface,
-            height: 1.5,
-          ),
+          ).copyWith(height: 1.5),
         ),
       ],
     );
@@ -203,9 +200,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
       children: [
         Text(
           'Structure',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTheme.bodyLarge(
+            context,
+            weight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
@@ -230,9 +227,9 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
       children: [
         Text(
           'Examples',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTheme.bodyLarge(
+            context,
+            weight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
@@ -260,44 +257,40 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
             children: [
               Text(
                 currentExample.chineseSentence,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w500,
+                style: AppTheme.headingLarge(
+                  context,
+                  weight: FontWeight.w500,
                   color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.5,
-                ),
+                ).copyWith(height: 1.5),
               ),
               const SizedBox(height: 8),
               Text(
                 currentExample.pinyinSentence,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.normal,
+                style: AppTheme.bodyDefault(
+                  context,
+                  weight: FontWeight.normal,
                   color: Theme.of(context).colorScheme.primary,
-                  height: 1.2,
-                ),
+                ).copyWith(height: 1.2),
               ),
               const SizedBox(height: 8),
               Text(
                 currentExample.englishTranslation,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.normal,
+                style: AppTheme.bodyDefault(
+                  context,
+                  weight: FontWeight.normal,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontStyle: FontStyle.italic,
-                  height: 1.2,
-                ),
+                ).copyWith(fontStyle: FontStyle.italic, height: 1.2),
               ),
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
               Text(
                 'Sentence Breakdown',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                style: AppTheme.bodyDefault(
+                  context,
+                  weight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -335,8 +328,8 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                       Expanded(
                         child: Text(
                           currentExample.note!,
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: AppTheme.bodySmall(
+                            context,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),

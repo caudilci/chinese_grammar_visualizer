@@ -3,6 +3,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'colors.dart';
 
 class AppTheme {
+  // Font size definitions
+  // These standardized sizes should be used throughout the app
+  static const double fontSizeXXLarge =
+      32.0; // Largest headers, main Chinese characters
+  static const double fontSizeXLarge = 28.0; // Very large headers
+  static const double fontSizeLarge = 24.0; // Large headers, Chinese characters
+  static const double fontSizeMediumLarge =
+      20.0; // Medium-large text, section headers
+  static const double fontSizeMedium = 18.0; // Medium text, list items headers
+  static const double fontSizeDefault = 16.0; // Default body text size
+  static const double fontSizeSmall = 14.0; // Small text, secondary information
+  static const double fontSizeXSmall = 12.0; // Very small text, captions, hints
+  static const double fontSizeXXSmall = 10.0; // Smallest text, used sparingly
   // Primary color palette
   static const Color primaryColor = Color(0xFF4A6572);
   static const Color accentColor = Color(0xFFFF5252);
@@ -74,11 +87,7 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       color: primaryColor,
       iconTheme: IconThemeData(color: Colors.white),
-      titleTextStyle: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      titleTextStyle: appBarTitleStyle(),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -112,21 +121,21 @@ class AppTheme {
 
   // Chinese text styles
   static TextStyle chineseTextStyle = GoogleFonts.notoSansSc(
-    fontSize: 24.0,
+    fontSize: fontSizeLarge,
     fontWeight: FontWeight.w500,
     color: chineseCharColor,
     height: 1.5,
   );
 
   static TextStyle pinyinTextStyle = GoogleFonts.notoSans(
-    fontSize: 16.0,
+    fontSize: fontSizeDefault,
     fontWeight: FontWeight.normal,
     color: pinyinColor,
     height: 1.2,
   );
 
   static TextStyle translationTextStyle = GoogleFonts.notoSans(
-    fontSize: 16.0,
+    fontSize: fontSizeDefault,
     fontWeight: FontWeight.normal,
     color: translationColor,
     fontStyle: FontStyle.italic,
@@ -154,5 +163,134 @@ class AppTheme {
     if (level < 1) return difficultyColors[0];
     if (level > 5) return difficultyColors[4];
     return difficultyColors[level - 1];
+  }
+
+  // Text style helpers based on standardized font sizes
+
+  // App bar title style
+  static TextStyle appBarTitleStyle({
+    Color? color,
+    FontWeight weight = FontWeight.bold,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeMediumLarge,
+      fontWeight: weight,
+      color: color ?? Colors.white,
+    );
+  }
+
+  // Heading styles
+  static TextStyle headingXXLarge(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.bold,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeXXLarge,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle headingXLarge(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.bold,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeXLarge,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle headingLarge(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.bold,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeLarge,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle headingMedium(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.bold,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeMediumLarge,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  // Body text styles
+  static TextStyle bodyLarge(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.normal,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeMedium,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle bodyDefault(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.normal,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeDefault,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle bodySmall(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.normal,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeSmall,
+      fontWeight: weight,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  // Caption and label styles
+  static TextStyle caption(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.normal,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeXSmall,
+      fontWeight: weight,
+      color:
+          color ??
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+    );
+  }
+
+  static TextStyle labelSmall(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.normal,
+  }) {
+    return TextStyle(
+      fontSize: fontSizeXXSmall,
+      fontWeight: weight,
+      color:
+          color ??
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+    );
   }
 }

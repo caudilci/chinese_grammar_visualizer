@@ -26,6 +26,27 @@ Built with Flutter using:
 - JSON data storage for grammar patterns
 - Custom animations and transitions
 - Responsive design for multiple screen sizes
+- Standardized font sizes for consistent UI
+
+### Font Size Standards
+
+The app uses a standardized font system to maintain consistency across all screens:
+
+```dart
+// Use the standardized font sizes from AppTheme
+Text(
+  'Example Text',
+  style: AppTheme.bodyDefault(context),
+)
+
+// For headings
+Text(
+  'Heading Text',
+  style: AppTheme.headingLarge(context),
+)
+```
+
+See `docs/font_size_standards.md` for complete documentation.
 
 ## Getting Started
 
@@ -40,3 +61,4 @@ Built with Flutter using:
 - Add audio pronunciation
 - Support for offline usage
 - User progress tracking
+- Expand theme and design system

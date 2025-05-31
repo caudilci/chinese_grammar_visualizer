@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_theme.dart';
 
 /// Catppuccin theme implementation for the Chinese Grammar Visualizer app
 /// Based on https://github.com/catppuccin/catppuccin
@@ -75,7 +76,7 @@ class CatppuccinTheme {
       background: latteBase,
       surface: latteMantle,
       surfaceContainer: latteCrust,
-      onPrimary: latteBase,
+      onPrimary: Colors.white,
       onSecondary: latteBase,
       onError: latteBase,
       onBackground: latteText,
@@ -94,7 +95,7 @@ class CatppuccinTheme {
       background: mochaBase,
       surface: mochaMantle,
       surfaceContainer: mochaCrust,
-      onPrimary: mochaText,
+      onPrimary: Colors.white,
       onSecondary: mochaText,
       onError: mochaText,
       onBackground: mochaText,
@@ -160,32 +161,73 @@ class CatppuccinTheme {
       // Cannot use cardTheme due to compatibility issues
       textTheme: GoogleFonts.notoSansTextTheme(
         TextTheme(
-          displayLarge: TextStyle(color: textColor),
-          displayMedium: TextStyle(color: textColor),
-          displaySmall: TextStyle(color: textColor),
-          headlineLarge: TextStyle(color: textColor),
-          headlineMedium: TextStyle(color: textColor),
-          headlineSmall: TextStyle(color: textColor),
-          titleLarge: TextStyle(color: textColor),
-          titleMedium: TextStyle(color: textColor),
-          titleSmall: TextStyle(color: textColor),
-          bodyLarge: TextStyle(color: textColor),
-          bodyMedium: TextStyle(color: textColor),
-          bodySmall: TextStyle(color: textColor),
-          labelLarge: TextStyle(color: textColor),
-          labelMedium: TextStyle(color: textColor),
-          labelSmall: TextStyle(color: textColor),
+          displayLarge: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeXXLarge,
+          ),
+          displayMedium: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeXLarge,
+          ),
+          displaySmall: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeLarge,
+          ),
+          headlineLarge: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeLarge,
+          ),
+          headlineMedium: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeMediumLarge,
+          ),
+          headlineSmall: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeMedium,
+          ),
+          titleLarge: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeMedium,
+          ),
+          titleMedium: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeDefault,
+          ),
+          titleSmall: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeSmall,
+          ),
+          bodyLarge: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeDefault,
+          ),
+          bodyMedium: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeDefault,
+          ),
+          bodySmall: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeSmall,
+          ),
+          labelLarge: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeDefault,
+          ),
+          labelMedium: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeSmall,
+          ),
+          labelSmall: TextStyle(
+            color: textColor,
+            fontSize: AppTheme.fontSizeXSmall,
+          ),
         ),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: primary,
         foregroundColor: onPrimary,
         elevation: 0,
-        titleTextStyle: TextStyle(
-          color: onPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        titleTextStyle: AppTheme.appBarTitleStyle(color: onPrimary),
         iconTheme: IconThemeData(color: onPrimary),
         actionsIconTheme: IconThemeData(color: onPrimary),
       ),
@@ -309,7 +351,7 @@ class CatppuccinTheme {
         backgroundColor: isDark ? surface : Colors.white,
         indicatorColor: primary.withValues(alpha: 0.2),
         labelTextStyle: MaterialStateProperty.all(
-          TextStyle(color: textColor, fontSize: 12),
+          TextStyle(color: textColor, fontSize: AppTheme.fontSizeXSmall),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/flash_card.dart';
 import '../providers/flash_card_provider.dart';
 import '../utils/pinyin_utils.dart';
+import '../utils/app_theme.dart';
 import 'flash_card_results_screen.dart';
 
 class FlashCardReviewScreen extends StatefulWidget {
@@ -146,7 +147,10 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
           }
 
           return Scaffold(
-            appBar: AppBar(title: const Text('Flash Cards')),
+            appBar: AppBar(
+              title: const Text('Flash Cards'),
+              titleTextStyle: AppTheme.appBarTitleStyle(),
+            ),
             body: const Center(child: Text('No active session')),
           );
         }
@@ -175,7 +179,10 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
           // This shouldn't happen anymore with the fix for repeating cards,
           // but we'll keep this as a fallback
           return Scaffold(
-            appBar: AppBar(title: const Text('Flash Cards')),
+            appBar: AppBar(
+              title: const Text('Flash Cards'),
+              titleTextStyle: AppTheme.appBarTitleStyle(),
+            ),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +256,7 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                       provider.currentSession?.isEndless == true
                           ? 'Endless Mode - Card ${progress + 1}'
                           : 'Card ${progress + 1} of $total',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: AppTheme.caption(context, color: Colors.grey[600]),
                     ),
                     if (provider.sessionCards.length < total &&
                         provider.sessionCards.isNotEmpty &&
@@ -276,7 +283,7 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                             Text(
                               'Repeating words due to limited vocabulary',
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: AppTheme.fontSizeXXSmall,
                                 color: Colors.orange[800],
                                 fontWeight: FontWeight.bold,
                               ),
@@ -356,7 +363,8 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
             Text(
               card.entry.simplified,
               style: TextStyle(
-                fontSize: 64,
+                fontSize:
+                    64, // Special case: larger than standard sizes for emphasis
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
@@ -369,9 +377,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   '(${card.entry.traditional})',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w300,
+                  style: AppTheme.headingLarge(
+                    context,
+                    weight: FontWeight.w300,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white70
                         : Colors.black54,
@@ -387,11 +395,11 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                 const SizedBox(width: 4),
                 Text(
                   'Tap to flip',
-                  style: TextStyle(
+                  style: AppTheme.caption(
+                    context,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[400]
                         : Colors.grey[600],
-                    fontSize: 12,
                   ),
                 ),
               ],
@@ -425,8 +433,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
             const Spacer(),
             Text(
               PinyinUtils.toDiacriticPinyin(card.entry.pinyin),
-              style: TextStyle(
-                fontSize: 28,
+              style: AppTheme.headingXLarge(
+                context,
+                weight: FontWeight.normal,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Color(0xFF89B4FA) // Catppuccin mocha blue
                     : Colors.blue,
@@ -436,9 +445,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
             const SizedBox(height: 32),
             Text(
               'Meaning:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              style: AppTheme.bodyLarge(
+                context,
+                weight: FontWeight.bold,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.grey[300]
                     : Colors.grey[700],
@@ -455,8 +464,8 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Text(
                             '• $definition',
-                            style: TextStyle(
-                              fontSize: 18,
+                            style: AppTheme.bodyLarge(
+                              context,
                               color:
                                   Theme.of(context).brightness ==
                                       Brightness.dark
@@ -478,11 +487,11 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                 const SizedBox(width: 4),
                 Text(
                   'Tap to flip back',
-                  style: TextStyle(
+                  style: AppTheme.caption(
+                    context,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[400]
                         : Colors.grey[600],
-                    fontSize: 12,
                   ),
                 ),
               ],
@@ -522,9 +531,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                 children: [
                   Icon(Icons.close, size: 16),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Didn\'t Know',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: AppTheme.bodySmall(context, weight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -553,9 +562,9 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
                 children: [
                   Icon(Icons.check, size: 16),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Knew It',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: AppTheme.bodySmall(context, weight: FontWeight.bold),
                   ),
                 ],
               ),

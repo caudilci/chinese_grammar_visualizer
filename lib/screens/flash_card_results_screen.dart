@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../utils/app_theme.dart';
 import 'flash_card_setup_screen.dart';
 
 class FlashCardResultsScreen extends StatelessWidget {
@@ -16,7 +17,10 @@ class FlashCardResultsScreen extends StatelessWidget {
 
         if (session == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Session Results')),
+            appBar: AppBar(
+              title: const Text('Session Results'),
+              titleTextStyle: AppTheme.appBarTitleStyle(),
+            ),
             body: const Center(child: Text('No session data available')),
           );
         }
@@ -39,8 +43,7 @@ class FlashCardResultsScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Session Results'),
-            centerTitle: true,
-            titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
+            titleTextStyle: AppTheme.appBarTitleStyle(),
             automaticallyImplyLeading: false,
           ),
           body: SingleChildScrollView(
@@ -65,26 +68,26 @@ class FlashCardResultsScreen extends StatelessWidget {
                               : accuracy >= 60
                               ? '👌 Good Effort!'
                               : '🔄 Keep Practicing!',
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+                          style: AppTheme.headingXLarge(
+                            context,
+                            weight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'You scored ${accuracy.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            fontSize: 20,
+                          style: AppTheme.headingMedium(
+                            context,
                             color: _getAccuracyColor(accuracy),
-                            fontWeight: FontWeight.bold,
+                            weight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Session completed on $dateText',
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: AppTheme.bodySmall(
+                            context,
                             color: Colors.grey[600],
                           ),
                           textAlign: TextAlign.center,
@@ -97,9 +100,12 @@ class FlashCardResultsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Session statistics
-                const Text(
+                Text(
                   'Session Statistics',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: AppTheme.headingMedium(
+                    context,
+                    weight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _buildStatisticsCard(
@@ -113,9 +119,12 @@ class FlashCardResultsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Word lists studied
-                const Text(
+                Text(
                   'Word Lists Studied',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: AppTheme.headingMedium(
+                    context,
+                    weight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _buildWordListsCard(context, session.wordListIds),
@@ -238,21 +247,23 @@ class FlashCardResultsScreen extends StatelessWidget {
     required String label,
     required String value,
   }) {
-    return Column(
-      children: [
-        Icon(icon, color: iconColor, size: 28),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: iconColor,
+    return Builder(
+      builder: (context) => Column(
+        children: [
+          Icon(icon, color: iconColor, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: AppTheme.headingLarge(
+              context,
+              weight: FontWeight.bold,
+              color: iconColor,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-      ],
+          const SizedBox(height: 4),
+          Text(label, style: AppTheme.bodySmall(context, color: Colors.grey)),
+        ],
+      ),
     );
   }
 
