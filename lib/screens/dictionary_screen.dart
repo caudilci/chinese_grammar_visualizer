@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../providers/tts_provider.dart';
 import '../services/search_isolate.dart';
 import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
@@ -104,7 +105,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                   ),
                   filled: true,
                   fillColor: Theme.of(context).brightness == Brightness.dark
-                      ? Theme.of(context).colorScheme.surfaceVariant
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
                       : Colors.grey[100],
                   helperText: provider.searchMode == SearchMode.auto
                       ? 'Auto-detecting search type'
@@ -502,29 +503,57 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  entry.simplified,
-                                  style: AppTheme.headingXXLarge(
-                                    context,
-                                    weight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        entry.simplified,
+                                        style: AppTheme.headingXXLarge(
+                                          context,
+                                          weight: FontWeight.bold,
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      if (entry.traditional != entry.simplified)
+                                        Text(
+                                          '(${entry.traditional})',
+                                          style: AppTheme.headingLarge(
+                                            context,
+                                            weight: FontWeight.w300,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                if (entry.traditional != entry.simplified)
-                                  Text(
-                                    '(${entry.traditional})',
-                                    style: AppTheme.headingLarge(
-                                      context,
-                                      weight: FontWeight.w300,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(alpha: 0.8),
-                                    ),
-                                  ),
+                                Consumer<TtsProvider>(
+                                  builder: (context, ttsProvider, _) {
+                                    return Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.volume_up),
+                                          onPressed: ttsProvider.isSupported
+                                              ? () {
+                                                  ttsProvider.speak(entry.simplified);
+                                                }
+                                              : null,
+                                          tooltip: ttsProvider.isSupported
+                                              ? 'Pronounce Chinese'
+                                              : 'TTS not supported on this platform',
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -538,15 +567,22 @@ class DictionaryScreenState extends State<DictionaryScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: AppTheme.headingMedium(
-                          context,
-                          weight: FontWeight.normal,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.blue,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              PinyinUtils.toDiacriticPinyin(entry.pinyin),
+                              style: AppTheme.headingMedium(
+                                context,
+                                weight: FontWeight.normal,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.blue,
+                              ),
+                            ),
+                          ),
+                          const SizedBox.shrink(), // No additional TTS buttons
+                        ],
                       ),
                       const Divider(height: 32),
                       Text(

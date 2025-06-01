@@ -7,6 +7,7 @@ import 'providers/practice_provider.dart';
 import 'providers/word_list_provider.dart';
 import 'providers/flash_card_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/tts_provider.dart';
 import 'screens/main_screen.dart';
 import 'utils/catppuccin_theme.dart';
 import 'utils/app_theme.dart';
@@ -25,6 +26,7 @@ void main() {
           ),
         ),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => TtsProvider()),
       ],
       child: const MyApp(),
     ),

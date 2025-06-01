@@ -4,6 +4,7 @@ import '../models/dictionary_entry.dart';
 import '../models/word_list.dart';
 import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../providers/tts_provider.dart';
 import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
 import 'flash_card_review_screen.dart';
@@ -629,13 +630,35 @@ class WordListDetailScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 16),
                   ),
                 ),
-                Text(
-                  entry.simplified,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.simplified,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    Consumer<TtsProvider>(
+                      builder: (context, ttsProvider, _) {
+                        return IconButton(
+                          icon: const Icon(Icons.volume_up),
+                          onPressed: ttsProvider.isSupported 
+                              ? () {
+                                  ttsProvider.speak(entry.simplified);
+                                } 
+                              : null,
+                          tooltip: ttsProvider.isSupported 
+                              ? 'Pronounce Chinese' 
+                              : 'TTS not supported on this platform',
+                          color: Theme.of(context).colorScheme.primary,
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 if (entry.traditional != entry.simplified)
                   Text(

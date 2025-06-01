@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.chinese_grammar_visualizer"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973" // Specify a specific NDK version instead of using flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

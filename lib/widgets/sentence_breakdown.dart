@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/grammar_pattern.dart';
+import '../providers/tts_provider.dart';
 import '../services/color_service.dart';
 import '../utils/colors.dart';
 import '../utils/dictionary_utils.dart';
@@ -320,13 +322,35 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      part.text,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            part.text,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        Consumer<TtsProvider>(
+                          builder: (context, ttsProvider, _) {
+                            return IconButton(
+                              icon: const Icon(Icons.volume_up, size: 20),
+                              onPressed: ttsProvider.isSupported 
+                                  ? () {
+                                      ttsProvider.speak(part.text);
+                                    } 
+                                  : null,
+                              tooltip: ttsProvider.isSupported 
+                                  ? 'Pronounce' 
+                                  : 'TTS not supported on this platform',
+                              color: componentColor,
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
