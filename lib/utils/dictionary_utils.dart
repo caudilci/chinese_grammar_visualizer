@@ -5,6 +5,8 @@ import '../providers/dictionary_provider.dart';
 import '../providers/word_list_provider.dart';
 import '../utils/pinyin_utils.dart';
 import '../widgets/word_list_selector.dart';
+import '../widgets/dictionary_entry_details.dart';
+import '../extensions/color_extension.dart';
 import 'package:provider/provider.dart';
 
 class DictionaryUtils {
@@ -102,144 +104,12 @@ class DictionaryUtils {
     BuildContext context,
     DictionaryEntry entry,
   ) {
-    // Initialize the word list provider if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WordListProvider>(context, listen: false).initialize();
-    });
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        builder: (_, controller) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Theme.of(context).colorScheme.surfaceContainer
-                  : Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                  offset: const Offset(0, -3),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    controller: controller,
-                    padding: const EdgeInsets.all(16.0),
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? Colors.grey[600]
-                                : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.only(bottom: 16),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  entry.simplified,
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                  ),
-                                ),
-                                if (entry.traditional != entry.simplified)
-                                  Text(
-                                    '(${entry.traditional})',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w300,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(alpha: 0.8),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.playlist_add),
-                            label: const Text('Add to List'),
-                            onPressed: () {
-                              _showWordListSelection(context, entry);
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const Divider(height: 32),
-                      Text(
-                        'Definitions:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ...entry.definitions.map(
-                        (definition) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text(
-                            '• $definition',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildWordListChips(context, entry),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+    DictionaryEntryDetails.showEntryDetailsModal(
+      context, 
+      entry,
+      onAddToList: () {
+        _showWordListSelection(context, entry);
+      },
     );
   }
 
@@ -268,57 +138,5 @@ class DictionaryUtils {
     );
   }
 
-  /// Build word list chips showing which lists this entry belongs to
-  static Widget _buildWordListChips(
-    BuildContext context,
-    DictionaryEntry entry,
-  ) {
-    return Consumer<WordListProvider>(
-      builder: (context, provider, child) {
-        final containingLists = provider.getListsContainingEntry(entry);
-
-        if (!provider.isInitialized) {
-          provider.initialize();
-          return const SizedBox.shrink();
-        }
-
-        if (containingLists.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'In Word Lists:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: containingLists.map((list) {
-                return Chip(
-                  label: Text(list.name),
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.15),
-                  labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  deleteIcon: const Icon(Icons.close, size: 18),
-                  onDeleted: () {
-                    provider.removeEntryFromList(list.id, entry);
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Using the common widget now, so we can remove this method
 }

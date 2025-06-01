@@ -9,6 +9,7 @@ import '../utils/app_theme.dart';
 import '../utils/pinyin_utils.dart';
 import 'flash_card_review_screen.dart';
 import 'flash_card_setup_screen.dart';
+import '../widgets/dictionary_entry_details.dart';
 
 class WordListsScreen extends StatefulWidget {
   const WordListsScreen({Key? key}) : super(key: key);
@@ -586,124 +587,6 @@ class WordListDetailScreen extends StatelessWidget {
   }
 
   void _showEntryDetails(BuildContext context, DictionaryEntry entry) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        builder: (_, controller) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  spreadRadius: 5,
-                ),
-              ],
-            ),
-            child: ListView(
-              controller: controller,
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.simplified,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                    Consumer<TtsProvider>(
-                      builder: (context, ttsProvider, _) {
-                        return IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          onPressed: ttsProvider.isSupported 
-                              ? () {
-                                  ttsProvider.speak(entry.simplified);
-                                } 
-                              : null,
-                          tooltip: ttsProvider.isSupported 
-                              ? 'Pronounce Chinese' 
-                              : 'TTS not supported on this platform',
-                          color: Theme.of(context).colorScheme.primary,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                if (entry.traditional != entry.simplified)
-                  Text(
-                    '(${entry.traditional})',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w300,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                Text(
-                  PinyinUtils.toDiacriticPinyin(entry.pinyin),
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const Divider(height: 32),
-                Text(
-                  'Definitions:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...entry.definitions.map(
-                  (definition) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      '• $definition',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
+    DictionaryEntryDetails.showEntryDetailsModal(context, entry);
   }
 }
