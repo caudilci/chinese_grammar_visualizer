@@ -9,7 +9,7 @@ import '../utils/app_theme.dart';
 import '../extensions/color_extension.dart';
 import '../widgets/word_list_selector.dart';
 
-class DictionaryEntryDetails extends StatelessWidget {
+class DictionaryEntryDetails extends StatefulWidget {
   final DictionaryEntry entry;
   final ScrollController? scrollController;
   final VoidCallback? onAddToList;
@@ -21,12 +21,86 @@ class DictionaryEntryDetails extends StatelessWidget {
     this.onAddToList,
   }) : super(key: key);
 
+  /// Static helper method to show the details in a modal bottom sheet
+  static void showEntryDetailsModal(
+    BuildContext context, 
+    DictionaryEntry entry, 
+    {VoidCallback? onAddToList}
+  ) {
+    // Initialize the provider before showing the modal to prevent UI flicker
+    Provider.of<WordListProvider>(context, listen: false).initialize();
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (_, controller) {
+          return DictionaryEntryDetails(
+            entry: entry,
+            scrollController: controller,
+            onAddToList: onAddToList ?? () {
+              showWordListSelection(context, entry);
+            },
+          );
+        },
+      ),
+    );
+  }
+  
+  /// Static helper method to show the word list selection dialog
+  static void showWordListSelection(
+    BuildContext context,
+    DictionaryEntry entry,
+  ) {
+    // Initialize the provider before showing the modal to prevent UI flicker
+    Provider.of<WordListProvider>(context, listen: false).initialize();
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).colorScheme.surfaceContainer
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          child: WordListSelector(entry: entry),
+        );
+      },
+    );
+  }
+
+
+  @override
+  State<DictionaryEntryDetails> createState() => _DictionaryEntryDetailsState();
+}
+
+class _DictionaryEntryDetailsState extends State<DictionaryEntryDetails> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the word list provider once when widget is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<WordListProvider>(context, listen: false).initialize();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Initialize the word list provider if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WordListProvider>(context, listen: false).initialize();
-    });
 
     return Container(
       decoration: BoxDecoration(
@@ -50,7 +124,7 @@ class DictionaryEntryDetails extends StatelessWidget {
         children: [
           Expanded(
             child: ListView(
-              controller: scrollController,
+              controller: widget.scrollController,
               padding: const EdgeInsets.all(16.0),
               children: [
                 Center(
@@ -79,16 +153,16 @@ class DictionaryEntryDetails extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  entry.simplified,
+                                  widget.entry.simplified,
                                   style: AppTheme.headingXXLarge(
                                     context,
                                     weight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
-                                if (entry.traditional != entry.simplified)
+                                if (widget.entry.traditional != widget.entry.simplified)
                                   Text(
-                                    '(${entry.traditional})',
+                                    '(${widget.entry.traditional})',
                                     style: AppTheme.headingLarge(
                                       context,
                                       weight: FontWeight.w300,
@@ -110,7 +184,7 @@ class DictionaryEntryDetails extends StatelessWidget {
                                     icon: const Icon(Icons.volume_up),
                                     onPressed: ttsProvider.isSupported
                                         ? () {
-                                            ttsProvider.speak(entry.simplified);
+                                            ttsProvider.speak(widget.entry.simplified);
                                           }
                                         : null,
                                     tooltip: ttsProvider.isSupported
@@ -125,11 +199,11 @@ class DictionaryEntryDetails extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (onAddToList != null)
+                    if (widget.onAddToList != null)
                       ElevatedButton.icon(
                         icon: const Icon(Icons.playlist_add),
                         label: const Text('Add to List'),
-                        onPressed: onAddToList,
+                        onPressed: widget.onAddToList,
                       ),
                   ],
                 ),
@@ -138,7 +212,7 @@ class DictionaryEntryDetails extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        PinyinUtils.toDiacriticPinyin(entry.pinyin),
+                        PinyinUtils.toDiacriticPinyin(widget.entry.pinyin),
                         style: AppTheme.headingMedium(
                           context,
                           weight: FontWeight.normal,
@@ -161,7 +235,7 @@ class DictionaryEntryDetails extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ...entry.definitions.map(
+                ...widget.entry.definitions.map(
                   (definition) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Text(
@@ -174,7 +248,7 @@ class DictionaryEntryDetails extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildWordListChips(context, entry),
+                _buildWordListChips(context, widget.entry),
               ],
             ),
           ),
@@ -189,8 +263,8 @@ class DictionaryEntryDetails extends StatelessWidget {
       builder: (context, provider, child) {
         final containingLists = provider.getListsContainingEntry(entry);
 
+        // Just return empty widget if not initialized yet - we're already initializing in initState
         if (!provider.isInitialized) {
-          provider.initialize();
           return const SizedBox.shrink();
         }
 
@@ -232,58 +306,4 @@ class DictionaryEntryDetails extends StatelessWidget {
     );
   }
 
-  /// Static helper method to show the details in a modal bottom sheet
-  static void showEntryDetailsModal(
-    BuildContext context, 
-    DictionaryEntry entry, 
-    {VoidCallback? onAddToList}
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        builder: (_, controller) {
-          return DictionaryEntryDetails(
-            entry: entry,
-            scrollController: controller,
-            onAddToList: onAddToList ?? () {
-              showWordListSelection(context, entry);
-            },
-          );
-        },
-      ),
-    );
-  }
-  
-  /// Static helper method to show the word list selection dialog
-  static void showWordListSelection(
-    BuildContext context,
-    DictionaryEntry entry,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Theme.of(context).colorScheme.surfaceContainer
-          : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
-          ),
-          child: WordListSelector(entry: entry),
-        );
-      },
-    );
-  }
 }
