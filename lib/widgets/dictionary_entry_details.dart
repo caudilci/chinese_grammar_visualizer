@@ -7,6 +7,7 @@ import '../providers/word_list_provider.dart';
 import '../utils/pinyin_utils.dart';
 import '../utils/app_theme.dart';
 import '../extensions/color_extension.dart';
+import '../widgets/word_list_selector.dart';
 
 class DictionaryEntryDetails extends StatelessWidget {
   final DictionaryEntry entry;
@@ -252,10 +253,37 @@ class DictionaryEntryDetails extends StatelessWidget {
           return DictionaryEntryDetails(
             entry: entry,
             scrollController: controller,
-            onAddToList: onAddToList,
+            onAddToList: onAddToList ?? () {
+              showWordListSelection(context, entry);
+            },
           );
         },
       ),
+    );
+  }
+  
+  /// Static helper method to show the word list selection dialog
+  static void showWordListSelection(
+    BuildContext context,
+    DictionaryEntry entry,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).colorScheme.surfaceContainer
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          child: WordListSelector(entry: entry),
+        );
+      },
     );
   }
 }

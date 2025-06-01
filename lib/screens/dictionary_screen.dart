@@ -446,9 +446,6 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     DictionaryEntryDetails.showEntryDetailsModal(
       context, 
       entry,
-      onAddToList: () {
-        _showWordListSelection(context, entry);
-      },
     );
   }
 
@@ -498,24 +495,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     );
   }
 
-  void _showWordListSelection(BuildContext context, DictionaryEntry entry) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
-          ),
-          child: WordListSelector(entry: entry),
-        );
-      },
-    );
-  }
+  // Using DictionaryEntryDetails.showWordListSelection instead
 
   void _launchCCCedictWebsite() async {
     final Uri url = Uri.parse('https://cc-cedict.org/');

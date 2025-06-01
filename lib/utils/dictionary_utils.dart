@@ -107,36 +107,10 @@ class DictionaryUtils {
     DictionaryEntryDetails.showEntryDetailsModal(
       context, 
       entry,
-      onAddToList: () {
-        _showWordListSelection(context, entry);
-      },
     );
   }
 
-  /// Show word list selection dialog
-  static void _showWordListSelection(
-    BuildContext context,
-    DictionaryEntry entry,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Theme.of(context).colorScheme.surfaceContainer
-          : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
-          ),
-          child: WordListSelector(entry: entry),
-        );
-      },
-    );
-  }
+  // Using DictionaryEntryDetails.showWordListSelection instead
 
   // Using the common widget now, so we can remove this method
 }
