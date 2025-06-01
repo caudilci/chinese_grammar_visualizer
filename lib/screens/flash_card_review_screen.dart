@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/flash_card.dart';
 import '../providers/flash_card_provider.dart';
+import '../providers/tts_provider.dart';
 import '../utils/pinyin_utils.dart';
 import '../utils/app_theme.dart';
 import 'flash_card_results_screen.dart';
@@ -431,16 +432,39 @@ class _FlashCardReviewScreenState extends State<FlashCardReviewScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
-            Text(
-              PinyinUtils.toDiacriticPinyin(card.entry.pinyin),
-              style: AppTheme.headingXLarge(
-                context,
-                weight: FontWeight.normal,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Color(0xFF89B4FA) // Catppuccin mocha blue
-                    : Colors.blue,
-              ),
-              textAlign: TextAlign.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    PinyinUtils.toDiacriticPinyin(card.entry.pinyin),
+                    style: AppTheme.headingXLarge(
+                      context,
+                      weight: FontWeight.normal,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Color(0xFF89B4FA) // Catppuccin mocha blue
+                          : Colors.blue,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Consumer<TtsProvider>(
+                  builder: (context, ttsProvider, _) {
+                    return IconButton(
+                      icon: const Icon(Icons.volume_up),
+                      onPressed: ttsProvider.isSupported 
+                          ? () {
+                              ttsProvider.speak(card.entry.simplified);
+                            } 
+                          : null,
+                      tooltip: ttsProvider.isSupported 
+                          ? 'Pronounce Chinese' 
+                          : 'TTS not supported on this platform',
+                      color: Theme.of(context).colorScheme.primary,
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             Text(

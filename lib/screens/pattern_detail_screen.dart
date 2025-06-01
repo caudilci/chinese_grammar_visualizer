@@ -6,6 +6,7 @@ import '../utils/app_theme.dart';
 import '../utils/catppuccin_theme.dart';
 import '../widgets/grammar_visualizer.dart';
 import '../widgets/sentence_breakdown.dart';
+import '../widgets/grammar_example_card.dart';
 import 'practice_screen.dart';
 
 class PatternDetailScreen extends StatefulWidget {
@@ -234,6 +235,8 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        GrammarExampleCard(example: currentExample),
+        const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -241,51 +244,14 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 ? Theme.of(context).colorScheme.surfaceContainer
                 : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black.withValues(alpha: 0.2)
-                    : Colors.grey.withValues(alpha: 0.1),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: const Offset(0, 1),
-              ),
-            ],
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant,
+              width: 1,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                currentExample.chineseSentence,
-                style: AppTheme.headingLarge(
-                  context,
-                  weight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ).copyWith(height: 1.5),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                currentExample.pinyinSentence,
-                style: AppTheme.bodyDefault(
-                  context,
-                  weight: FontWeight.normal,
-                  color: Theme.of(context).colorScheme.primary,
-                ).copyWith(height: 1.2),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                currentExample.englishTranslation,
-                style: AppTheme.bodyDefault(
-                  context,
-                  weight: FontWeight.normal,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.7),
-                ).copyWith(fontStyle: FontStyle.italic, height: 1.2),
-              ),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 16),
               Text(
                 'Sentence Breakdown',
                 style: AppTheme.bodyDefault(
@@ -299,45 +265,6 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 parts: currentExample.breakdownParts,
                 colorCoding: pattern.colorCoding,
               ),
-              if (currentExample.note != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? CatppuccinTheme.mochaYellow.withValues(alpha: 0.2)
-                        : Colors.amber.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? CatppuccinTheme.mochaYellow
-                          : Colors.amber,
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.lightbulb_outline,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? CatppuccinTheme.mochaYellow
-                            : Colors.amber,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          currentExample.note!,
-                          style: AppTheme.bodySmall(
-                            context,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ),
