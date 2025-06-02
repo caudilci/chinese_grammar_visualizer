@@ -1,9 +1,9 @@
 import 'dart:io' as io;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/tts_provider.dart';
+import '../providers/language_provider.dart';
 import '../utils/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -22,6 +22,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           _buildSectionHeader(context, 'Appearance'),
           _buildThemeSelector(context),
+          _buildCharacterSelector(context),
           const Divider(),
           _buildSectionHeader(context, 'Text-to-Speech'),
           _buildTtsSettings(context),
@@ -134,6 +135,47 @@ class SettingsScreen extends StatelessWidget {
   }
 
   // Theme color indicator no longer needed since we only have a simple toggle
+  
+  Widget _buildCharacterSelector(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        final brightness = Theme.of(context).brightness;
+
+        return Column(
+          children: [
+            ListTile(
+              leading: Icon(
+                Icons.translate,
+                color: brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              title: Text(
+                'Chinese Character Type',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              subtitle: Text(
+                languageProvider.useTraditionalCharacters ? 'Traditional (繁體)' : 'Simplified (简体)',
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
+              trailing: Switch(
+                value: languageProvider.useTraditionalCharacters,
+                onChanged: (value) {
+                  languageProvider.toggleCharacterType();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
   
   Widget _buildTtsSettings(BuildContext context) {
     return Consumer<TtsProvider>(

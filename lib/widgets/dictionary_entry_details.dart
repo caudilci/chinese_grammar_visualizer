@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/tts_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../providers/language_provider.dart';
 import '../utils/pinyin_utils.dart';
 import '../utils/app_theme.dart';
-import '../extensions/color_extension.dart';
 import '../widgets/word_list_selector.dart';
 
 class DictionaryEntryDetails extends StatefulWidget {
@@ -152,26 +152,43 @@ class _DictionaryEntryDetailsState extends State<DictionaryEntryDetails> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  widget.entry.simplified,
-                                  style: AppTheme.headingXXLarge(
-                                    context,
-                                    weight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurface,
-                                  ),
+                                Consumer<LanguageProvider>(
+                                  builder: (context, languageProvider, _) {
+                                    final primary = languageProvider.useTraditionalCharacters
+                                        ? widget.entry.traditional
+                                        : widget.entry.simplified;
+                                    final secondary = languageProvider.useTraditionalCharacters
+                                        ? widget.entry.simplified
+                                        : widget.entry.traditional;
+                                    final showSecondary = primary != secondary;
+                                        
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          primary,
+                                          style: AppTheme.headingXXLarge(
+                                            context,
+                                            weight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                        ),
+                                        if (showSecondary)
+                                          Text(
+                                            '($secondary)',
+                                            style: AppTheme.headingLarge(
+                                              context,
+                                              weight: FontWeight.w300,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withValues(alpha: 0.8),
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  }
                                 ),
-                                if (widget.entry.traditional != widget.entry.simplified)
-                                  Text(
-                                    '(${widget.entry.traditional})',
-                                    style: AppTheme.headingLarge(
-                                      context,
-                                      weight: FontWeight.w300,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(alpha: 0.8),
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
@@ -184,7 +201,10 @@ class _DictionaryEntryDetailsState extends State<DictionaryEntryDetails> {
                                     icon: const Icon(Icons.volume_up),
                                     onPressed: ttsProvider.isSupported
                                         ? () {
-                                            ttsProvider.speak(widget.entry.simplified);
+                                            final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                                            ttsProvider.speak(languageProvider.useTraditionalCharacters
+                                                ? widget.entry.traditional
+                                                : widget.entry.simplified);
                                           }
                                         : null,
                                     tooltip: ttsProvider.isSupported

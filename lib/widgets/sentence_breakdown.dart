@@ -9,8 +9,14 @@ import '../utils/dictionary_utils.dart';
 class SentenceBreakdown extends StatefulWidget {
   final List<SentencePart> parts;
   final Map<String, String>? colorCoding;
+  final bool useTraditional;
 
-  const SentenceBreakdown({super.key, required this.parts, this.colorCoding});
+  const SentenceBreakdown({
+    super.key, 
+    required this.parts, 
+    this.colorCoding, 
+    this.useTraditional = false,
+  });
 
   @override
   State<SentenceBreakdown> createState() => _SentenceBreakdownState();
@@ -65,6 +71,11 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
       children: List.generate(widget.parts.length, (index) {
         final part = widget.parts[index];
         final isSelected = _selectedPartIndex == index;
+        
+        // Get the appropriate text based on character preference
+        final String partText = widget.useTraditional && part.traditionalText != null
+            ? part.traditionalText!
+            : part.text;
 
         // Get color based on part of speech instead of grammar function
         Color componentColor = PartOfSpeechColors.getDefaultColor(context);
@@ -157,7 +168,7 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  part.text,
+                  partText,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: isSelected
@@ -326,7 +337,9 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                       children: [
                         Expanded(
                           child: Text(
-                            part.text,
+                            widget.useTraditional && part.traditionalText != null
+                                ? part.traditionalText!
+                                : part.text,
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -340,7 +353,9 @@ class _SentenceBreakdownState extends State<SentenceBreakdown> {
                               icon: const Icon(Icons.volume_up, size: 20),
                               onPressed: ttsProvider.isSupported 
                                   ? () {
-                                      ttsProvider.speak(part.text);
+                                      ttsProvider.speak(widget.useTraditional && part.traditionalText != null
+                                          ? part.traditionalText!
+                                          : part.text);
                                     } 
                                   : null,
                               tooltip: ttsProvider.isSupported 

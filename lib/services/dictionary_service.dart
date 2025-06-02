@@ -9,7 +9,7 @@ class DictionaryService {
   factory DictionaryService() => _instance;
   DictionaryService._internal();
 
-  List<DictionaryEntry> _entries = [];
+  final List<DictionaryEntry> _entries = [];
   bool _isLoaded = false;
   final Completer<void> _loadingCompleter = Completer<void>();
 

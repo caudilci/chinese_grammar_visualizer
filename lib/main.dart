@@ -8,6 +8,7 @@ import 'providers/word_list_provider.dart';
 import 'providers/flash_card_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/tts_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
 import 'utils/catppuccin_theme.dart';
 import 'utils/app_theme.dart';
@@ -27,6 +28,7 @@ void main() {
         ),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => TtsProvider()),
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
       ],
       child: const MyApp(),
     ),
@@ -68,6 +70,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadData() async {
+    // Initialize the language provider
+    await Provider.of<LanguageProvider>(context, listen: false).initialize();
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
       Navigator.of(context).pushReplacement(
