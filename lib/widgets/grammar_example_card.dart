@@ -9,12 +9,14 @@ class GrammarExampleCard extends StatelessWidget {
   final GrammarExample example;
   final bool isAnimated;
   final bool showFocus;
+  final bool useTraditional;
 
   const GrammarExampleCard({
     Key? key,
     required this.example,
     this.isAnimated = false,
     this.showFocus = true,
+    this.useTraditional = false,
   }) : super(key: key);
 
   @override
@@ -39,7 +41,9 @@ class GrammarExampleCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    example.chineseSentence,
+                    useTraditional && example.traditionalChineseSentence != null 
+                        ? example.traditionalChineseSentence!
+                        : example.chineseSentence,
                     style: AppTheme.headingLarge(
                       context,
                       weight: FontWeight.w500,
@@ -53,7 +57,9 @@ class GrammarExampleCard extends StatelessWidget {
                       icon: const Icon(Icons.volume_up),
                       onPressed: ttsProvider.isSupported
                           ? () {
-                              ttsProvider.speak(example.chineseSentence);
+                              ttsProvider.speak(useTraditional && example.traditionalChineseSentence != null
+                                  ? example.traditionalChineseSentence!
+                                  : example.chineseSentence);
                             }
                           : null,
                       tooltip: ttsProvider.isSupported

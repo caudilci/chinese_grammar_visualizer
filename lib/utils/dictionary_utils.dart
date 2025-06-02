@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/dictionary_entry.dart';
 import '../models/grammar_pattern.dart';
 import '../providers/dictionary_provider.dart';
-import '../providers/word_list_provider.dart';
 import '../utils/pinyin_utils.dart';
-import '../widgets/word_list_selector.dart';
 import '../widgets/dictionary_entry_details.dart';
-import '../extensions/color_extension.dart';
 import 'package:provider/provider.dart';
 
 class DictionaryUtils {

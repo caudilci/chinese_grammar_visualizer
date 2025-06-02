@@ -148,8 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         value: category,
                         child: Text(category),
                       ),
-                    )
-                    .toList(),
+                    ),
               ],
               onChanged: (value) {
                 setState(() {
@@ -211,8 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                    )
-                    .toList(),
+                    ),
               ],
               onChanged: (value) {
                 setState(() {

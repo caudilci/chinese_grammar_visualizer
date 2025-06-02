@@ -206,14 +206,12 @@ class FlashCardProvider extends ChangeNotifier {
     try {
       // Get all cards from selected word lists
       final allCards = <FlashCard>[];
-      bool hasEmptyWordLists = false;
 
       for (final listId in wordListIds) {
         final wordList = _wordListProvider.getWordListById(listId);
         if (wordList != null) {
           final cards = getCardsForWordList(wordList);
           if (cards.isEmpty) {
-            hasEmptyWordLists = true;
             print('Warning: Word list ${wordList.name} (ID: $listId) is empty');
           }
           allCards.addAll(cards);

@@ -4,12 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
 import '../providers/word_list_provider.dart';
-import '../providers/tts_provider.dart';
 import '../services/search_isolate.dart';
 import '../utils/app_theme.dart';
-import '../utils/pinyin_utils.dart';
 import '../widgets/dictionary_search_result.dart';
-import '../widgets/word_list_selector.dart';
 import '../widgets/dictionary_entry_details.dart';
 
 class DictionaryScreen extends StatefulWidget {
@@ -443,56 +440,7 @@ class DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   void _showEntryDetails(BuildContext context, DictionaryEntry entry) {
-    DictionaryEntryDetails.showEntryDetailsModal(
-      context, 
-      entry,
-    );
-  }
-
-  Widget _buildWordListChips(BuildContext context, DictionaryEntry entry) {
-    return Consumer<WordListProvider>(
-      builder: (context, provider, child) {
-        final containingLists = provider.getListsContainingEntry(entry);
-
-        if (!provider.isInitialized) {
-          provider.initialize();
-          return const SizedBox.shrink();
-        }
-
-        if (containingLists.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'In Word Lists:',
-              style: AppTheme.bodyDefault(
-                context,
-                weight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: containingLists.map((list) {
-                return Chip(
-                  label: Text(list.name),
-                  backgroundColor: Theme.of(
-                    context,
-                  ).primaryColor.withValues(alpha: 0.1),
-                  deleteIcon: const Icon(Icons.close, size: 18),
-                  onDeleted: () {
-                    provider.removeEntryFromList(list.id, entry);
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        );
-      },
-    );
+    DictionaryEntryDetails.showEntryDetailsModal(context, entry);
   }
 
   // Using DictionaryEntryDetails.showWordListSelection instead

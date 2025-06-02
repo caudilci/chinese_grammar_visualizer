@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/dictionary_entry.dart';
 import '../providers/dictionary_provider.dart';
+import '../providers/language_provider.dart';
 import '../services/search_isolate.dart';
 import '../utils/pinyin_utils.dart';
+import '../utils/app_theme.dart';
 
 class DictionarySearchResult extends StatelessWidget {
   final DictionaryEntry entry;
@@ -175,51 +177,63 @@ class DictionarySearchResult extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.ideographic,
-                children: [
-                  // Highlight matched Chinese characters if in Chinese search mode
-                  (searchMode == SearchMode.chinese ||
-                          (searchMode == SearchMode.auto &&
-                              PinyinUtils.containsChineseCharacters(
-                                searchQuery,
-                              )))
-                      ? _highlightText(
-                          entry.simplified,
-                          searchQuery,
-                          const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          context,
-                        )
-                      : Text(
-                          entry.simplified,
-                          style: const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
+              Consumer<LanguageProvider>(
+                builder: (context, languageProvider, _) {
+                  final primaryText = languageProvider.useTraditionalCharacters
+                      ? entry.traditional
+                      : entry.simplified;
+                  final secondaryText = languageProvider.useTraditionalCharacters
+                      ? entry.simplified
+                      : entry.traditional;
+                  final showSecondary = primaryText != secondaryText;
+                  
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.ideographic,
+                    children: [
+                      // Highlight matched Chinese characters if in Chinese search mode
+                      (searchMode == SearchMode.chinese ||
+                              (searchMode == SearchMode.auto &&
+                                  PinyinUtils.containsChineseCharacters(
+                                    searchQuery,
+                                  )))
+                          ? _highlightText(
+                              primaryText,
+                              searchQuery,
+                              AppTheme.headingLarge(
+                                context, 
+                                weight: FontWeight.bold,
+                              ),
+                              context,
+                            )
+                          : Text(
+                              primaryText,
+                              style: AppTheme.headingLarge(
+                                context,
+                                weight: FontWeight.bold,
+                              ),
+                            ),
+                      const SizedBox(width: 8.0),
+                      if (showSecondary)
+                        Text(
+                          '($secondaryText)',
+                          style: AppTheme.bodySmall(
+                            context,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
-                  const SizedBox(width: 8.0),
-                  if (entry.traditional != entry.simplified)
-                    Text(
-                      '(${entry.traditional})',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.7),
+                      const Spacer(),
+                      Icon(
+                        Icons.chevron_right,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[500]
+                            : Colors.grey[400],
                       ),
-                    ),
-                  const Spacer(),
-                  Icon(
-                    Icons.chevron_right,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey[500]
-                        : Colors.grey[400],
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 4.0),
               // Highlight pinyin if in Chinese mode or auto mode with pinyin query
@@ -229,8 +243,8 @@ class DictionarySearchResult extends StatelessWidget {
                   ? _buildPinyinHighlight(entry.pinyin, searchQuery, context)
                   : Text(
                       formattedPinyin,
-                      style: TextStyle(
-                        fontSize: 16.0,
+                      style: AppTheme.bodyDefault(
+                        context,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
@@ -243,16 +257,16 @@ class DictionarySearchResult extends StatelessWidget {
                   ? _highlightText(
                       definitionPreview,
                       searchQuery,
-                      TextStyle(
-                        fontSize: 14.0,
+                      AppTheme.bodySmall(
+                        context,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       context,
                     )
                   : Text(
                       definitionPreview,
-                      style: TextStyle(
-                        fontSize: 14.0,
+                      style: AppTheme.bodySmall(
+                        context,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       maxLines: 2,

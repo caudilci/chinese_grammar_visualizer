@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/grammar_pattern.dart';
 import '../providers/grammar_provider.dart';
+import '../providers/language_provider.dart';
 import '../utils/app_theme.dart';
 import '../utils/catppuccin_theme.dart';
+import '../utils/character_utils.dart';
 import '../widgets/grammar_visualizer.dart';
 import '../widgets/sentence_breakdown.dart';
 import '../widgets/grammar_example_card.dart';
@@ -121,13 +123,22 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          pattern.chineseTitle,
-          style: AppTheme.headingXLarge(
-            context,
-            weight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onSurface,
-          ).copyWith(height: 1.5),
+        Consumer<LanguageProvider>(
+          builder: (context, languageProvider, _) {
+            final displayText = CharacterUtils.getChineseText(
+              context,
+              pattern.chineseTitle,
+              pattern.traditionalChineseTitle,
+            );
+            return Text(
+              displayText,
+              style: AppTheme.headingXLarge(
+                context,
+                weight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurface,
+              ).copyWith(height: 1.5),
+            );
+          }
         ),
         const SizedBox(height: 4),
         Text(
@@ -208,9 +219,18 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        GrammarVisualizer(
-          structure: pattern.structure,
-          structureBreakdown: pattern.structureBreakdown,
+        Consumer<LanguageProvider>(
+          builder: (context, languageProvider, _) {
+            final displayStructure = CharacterUtils.getChineseText(
+              context,
+              pattern.structure,
+              pattern.traditionalStructure,
+            );
+            return GrammarVisualizer(
+              structure: displayStructure,
+              structureBreakdown: pattern.structureBreakdown,
+            );
+          }
         ),
       ],
     );
@@ -235,7 +255,14 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        GrammarExampleCard(example: currentExample),
+        Consumer<LanguageProvider>(
+          builder: (context, languageProvider, _) {
+            return GrammarExampleCard(
+              example: currentExample,
+              useTraditional: languageProvider.useTraditionalCharacters,
+            );
+          }
+        ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -261,9 +288,14 @@ class _PatternDetailScreenState extends State<PatternDetailScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              SentenceBreakdown(
-                parts: currentExample.breakdownParts,
-                colorCoding: pattern.colorCoding,
+              Consumer<LanguageProvider>(
+                builder: (context, languageProvider, _) {
+                  return SentenceBreakdown(
+                    parts: currentExample.breakdownParts,
+                    colorCoding: pattern.colorCoding,
+                    useTraditional: languageProvider.useTraditionalCharacters,
+                  );
+                }
               ),
             ],
           ),
