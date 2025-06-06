@@ -10,6 +10,11 @@ import 'providers/theme_provider.dart';
 import 'providers/tts_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
+import 'screens/word_lists_screen.dart';
+import 'screens/flash_card_setup_screen.dart';
+import 'screens/flash_card_review_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/import_export_screen.dart';
 import 'utils/catppuccin_theme.dart';
 import 'utils/app_theme.dart';
 
@@ -49,6 +54,13 @@ class MyApp extends StatelessWidget {
           darkTheme: themeProvider.darkTheme,
           themeMode: themeProvider.themeMode,
           home: const SplashScreen(),
+          routes: {
+            '/word-lists': (ctx) => const WordListsScreen(),
+            '/flash-cards/setup': (ctx) => const FlashCardSetupScreen(),
+            '/flash-cards/review': (ctx) => const FlashCardReviewScreen(),
+            '/settings': (ctx) => const SettingsScreen(),
+            '/import-export': (ctx) => const ImportExportScreen(),
+          },
         );
       },
     );

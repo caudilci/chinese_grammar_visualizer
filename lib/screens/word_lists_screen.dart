@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/word_list.dart';
-import '../providers/flash_card_provider.dart';
 import '../providers/word_list_provider.dart';
+import '../providers/flash_card_provider.dart';
 import '../utils/app_theme.dart';
-import 'flash_card_review_screen.dart';
+import '../widgets/empty_state.dart';
 import 'flash_card_setup_screen.dart';
+import 'flash_card_review_screen.dart';
 import 'word_list_detail_screen.dart';
+import 'import_export_screen.dart';
 
 class WordListsScreen extends StatefulWidget {
   const WordListsScreen({Key? key}) : super(key: key);
@@ -217,6 +219,17 @@ class _WordListsScreenState extends State<WordListsScreen> {
         title: const Text('Word Lists'),
         titleTextStyle: AppTheme.appBarTitleStyle(),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.import_export),
+            tooltip: 'Import & Export Lists',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ImportExportScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Create new list',

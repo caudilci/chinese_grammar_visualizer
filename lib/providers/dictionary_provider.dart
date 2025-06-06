@@ -180,6 +180,25 @@ class DictionaryProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  // Lookup a word and return a single best match dictionary entry
+  DictionaryEntry? lookupWord(String word) {
+    if (word.isEmpty) return null;
+    
+    // First try an exact match
+    final exactMatches = _dictionaryService.entries.where((entry) => 
+      entry.simplified == word || entry.traditional == word
+    ).toList();
+    
+    if (exactMatches.isNotEmpty) {
+      // Return the shortest entry (likely the most common/basic definition)
+      return exactMatches.reduce((a, b) => 
+        a.simplified.length < b.simplified.length ? a : b);
+    }
+    
+    // If no exact match, return null
+    return null;
+  }
+  
   // Get dictionary entries for a specific word (for grammar example lookups)
   // searchWithNormalization: true for general dictionary search, false for exact matching from grammar examples
   List<DictionaryEntry> getDictionaryEntriesForWord(String word, {String? pinyin, bool searchWithNormalization = true}) {

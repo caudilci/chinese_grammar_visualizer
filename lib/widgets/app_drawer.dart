@@ -3,6 +3,7 @@ import '../screens/flash_card_setup_screen.dart';
 import '../screens/flash_card_review_screen.dart';
 import '../screens/word_lists_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/import_export_screen.dart';
 import '../providers/flash_card_provider.dart';
 import '../utils/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -68,11 +69,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop(); // Close the drawer
               // Navigate to word lists screen
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const WordListsScreen(),
-                ),
-              );
+              Navigator.of(context).pushNamed('/word-lists');
             },
           ),
           ExpansionTile(
@@ -109,11 +106,7 @@ class AppDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).pop(); // Close the drawer
                     // Navigate to review screen
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const FlashCardReviewScreen(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/flash-cards/review');
                   },
                 ),
               ListTile(
@@ -167,16 +160,29 @@ class AppDrawer extends StatelessWidget {
                   }
 
                   // Navigate to setup screen
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const FlashCardSetupScreen(),
-                    ),
-                  );
+                  Navigator.of(context).pushNamed('/flash-cards/setup');
                 },
               ),
             ],
           ),
           const Divider(),
+          ListTile(
+            leading: Icon(
+              Icons.import_export,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            title: Text(
+              'Import & Export',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+            onTap: () {
+              Navigator.of(context).pop(); // Close the drawer
+              // Navigate to import/export screen
+              Navigator.of(context).pushNamed('/import-export');
+            },
+          ),
           ListTile(
             leading: Icon(
               Icons.settings,
@@ -191,9 +197,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop(); // Close the drawer
               // Navigate to settings screen
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
+              Navigator.of(context).pushNamed('/settings');
             },
           ),
         ],
