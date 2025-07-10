@@ -103,7 +103,9 @@ class ImportExportService {
         // Check if we already created this word list in this import operation
         if (categoryToWordList.containsKey(category)) {
           final wordList = categoryToWordList[category]!;
-          debugPrint('Adding entries to existing word list "${wordList.name}" (created during this import)');
+          debugPrint(
+            'Adding entries to existing word list "${wordList.name}" (created during this import)',
+          );
           await _wordListProvider.addEntriesToList(wordList.id, validEntries);
           continue;
         }
@@ -111,12 +113,15 @@ class ImportExportService {
         // Check if this word list already exists in the app
         WordList? wordList = _wordListProvider.getWordListByName(category);
         if (wordList != null) {
-          debugPrint('Found existing word list for category "$category" with ID: ${wordList.id}');
+          debugPrint(
+            'Found existing word list for category "$category" with ID: ${wordList.id}',
+          );
         } else {
           // Create the hierarchy if needed
           if (category.contains('/')) {
             debugPrint('Creating hierarchical categories for path: $category');
-            final createdHierarchy = await _wordListProvider.createWordListsForPath(category);
+            final createdHierarchy = await _wordListProvider
+                .createWordListsForPath(category);
             wordList = createdHierarchy.last;
 
             // Track all created lists
@@ -402,7 +407,9 @@ class ImportExportService {
         // Pleco text format is typically:
         // traditional[simplified]<tab>pinyin<tab>definition
         // or
-        // traditional[simplified]<tab>pinyin
+        // simplified[traditional]<tab>pinyin<tab>definition (if primary charset in Pleco is set to simplified)
+        // or just
+        // characters<tab>pinyin<tab>definition (when no distinction is made)
         final parts = line.split('\t');
 
         if (parts.length < 2) continue;
@@ -414,16 +421,67 @@ class ImportExportService {
 
         // Parse Chinese characters part
         if (charPart.contains('[') && charPart.contains(']')) {
-          // Format: traditional[simplified]
+          // Format: first[second] - could be either traditional[simplified] or simplified[traditional]
           final startBracket = charPart.indexOf('[');
           final endBracket = charPart.indexOf(']');
 
-          traditional = charPart.substring(0, startBracket).trim();
-          simplified = charPart.substring(startBracket + 1, endBracket).trim();
+          final firstChars = charPart.substring(0, startBracket).trim();
+          final secondChars = charPart
+              .substring(startBracket + 1, endBracket)
+              .trim();
+
+          // Try to detect which is which by checking with dictionary
+          if (_dictionaryProvider != null) {
+            // First try assuming first is simplified (more common in our app)
+            final firstAsSimplified = _dictionaryProvider.lookupWord(
+              firstChars,
+            );
+            final secondAsSimplified = _dictionaryProvider.lookupWord(
+              secondChars,
+            );
+
+            if (firstAsSimplified != null &&
+                firstAsSimplified.traditional == secondChars) {
+              // First entry is simplified, second is traditional
+              simplified = firstChars;
+              traditional = secondChars;
+            } else if (secondAsSimplified != null &&
+                secondAsSimplified.traditional == firstChars) {
+              // Second entry is simplified, first is traditional
+              traditional = firstChars;
+              simplified = secondChars;
+            } else {
+              // Can't determine, make best guess:
+              // Simplified characters typically have fewer strokes
+              if (_isLikelySimplified(firstChars, secondChars)) {
+                simplified = firstChars;
+                traditional = secondChars;
+              } else {
+                traditional = firstChars;
+                simplified = secondChars;
+              }
+            }
+          } else {
+            // No dictionary to check, assume format is traditional[simplified]
+            traditional = firstChars;
+            simplified = secondChars;
+          }
         } else {
           // Format: characters (no distinction between simplified and traditional)
-          traditional = charPart;
-          simplified = charPart;
+          // Try to look up to see if we know this character
+          if (_dictionaryProvider != null) {
+            final entry = _dictionaryProvider.lookupWord(charPart);
+            if (entry != null) {
+              simplified = entry.simplified;
+              traditional = entry.traditional;
+            } else {
+              traditional = charPart;
+              simplified = charPart;
+            }
+          } else {
+            traditional = charPart;
+            simplified = charPart;
+          }
         }
 
         // Extract pinyin
@@ -470,6 +528,13 @@ class ImportExportService {
     }
 
     return categorizedEntries;
+  }
+
+  // Helper method to guess if the first string is likely simplified compared to the second
+  bool _isLikelySimplified(String first, String second) {
+    // Simple heuristic: simplified characters typically have fewer strokes
+    // We'll just compare the character count as a rough approximation
+    return first.length <= second.length;
   }
 
   /// Parse content in Pleco XML format
@@ -577,8 +642,22 @@ class ImportExportService {
               traditional = headword.innerText;
             } else if (charset == null && headwords.length == 1) {
               // If there's only one headword and no charset, use it for both
-              simplified = headword.innerText;
-              traditional = headword.innerText;
+              final chars = headword.innerText;
+
+              // Try to identify simplified vs traditional from our dictionary
+              if (_dictionaryProvider != null) {
+                final entry = _dictionaryProvider.lookupWord(chars);
+                if (entry != null) {
+                  simplified = entry.simplified;
+                  traditional = entry.traditional;
+                } else {
+                  simplified = chars;
+                  traditional = chars;
+                }
+              } else {
+                simplified = chars;
+                traditional = chars;
+              }
             }
           }
 
@@ -587,6 +666,25 @@ class ImportExportService {
             simplified = traditional;
           } else if (traditional.isEmpty && simplified.isNotEmpty) {
             traditional = simplified;
+          }
+
+          // Cross-check with dictionary if possible
+          if (_dictionaryProvider != null && simplified != traditional) {
+            // Verify our mapping is correct by checking dictionary
+            final entry = _dictionaryProvider.lookupWord(simplified);
+            if (entry != null && entry.traditional != traditional) {
+              // Our mapping conflicts with the dictionary, try the other way around
+              final reversedEntry = _dictionaryProvider.lookupWord(traditional);
+              if (reversedEntry != null &&
+                  reversedEntry.simplified == simplified) {
+                // The mapping is reversed but consistent, keep as is
+              } else {
+                // Dictionary doesn't agree, trust the explicit charset markers from the file
+                debugPrint(
+                  'Dictionary mapping differs from XML charset markers for: $simplified / $traditional',
+                );
+              }
+            }
           }
 
           // Extract pinyin
